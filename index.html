@@ -124,6 +124,7 @@
     <span style="flex:1"></span>
     <span id="f-compte"></span>
     <button class="tab" id="btn-dernier" type="button">↺ Dernier bulletin</button>
+    <button class="tab" id="btn-reset" type="button" title="Annule les décisions et bulletins de ce client : tout revient dans la file">↺ Réinitialiser (démo)</button>
     <button class="bigbtn" id="btn-bulletin" type="button" disabled>Écrire le bulletin<span class="arrow">→</span></button>
   </div>
   <div id="list"></div>
@@ -357,6 +358,17 @@ $('btn-dernier').onclick = async () => {
     load();
   };
   $('modal').style.display = 'flex';
+};
+
+$('btn-reset').onclick = async () => {
+  const c = clients.find(x => x.id === current); if (!c) return;
+  if (!confirm('Remettre toutes les propositions de ' + c.name + ' à l\'état initial ?\nLes décisions garder/écarter et les bulletins générés seront annulés.')) return;
+  const pid = c.client_profiles[0].id;
+  const r1 = await sb.from('matches').update({ status: 'proposed', reviewed_at: null, bulletin_id: null }).eq('profile_id', pid).gte('llm_score', 60);
+  const r2 = await sb.from('matches').update({ status: 'grey', reviewed_at: null, bulletin_id: null }).eq('profile_id', pid).lt('llm_score', 60);
+  if (r1.error || r2.error) { toast('Erreur : ' + (r1.error || r2.error).message); return; }
+  toast('Démo réinitialisée : toutes les propositions sont de retour');
+  renderTabs(); load();
 };
 
 window.switchTo = switchTo; window.decide = decide; window.toggleTheme = toggleTheme;
