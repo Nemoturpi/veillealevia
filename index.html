@@ -123,6 +123,7 @@
     <span id="f-themes" style="display:flex;gap:6px;flex-wrap:wrap"></span>
     <span style="flex:1"></span>
     <span id="f-compte"></span>
+    <button class="tab" id="btn-dernier" type="button">↺ Dernier bulletin</button>
     <button class="bigbtn" id="btn-bulletin" type="button" disabled>Écrire le bulletin<span class="arrow">→</span></button>
   </div>
   <div id="list"></div>
@@ -135,6 +136,7 @@
     <pre class="prompt" id="m-prompt"></pre>
     <div style="margin-top:12px; display:flex; gap:10px">
       <button class="bigbtn" id="m-copy" type="button">Copier à nouveau</button>
+      <button class="tab" id="m-reopen" type="button" style="display:none">Rouvrir la sélection</button>
       <button class="tab" id="m-close" type="button">Fermer</button>
     </div>
   </div>
@@ -334,6 +336,26 @@ $('btn-bulletin').onclick = async () => {
   $('m-client').textContent = c.name;
   $('m-prompt').textContent = prompt;
   $('m-copy').onclick = async () => { try { await navigator.clipboard.writeText(prompt); toast('Copié'); } catch (e) {} };
+  $('m-reopen').style.display = 'none';
+  $('modal').style.display = 'flex';
+};
+
+$('btn-dernier').onclick = async () => {
+  const c = clients.find(x => x.id === current); if (!c) return;
+  const { data } = await sb.from('bulletins').select('id,prompt_text,created_at').eq('profile_id', c.client_profiles[0].id).order('created_at', { ascending: false }).limit(1);
+  if (!data || !data.length) { toast('Aucun bulletin généré pour ce client.'); return; }
+  const b = data[0];
+  $('m-client').textContent = c.name + ' — généré le ' + new Date(b.created_at).toLocaleDateString('fr-FR');
+  $('m-prompt').textContent = b.prompt_text || '';
+  try { await navigator.clipboard.writeText(b.prompt_text || ''); toast('Prompt copié'); } catch (e) {}
+  $('m-copy').onclick = async () => { try { await navigator.clipboard.writeText(b.prompt_text || ''); toast('Copié'); } catch (e) {} };
+  $('m-reopen').style.display = 'inline-block';
+  $('m-reopen').onclick = async () => {
+    await sb.from('matches').update({ bulletin_id: null }).eq('bulletin_id', b.id);
+    $('modal').style.display = 'none'; $('m-reopen').style.display = 'none';
+    toast('Sélection rouverte : ces informations comptent à nouveau pour « Écrire le bulletin »');
+    load();
+  };
   $('modal').style.display = 'flex';
 };
 
