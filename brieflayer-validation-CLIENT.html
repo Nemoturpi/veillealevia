@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BriefLayer — Validation de la veille</title>
+<style>
+  :root { --or: #b8860b; --bg: #faf8f3; --card: #ffffff; --txt: #1f2328; --mut: #6b7280; --ok: #1d7a4f; --no: #b3422e; --grey: #8a6d1a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, 'Times New Roman', serif; background: var(--bg); color: var(--txt); }
+  header { padding: 18px 28px; border-bottom: 2px solid var(--or); display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  header h1 { font-size: 20px; margin: 0; letter-spacing: .5px; }
+  header .sub { color: var(--mut); font-size: 13px; font-family: system-ui, sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 20px 16px 80px; }
+  .tabs { display: flex; gap: 8px; margin: 6px 0 18px; flex-wrap: wrap; font-family: system-ui, sans-serif; }
+  .tab { padding: 8px 16px; border: 1px solid #d8d2c4; background: #fff; border-radius: 18px; cursor: pointer; font-size: 14px; }
+  .tab.on { background: var(--or); color: #fff; border-color: var(--or); }
+  .tab .n { font-weight: 600; }
+  .bar { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; font-family: system-ui, sans-serif; font-size: 13px; color: var(--mut); flex-wrap: wrap; }
+  .bar button, .modal button { font-family: system-ui, sans-serif; }
+  .card { background: var(--card); border: 1px solid #e4ded1; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+  .card.urgent { border-left: 4px solid var(--no); }
+  .t { font-size: 16px; font-weight: 600; margin: 0 0 4px; }
+  .t a { color: var(--txt); text-decoration: none; border-bottom: 1px dotted #b6ad99; }
+  .meta { font-family: system-ui, sans-serif; font-size: 12px; color: var(--mut); margin-bottom: 8px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .badge { padding: 1px 8px; border-radius: 10px; background: #f0ead9; color: #6b5a17; }
+  .badge.u { background: #f7e1da; color: var(--no); font-weight: 600; }
+  .why { font-size: 13.5px; color: #4a5260; font-style: italic; margin: 6px 0; }
+  textarea.resume { width: 100%; min-height: 64px; font-family: Georgia, serif; font-size: 14px; padding: 8px; border: 1px solid #ded7c6; border-radius: 6px; background: #fffdf8; resize: vertical; }
+  .acts { margin-top: 8px; display: flex; gap: 8px; }
+  .acts button { padding: 7px 16px; border-radius: 6px; border: 1px solid transparent; cursor: pointer; font-size: 13.5px; }
+  .b-ok { background: var(--ok); color: #fff; }
+  .b-no { background: #fff; color: var(--no); border-color: var(--no) !important; }
+  .empty { text-align: center; color: var(--mut); padding: 50px 0; font-style: italic; }
+  .bigbtn { background: var(--or); color: #fff; border: none; padding: 11px 22px; border-radius: 8px; font-size: 15px; cursor: pointer; }
+  .bigbtn:disabled { opacity: .45; cursor: default; }
+  .modal-bg { position: fixed; inset: 0; background: rgba(30,25,15,.5); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
+  .panel { background: #fff; border-radius: 12px; padding: 26px; max-width: 560px; width: 100%; max-height: 88vh; overflow: auto; }
+  .panel h2 { margin-top: 0; font-size: 18px; }
+  .panel .hint { font-family: system-ui, sans-serif; font-size: 12px; color: var(--mut); margin-top: 10px; line-height: 1.5; }
+  pre.prompt { white-space: pre-wrap; font-size: 12px; background: #f6f3ec; padding: 12px; border-radius: 8px; max-height: 45vh; overflow: auto; font-family: ui-monospace, monospace; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #2c2c2a; color: #fff; padding: 10px 20px; border-radius: 8px; font-family: system-ui, sans-serif; font-size: 14px; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 99; }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<header>
+  <h1>BriefLayer</h1>
+  <span class="sub">Validation de la veille — <span id="hdr-info">connexion…</span></span>
+</header>
+<main>
+  <div class="tabs" id="tabs"></div>
+  <div class="bar">
+    <label><input type="checkbox" id="show-grey"> afficher la zone grise (scores 40-59)</label>
+    <span style="flex:1"></span>
+    <button class="bigbtn" id="btn-bulletin" type="button" disabled>✍ Écrire le bulletin</button>
+  </div>
+  <div id="list"></div>
+</main>
+
+<div class="modal-bg" id="modal" style="display:none">
+  <div class="panel">
+    <h2>Prompt du bulletin — <span id="m-client"></span></h2>
+    <p class="hint">Le prompt est copié : colle-le dans Claude (ou ton IA habituelle), réponds à ses questions, ajoute ton édito. Les informations utilisées sont marquées et ne reviendront pas au prochain bulletin.</p>
+    <pre class="prompt" id="m-prompt"></pre>
+    <div style="margin-top:12px; display:flex; gap:10px">
+      <button class="bigbtn" id="m-copy" type="button">Copier à nouveau</button>
+      <button class="tab" id="m-close" type="button">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const EMBED = {
+  url: 'https://xkqeqajeccsacocnfqca.supabase.co',
+  key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhrcWVxYWplY2NzYWNvY25mcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNjc4OTIsImV4cCI6MjA5Njc0Mzg5Mn0.7NmmzyrXt-kVMBl-_WFqPuBP_9r-BAuIbavRO_sIryk'
+};
+let sb = null, clients = [], current = null, rows = [];
+
+const $ = id => document.getElementById(id);
+const toast = m => { const t = $('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); };
+
+function init() {
+  try { sb = supabase.createClient(EMBED.url, EMBED.key); }
+  catch (e) { $('list').innerHTML = '<div class="empty">⚠ Connexion impossible : ' + e.message + '</div>'; return; }
+  loadClients().catch(e => { $('list').innerHTML = '<div class="empty">⚠ Erreur : ' + e.message + '</div>'; });
+}
+
+$('show-grey').onchange = () => load();
+$('m-close').onclick = () => { $('modal').style.display = 'none'; load(); };
+
+async function loadClients() {
+  const { data, error } = await sb.from('clients').select('id,tenant_id,name,client_profiles(id,brief)').eq('active', true).order('name');
+  if (error) { $('hdr-info').textContent = 'erreur : ' + error.message; return; }
+  clients = (data || []).filter(c => c.client_profiles && c.client_profiles.length);
+  $('hdr-info').textContent = clients.length + ' client(s)';
+  if (!current && clients.length) current = clients[0].id;
+  renderTabs(); load();
+}
+
+async function counts() {
+  const out = {};
+  for (const c of clients) {
+    const pid = c.client_profiles[0].id;
+    const { count } = await sb.from('matches').select('id', { count: 'exact', head: true }).eq('profile_id', pid).eq('status', 'proposed').is('bulletin_id', null);
+    out[c.id] = count || 0;
+  }
+  return out;
+}
+
+async function renderTabs() {
+  const n = await counts();
+  $('tabs').innerHTML = clients.map(c =>
+    `<button type="button" class="tab ${c.id === current ? 'on' : ''}" onclick="switchTo('${c.id}')">${c.name} <span class="n">(${n[c.id] ?? 0})</span></button>`
+  ).join('');
+}
+function switchTo(id) { current = id; renderTabs(); load(); }
+
+async function load() {
+  const c = clients.find(x => x.id === current);
+  if (!c) { $('list').innerHTML = '<div class="empty">Aucun client configuré.</div>'; return; }
+  const pid = c.client_profiles[0].id;
+  const statuts = $('show-grey').checked ? ['proposed', 'grey'] : ['proposed'];
+  const { data, error } = await sb.from('matches')
+    .select('id,llm_score,rationale,client_summary,status,items(title,url,published_at,act_type,urgency,key_dates)')
+    .eq('profile_id', pid).in('status', statuts).is('bulletin_id', null)
+    .order('created_at', { ascending: false }).limit(200);
+  if (error) { $('list').innerHTML = '<div class="empty">Erreur : ' + error.message + '</div>'; return; }
+  rows = data || [];
+  rows.sort((a, b) => (((b.items || {}).urgency === 'urgent') - ((a.items || {}).urgency === 'urgent')) || (b.llm_score - a.llm_score));
+  renderList(); refreshBulletinBtn();
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+function renderList() {
+  if (!rows.length) { $('list').innerHTML = '<div class="empty">Rien à valider pour ce client. La veille tourne en continu — repassez plus tard dans la journée.</div>'; return; }
+  $('list').innerHTML = rows.map(r => {
+    const it = r.items || {};
+    const dates = (Array.isArray(it.key_dates) ? it.key_dates : []).map(d => `<span class="badge">📅 ${esc(d.date)} ${esc(d.libelle || d.label || '')}</span>`).join(' ');
+    return `<div class="card ${it.urgency === 'urgent' ? 'urgent' : ''}">
+      <p class="t"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.title)}</a></p>
+      <div class="meta">
+        <span class="badge">score ${r.llm_score}</span>
+        ${r.status === 'grey' ? '<span class="badge">zone grise</span>' : ''}
+        ${it.urgency === 'urgent' ? '<span class="badge u">URGENT</span>' : ''}
+        <span>${esc((it.published_at || '').slice(0, 10))}</span>
+        <span>${esc(it.act_type || '')}</span>
+        ${dates}
+      </div>
+      <p class="why">Pourquoi : ${esc(r.rationale)}</p>
+      <textarea class="resume" id="sum-${r.id}">${esc(r.client_summary)}</textarea>
+      <div class="acts">
+        <button type="button" class="b-ok" onclick="decide('${r.id}', 'approved')">✓ Garder</button>
+        <button type="button" class="b-no" onclick="decide('${r.id}', 'rejected')">✗ Écarter</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function decide(id, statut) {
+  const summary = $('sum-' + id) ? $('sum-' + id).value : null;
+  const { error } = await sb.from('matches').update({ status: statut, client_summary: summary, reviewed_at: new Date().toISOString() }).eq('id', id);
+  if (error) { toast('Erreur : ' + error.message); return; }
+  rows = rows.filter(r => r.id !== id);
+  renderList(); renderTabs(); refreshBulletinBtn();
+  toast(statut === 'approved' ? 'Gardé pour le bulletin' : 'Écarté');
+}
+
+async function approvedRows() {
+  const c = clients.find(x => x.id === current); if (!c) return [];
+  const pid = c.client_profiles[0].id;
+  const { data } = await sb.from('matches')
+    .select('id,rationale,client_summary,items(title,url,published_at,act_type,urgency,key_dates)')
+    .eq('profile_id', pid).in('status', ['approved', 'edited']).is('bulletin_id', null);
+  return data || [];
+}
+
+async function refreshBulletinBtn() {
+  const a = await approvedRows();
+  $('btn-bulletin').disabled = !a.length;
+  $('btn-bulletin').textContent = a.length ? `✍ Écrire le bulletin (${a.length} info${a.length > 1 ? 's' : ''})` : '✍ Écrire le bulletin';
+}
+
+function buildPrompt(client, brief, items) {
+  const lignes = items.map((r, i) => {
+    const it = r.items || {};
+    const dates = (Array.isArray(it.key_dates) ? it.key_dates : []).map(d => `${d.date} (${d.libelle || d.label || 'échéance'})`).join(', ');
+    return `${i + 1}. ${it.title}
+   Date : ${(it.published_at || '').slice(0, 10)} — Type : ${it.act_type || 'n.c.'}${it.urgency === 'urgent' ? ' — URGENT' : ''}${dates ? '\n   Échéances : ' + dates : ''}
+   Angle client : ${r.client_summary || ''}
+   Pourquoi ça le concerne : ${r.rationale || ''}
+   Source : ${it.url || ''}`;
+  }).join('\n\n');
+
+  return `Tu es consultant en affaires publiques. Rédige le bulletin de veille du client ${client} à partir des informations validées ci-dessous.
+
+FORMAT À RESPECTER :
+- Titre : « Bulletin de veille » + numéro et période (demande-les moi).
+- Sections : « 1/ En France » (sous-rubriques : Parlement, Gouvernement, puis rubriques thématiques selon les angles du client), « 2/ En Europe », « 3/ International » — uniquement si la matière le justifie.
+- Chaque information : « Sujet - phrase d'accroche » en gras, puis 1 à 3 phrases factuelles de développement.
+- Quand un rappel de contexte est utile, l'introduire par « ⇒ Pour rappel : ».
+- Le lien source en clair sous chaque information.
+- Les questions écrites parlementaires : citées avec leur numéro, l'auteur, le groupe et la circonscription.
+- Terminer par un agenda (auditions, échéances, consultations) si des dates clés figurent ci-dessous.
+- Ton factuel et professionnel ; reprendre l'angle client indiqué pour chaque information, sans le recopier mot à mot.
+
+PROFIL DU CLIENT :
+${brief}
+
+INFORMATIONS VALIDÉES (${items.length}) :
+
+${lignes}
+
+AVANT DE RÉDIGER : pose-moi tes questions (numéro et période du bulletin, édito souhaité, informations à ajouter ou regrouper, précisions sur certains points). Je complèterai, puis tu rédigeras.`;
+}
+
+$('btn-bulletin').onclick = async () => {
+  const c = clients.find(x => x.id === current); if (!c) return;
+  const a = await approvedRows();
+  if (!a.length) return;
+  const brief = c.client_profiles[0].brief || '';
+  const prompt = buildPrompt(c.name, brief, a);
+  const { data: bul, error } = await sb.from('bulletins').insert({ tenant_id: c.tenant_id, profile_id: c.client_profiles[0].id, prompt_text: prompt, status: 'draft' }).select('id').single();
+  if (error) { toast('Erreur bulletin : ' + error.message); return; }
+  await sb.from('matches').update({ bulletin_id: bul.id }).in('id', a.map(r => r.id));
+  try { await navigator.clipboard.writeText(prompt); toast('Prompt copié dans le presse-papier'); } catch (e) { toast('Copie manuelle nécessaire'); }
+  $('m-client').textContent = c.name;
+  $('m-prompt').textContent = prompt;
+  $('m-copy').onclick = async () => { try { await navigator.clipboard.writeText(prompt); toast('Copié'); } catch (e) {} };
+  $('modal').style.display = 'flex';
+};
+
+window.switchTo = switchTo; window.decide = decide;
+(function start() {
+  if (typeof supabase !== 'undefined') { init(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+  s.onload = () => init();
+  s.onerror = () => { $('list').innerHTML = '<div class="empty">⚠ Impossible de charger la librairie de connexion (bloqueur de pub, antivirus ou réseau). Désactivez le bloqueur pour cette page ou essayez un autre navigateur, puis rechargez (F5).</div>'; $('hdr-info').textContent = 'hors ligne'; };
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>
