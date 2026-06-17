@@ -15,12 +15,8 @@
   header img.logo { height: 46px; display: block; }
   header .sub { font-size: 13px; color: var(--ink-mute); letter-spacing: .02em; }
   header .hdr-info { margin-left: auto; font-size: 12px; color: var(--ink-mute); }
-  main { max-width: 1020px; margin: 0 auto; padding: 28px 18px 90px; }
-  .section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
-  .section-num { font-family: 'Inter Tight', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
-  .rule { height: 1px; background: var(--line); flex: 1; }
-  h2.titre { font-family: 'Inter Tight', sans-serif; font-weight: 600; font-size: 22px; margin: 0 0 16px; }
-  .legend { background: #fff; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 18px; }
+  main { max-width: 1480px; margin: 0 auto; padding: 24px 18px 90px; }
+  .legend { background: #fff; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 18px; }
   .legend summary { cursor: pointer; padding: 13px 18px; font-size: 13.5px; font-weight: 500; color: var(--ink); list-style: none; display: flex; align-items: center; gap: 8px; }
   .legend summary::before { content: '?'; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 12px; font-weight: 600; }
   .legend[open] summary { border-bottom: 1px solid var(--line); }
@@ -38,9 +34,71 @@
   .chip { padding: 4px 12px; border: 1px solid var(--line); border-radius: 14px; background: #fff; cursor: pointer; font-size: 12px; font-family: 'Inter', sans-serif; color: var(--ink); }
   .chip:hover { border-color: var(--accent); }
   .chip.on { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin-bottom: 12px; }
+  .mission { display: grid; grid-template-columns: minmax(260px, 1.3fr) repeat(4, minmax(120px, .6fr)); gap: 10px; margin: 0 0 14px; }
+  .mission-main, .mission-stat { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+  .mission-main { display: grid; gap: 8px; }
+  .mission-kicker, .mission-label { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-mute); font-weight: 600; }
+  .mission-title { font-family: 'Inter Tight', sans-serif; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .level-icon { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; background: var(--cream); border: 1px solid var(--line); font-size: 17px; }
+  .mission-track { height: 8px; border-radius: 999px; background: var(--cream); border: 1px solid var(--line); overflow: hidden; }
+  .mission-fill { height: 100%; background: var(--accent); border-radius: inherit; }
+  .mission-meta { font-size: 12px; color: var(--ink-mute); display: flex; gap: 10px; flex-wrap: wrap; }
+  .mission-stat strong { display: block; margin-top: 4px; font-family: 'Inter Tight', sans-serif; font-size: 22px; line-height: 1; }
+  .mission-stat.ready strong { color: var(--gold); }
+  .mission-stat.todo strong { color: var(--accent); }
+  .kanban { display: grid; grid-template-columns: repeat(4, minmax(260px, 1fr)); gap: 12px; align-items: start; }
+  .lane { min-width: 0; background: rgba(255,255,255,.52); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .lane-head { position: sticky; top: 0; z-index: 2; background: #fff; border-bottom: 1px solid var(--line); padding: 14px 12px 11px; display: flex; align-items: center; gap: 8px; }
+  .lane-step { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; background: var(--ink); color: #fff; font-family: 'Inter Tight', sans-serif; font-size: 17px; font-weight: 600; }
+  .lane-icon { font-size: 17px; line-height: 1; }
+  .lane-title { font-family: 'Inter Tight', sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0; }
+  .lane-count { margin-left: auto; min-width: 26px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--cream); border: 1px solid var(--line); color: var(--ink-mute); font-size: 12px; font-weight: 600; }
+  .lane-note { padding: 0 12px 10px; margin-top: -4px; font-size: 11.5px; color: var(--ink-mute); background: #fff; border-bottom: 1px solid var(--line); }
+  .lane-body { min-height: 220px; padding: 10px; }
+  .lane-body.drop-target { outline: 2px dashed var(--accent); outline-offset: -6px; background: rgba(178,34,52,.04); }
+  .lane.ready { border-color: #d5c08a; background: #fffaf0; }
+  .lane.ready .lane-head, .lane.ready .lane-note { background: #fffaf0; }
+  .lane.selected { border-color: #cfd8e6; background: #f8fbff; }
+  .lane.selected .lane-head, .lane.selected .lane-note { background: #f8fbff; }
+  .lane.rejected { background: #fbfaf8; }
+  .journey { display: grid; gap: 18px; }
+  .journey-hero, .stage-panel { min-height: calc(100vh - 245px); background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: clamp(22px, 4vw, 52px); display: grid; align-content: center; gap: 22px; }
+  .journey-hero { grid-template-columns: minmax(260px, 1.1fr) minmax(260px, .9fr); align-items: center; }
+  .stage-panel { align-content: start; }
+  .journey-kicker, .stage-kicker { font-size: 12px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: .12em; font-weight: 700; }
+  .journey-title, .stage-title { font-family: 'Inter Tight', sans-serif; font-size: clamp(42px, 7vw, 88px); line-height: .95; letter-spacing: 0; margin: 0; }
+  .journey-copy, .stage-copy { color: #4a4d55; font-size: clamp(16px, 2vw, 21px); line-height: 1.45; max-width: 760px; }
+  .journey-actions, .stage-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .quest-card { border: 1px solid var(--line); border-radius: 8px; padding: 18px; background: var(--cream); display: grid; gap: 10px; }
+  .quest-card strong { font-family: 'Inter Tight', sans-serif; font-size: clamp(30px, 4vw, 54px); line-height: .95; }
+  .quest-card span { color: var(--ink-mute); font-size: 13px; }
+  .stage-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .stage-tab { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px; cursor: pointer; text-align: left; color: var(--ink); display: grid; gap: 6px; }
+  .stage-tab:hover { border-color: var(--accent); }
+  .stage-tab.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .stage-tab.on span { color: #f3b6be; }
+  .stage-tab strong { font-family: 'Inter Tight', sans-serif; font-size: 19px; }
+  .stage-tab span { color: var(--ink-mute); font-size: 12px; }
+  .stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; align-items: start; }
+  .stage-panel.todo { border-left: 8px solid var(--accent); }
+  .stage-panel.selected { border-left: 8px solid #1f4d8a; }
+  .stage-panel.generate { border-left: 8px solid var(--gold); background: #fffdf7; }
+  .stage-meter { display: grid; grid-template-columns: repeat(4, minmax(120px, 1fr)); gap: 10px; }
+  .stage-meter .mission-stat { padding: 14px; }
+  .swipe-frame { max-width: 760px; width: 100%; margin: 0 auto; display: grid; gap: 12px; }
+  .swipe-count { justify-self: center; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--cream); color: var(--ink-mute); font-size: 12px; font-weight: 600; }
+  .swipe-frame .card { margin: 0; box-shadow: 0 18px 45px rgba(28,29,34,.12); }
+  .swipe-frame .t { font-size: 22px; }
+  .swipe-frame textarea.resume { min-height: 120px; font-size: 15px; }
+  .keyboard-tip { max-width: 760px; margin: 0 auto; padding: 10px 12px; border: 1px dashed var(--line); border-radius: 8px; background: #fffefb; color: var(--ink-mute); font-size: 12.5px; text-align: center; }
+  .manual-mini { display: grid; gap: 8px; margin-top: 8px; }
+  .manual-mini .manual-item { background: #fff; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 0 rgba(28,29,34,.03); }
+  .card[draggable="true"] { cursor: grab; }
+  .card.dragging { opacity: .48; cursor: grabbing; }
   .card.urgent { border-left: 4px solid var(--accent); }
-  .t { font-family: 'Inter Tight', sans-serif; font-size: 16.5px; font-weight: 600; margin: 0 0 6px; line-height: 1.35; }
+  .card.rejected-card { opacity: .72; }
+  .t { font-family: 'Inter Tight', sans-serif; font-size: 14.5px; font-weight: 600; margin: 0 0 6px; line-height: 1.32; }
   .t a { color: var(--ink); text-decoration: none; }
   .t a:hover { color: var(--accent); }
   .meta { font-size: 12px; color: var(--ink-mute); margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -52,28 +110,48 @@
   .badge.echeance { background: #eef2f8; border-color: #d4deed; color: #1f4d8a; }
   .why { font-size: 13.5px; color: #4a4d55; font-style: italic; margin: 8px 0; }
   .why b { color: var(--accent); font-style: normal; font-weight: 600; }
-  textarea.resume { width: 100%; min-height: 66px; font-family: 'Source Serif 4', Georgia, serif; font-size: 14.5px; line-height: 1.6; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: #fffefb; resize: vertical; color: var(--ink); }
+  textarea.resume { width: 100%; min-height: 70px; font-family: 'Source Serif 4', Georgia, serif; font-size: 13.5px; line-height: 1.45; padding: 9px; border: 1px solid var(--line); border-radius: 8px; background: #fffefb; resize: vertical; color: var(--ink); }
   textarea.resume:focus { outline: none; border-color: var(--accent); }
-  .acts { margin-top: 10px; display: flex; gap: 8px; }
-  .acts button { font-family: 'Inter Tight', sans-serif; padding: 8px 18px; border-radius: 8px; border: 1px solid transparent; cursor: pointer; font-size: 13.5px; font-weight: 500; }
-  .b-ok { background: var(--ink); color: #fff; }
-  .b-ok:hover { background: #000; }
-  .b-no { background: #fff; color: var(--accent); border-color: var(--accent) !important; }
-  .b-no:hover { background: #fdeef0; }
+  .acts { margin-top: 10px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  .acts button { font-family: 'Inter Tight', sans-serif; padding: 7px 10px; border-radius: 8px; border: 1px solid transparent; cursor: pointer; font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .acts button:only-child { grid-column: 1 / -1; }
+  .b-ok { background: #168a4a; color: #fff; }
+  .b-ok:hover { background: #0f6e39; }
+  .b-no { background: #c62828; color: #fff; border-color: #c62828 !important; }
+  .b-no:hover { background: #a91f1f; }
+  .b-soft { background: #fff; color: var(--ink); border-color: var(--line) !important; }
+  .b-soft:hover { border-color: var(--ink) !important; }
+  .b-ready { background: #168a4a; color: #fff; border-color: #168a4a !important; }
+  .b-ready:hover { background: #0f6e39; }
+  .b-wait { background: #f5edd8; color: #735613; border-color: #dfcc96 !important; }
+  .b-wait:hover { background: #eddfb9; }
   .empty { text-align: center; color: var(--ink-mute); padding: 56px 0; font-family: 'Source Serif 4', serif; font-style: italic; font-size: 15px; }
   .bigbtn { font-family: 'Inter Tight', sans-serif; background: var(--accent); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; }
   .bigbtn:hover { background: var(--accent-2); }
   .bigbtn:disabled { opacity: .4; cursor: default; }
   .bigbtn .arrow { margin-left: 8px; }
   .modal-bg { position: fixed; inset: 0; background: rgba(28,29,34,.55); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
-  .panel { background: #fff; border-radius: 14px; padding: 28px; max-width: 580px; width: 100%; max-height: 88vh; overflow: auto; }
+  .panel { background: #fff; border-radius: 8px; padding: 28px; max-width: 580px; width: 100%; max-height: 88vh; overflow: auto; }
+  .panel.wide { max-width: 760px; }
   .panel h2 { font-family: 'Inter Tight', sans-serif; margin-top: 0; font-size: 19px; }
   .panel .hint { font-size: 12.5px; color: var(--ink-mute); margin-top: 10px; line-height: 1.6; }
+  .field-label { display: block; margin: 14px 0 6px; font-size: 12px; color: var(--ink-mute); font-weight: 600; text-transform: uppercase; letter-spacing: .07em; }
+  .manual-field { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 10px 11px; font-family: 'Inter', sans-serif; color: var(--ink); background: #fffefb; }
+  .manual-field:focus { outline: none; border-color: var(--accent); }
+  .manual-text { min-height: 110px; resize: vertical; line-height: 1.5; }
+  .manual-list { margin-top: 18px; display: grid; gap: 10px; }
+  .manual-item { border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--cream); display: grid; gap: 6px; }
+  .manual-item strong { font-family: 'Inter Tight', sans-serif; font-size: 14px; }
+  .manual-item p { margin: 0; font-size: 13px; line-height: 1.45; color: #4a4d55; }
+  .manual-item a, .manual-item span { font-size: 12px; color: var(--ink-mute); word-break: break-word; }
+  .manual-actions { display: flex; justify-content: flex-end; margin-top: 2px; }
   pre.prompt { white-space: pre-wrap; font-size: 12px; background: var(--cream); border: 1px solid var(--line); padding: 14px; border-radius: 10px; max-height: 45vh; overflow: auto; font-family: 'JetBrains Mono', ui-monospace, monospace; }
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 11px 22px; border-radius: 8px; font-size: 14px; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 99; }
   .toast.show { opacity: 1; }
   footer { text-align: center; font-size: 11.5px; color: var(--ink-mute); padding: 26px; border-top: 1px solid var(--line); background: #fff; }
   footer .gold { color: var(--gold); }
+  @media (max-width: 1180px) { .mission { grid-template-columns: repeat(2, minmax(220px, 1fr)); } .kanban { grid-template-columns: repeat(2, minmax(260px, 1fr)); } .journey-hero { grid-template-columns: 1fr; } .stage-meter { grid-template-columns: repeat(2, minmax(120px, 1fr)); } }
+  @media (max-width: 680px) { header { padding: 12px 16px; } header .hdr-info { margin-left: 0; } .mission, .kanban, .stage-nav, .stage-meter { grid-template-columns: 1fr; } .journey-title, .stage-title { font-size: 42px; } .bar { align-items: stretch; } .bar select, .bar button, .bigbtn { width: 100%; } }
 </style>
 </head>
 <body>
@@ -83,9 +161,6 @@
   <span class="hdr-info" id="hdr-info">connexion…</span>
 </header>
 <main>
-  <div class="section-head"><span class="section-num">01 / Validation</span><span class="rule"></span></div>
-  <h2 class="titre">Les informations repérées pour vos clients.</h2>
-
   <details class="legend">
     <summary>Comment lire les scores ?</summary>
     <div class="legend-body">
@@ -93,6 +168,7 @@
       <div class="lg-row"><span class="badge s-hi">80 et + · prioritaire</span><span>le lien avec le périmètre est explicite et direct.</span></div>
       <div class="lg-row"><span class="badge s-mid">60–79 · pertinent</span><span>lien réel mais indirect — c'est là que votre regard de consultant fait la différence.</span></div>
       <div class="lg-row"><span class="badge s-grey">40–59 · zone grise</span><span>le lien n'a pas pu être établi clairement, sans pouvoir être exclu. Masquées par défaut ; cochez « zone grise » pour les parcourir et repêcher.</span></div>
+      <div class="lg-row"><span class="badge u">URGENT</span><span>signal temporel ou sensible détecté en amont. Il attire l'œil, mais ne remplace pas le tri par score.</span></div>
       <p style="margin-top:10px">En dessous de 40, l'information est écartée automatiquement et n'apparaît jamais. Vos décisions — garder ou écarter — servent ensuite à affiner les réglages de la veille.</p>
     </div>
   </details>
@@ -119,13 +195,14 @@
       <option value="actu_secteur">Actualité sectorielle</option>
       <option value="autre">Autre</option>
     </select>
-    <label><input type="checkbox" id="show-grey"> zone grise (40–59)</label>
+    <label><input type="checkbox" id="show-grey"> afficher les zones grises (40–59)</label>
     <span id="f-themes" style="display:flex;gap:6px;flex-wrap:wrap"></span>
     <span style="flex:1"></span>
     <span id="f-compte"></span>
+    <button class="tab" id="btn-manual" type="button">✚ Info supplémentaire</button>
     <button class="tab" id="btn-dernier" type="button">↺ Dernier bulletin</button>
     <button class="tab" id="btn-reset" type="button" title="Annule les décisions et bulletins de ce client : tout revient dans la file">↺ Réinitialiser (démo)</button>
-    <button class="bigbtn" id="btn-bulletin" type="button" disabled>Écrire le bulletin<span class="arrow">→</span></button>
+    <button class="bigbtn" id="btn-bulletin" type="button" disabled>⚡ Générer le bulletin<span class="arrow">→</span></button>
   </div>
   <div id="list"></div>
 </main>
@@ -133,13 +210,31 @@
 <div class="modal-bg" id="modal" style="display:none">
   <div class="panel">
     <h2>Prompt du bulletin — <span id="m-client"></span></h2>
-    <p class="hint">Le prompt est copié : collez-le dans Claude (ou votre IA habituelle), répondez à ses questions, ajoutez votre édito. Les informations utilisées sont marquées et ne reviendront pas au prochain bulletin.</p>
+    <p class="hint">Le prompt est copié : collez-le dans Claude (ou votre IA habituelle), répondez à ses questions, ajoutez votre édito. Les cartes « prêt à générer » et les infos manuelles du client actif sont utilisées.</p>
     <pre class="prompt" id="m-prompt"></pre>
     <div style="margin-top:12px; display:flex; gap:10px">
       <button class="bigbtn" id="m-copy" type="button">Copier à nouveau</button>
-      <button class="tab" id="m-reopen" type="button" style="display:none">Rouvrir la sélection</button>
+      <button class="tab" id="m-reopen" type="button" style="display:none">Rouvrir la pile générée</button>
       <button class="tab" id="m-close" type="button">Fermer</button>
     </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="manual-modal" style="display:none">
+  <div class="panel wide">
+    <h2>Ajouter une information supplémentaire — <span id="manual-client"></span></h2>
+    <p class="hint">Ajoutez ici une note, un échange, une alerte terrain ou une information repérée hors flux. Elle sera intégrée au prochain prompt du client actif.</p>
+    <label class="field-label" for="manual-title">Titre</label>
+    <input class="manual-field" id="manual-title" type="text" placeholder="Ex. Retour rendez-vous cabinet ministériel">
+    <label class="field-label" for="manual-body">Information et angle à intégrer</label>
+    <textarea class="manual-field manual-text" id="manual-body" placeholder="Décrivez les faits, le contexte, l'angle client, les réserves éventuelles..."></textarea>
+    <label class="field-label" for="manual-source">Source ou lien, si disponible</label>
+    <input class="manual-field" id="manual-source" type="text" placeholder="URL, source interne, contact, document...">
+    <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap">
+      <button class="bigbtn" id="manual-save" type="button">✚ Ajouter au prompt</button>
+      <button class="tab" id="manual-close" type="button">Fermer</button>
+    </div>
+    <div class="manual-list" id="manual-list"></div>
   </div>
 </div>
 
@@ -152,7 +247,7 @@ const EMBED = {
   url: 'https://xkqeqajeccsacocnfqca.supabase.co',
   key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhrcWVxYWplY2NzYWNvY25mcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNjc4OTIsImV4cCI6MjA5Njc0Mzg5Mn0.7NmmzyrXt-kVMBl-_WFqPuBP_9r-BAuIbavRO_sIryk'
 };
-let sb = null, clients = [], current = null, rows = [], themes = new Set();
+let sb = null, clients = [], current = null, rows = [], themes = new Set(), activeStage = 'intro';
 const TAGLABELS = { energie: 'Énergie', environnement: 'Environnement', sante: 'Santé', numerique: 'Numérique', donnees_personnelles: 'Données personnelles', fiscalite: 'Fiscalité', travail_emploi: 'Travail & emploi', transports: 'Transports', agriculture_alimentation: 'Agriculture', industrie: 'Industrie', finance: 'Finance', logement_urbanisme: 'Logement & urbanisme', education_recherche: 'Éducation & recherche', culture_medias: 'Culture & médias', defense_securite: 'Défense & sécurité', justice: 'Justice', collectivites_territoriales: 'Collectivités', europe_ue: 'Europe / UE', international: 'International', concurrence: 'Concurrence', marches_publics: 'Marchés publics', aides_etat: "Aides d'État", consommation: 'Consommation', institutions: 'Institutions' };
 
 const $ = id => document.getElementById(id);
@@ -180,7 +275,7 @@ async function counts() {
   const out = {};
   for (const c of clients) {
     const pid = c.client_profiles[0].id;
-    const { count } = await sb.from('matches').select('id', { count: 'exact', head: true }).eq('profile_id', pid).eq('status', 'proposed').is('bulletin_id', null);
+    const { count } = await sb.from('matches').select('id', { count: 'exact', head: true }).eq('profile_id', pid).in('status', ['proposed', 'grey', 'approved', 'edited', 'rejected']).is('bulletin_id', null);
     out[c.id] = count || 0;
   }
   return out;
@@ -192,21 +287,25 @@ async function renderTabs() {
     `<button type="button" class="tab ${c.id === current ? 'on' : ''}" onclick="switchTo('${c.id}')">${c.name} <span class="n">(${n[c.id] ?? 0})</span></button>`
   ).join('');
 }
-function switchTo(id) { current = id; renderTabs(); load(); }
+function switchTo(id) { current = id; activeStage = 'intro'; renderTabs(); load(); }
 
 async function load() {
   const c = clients.find(x => x.id === current);
   if (!c) { $('list').innerHTML = '<div class="empty">Aucun client configuré.</div>'; return; }
   const pid = c.client_profiles[0].id;
-  const statuts = $('show-grey').checked ? ['proposed', 'grey'] : ['proposed'];
+  const statuts = $('show-grey').checked ? ['proposed', 'grey', 'approved', 'edited', 'rejected'] : ['proposed', 'approved', 'edited', 'rejected'];
   const { data, error } = await sb.from('matches')
     .select('id,llm_score,rationale,client_summary,status,items(title,url,published_at,act_type,urgency,key_dates,tags)')
     .eq('profile_id', pid).in('status', statuts).is('bulletin_id', null)
     .order('created_at', { ascending: false }).limit(200);
   if (error) { $('list').innerHTML = '<div class="empty">Erreur : ' + error.message + '</div>'; return; }
   rows = data || [];
-  rows.sort((a, b) => (((b.items || {}).urgency === 'urgent') - ((a.items || {}).urgency === 'urgent')) || (b.llm_score - a.llm_score));
+  rows.sort(sortByScore);
   renderThemes(); render(); refreshBulletinBtn();
+}
+
+function sortByScore(a, b) {
+  return (b.llm_score - a.llm_score) || String((b.items || {}).published_at || '').localeCompare(String((a.items || {}).published_at || ''));
 }
 
 function filteredRows() {
@@ -232,7 +331,7 @@ function toggleTheme(t) { themes.has(t) ? themes.delete(t) : themes.add(t); rend
 function render() {
   const list = filteredRows();
   $('f-compte').textContent = rows.length ? (list.length + ' / ' + rows.length) : '';
-  renderList(list);
+  renderBoard(list);
 }
 
 function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
@@ -242,17 +341,318 @@ function scoreInfo(s) {
   return ['s-grey', 'zone grise'];
 }
 
-function renderList(list) {
-  if (!list.length) { $('list').innerHTML = '<div class="empty">' + (rows.length ? 'Rien ne correspond à ces filtres.' : 'Rien à valider pour ce client. La veille tourne en continu — repassez plus tard dans la journée.') + '</div>'; return; }
-  $('list').innerHTML = list.map(r => {
+function manualKey() {
+  return 'brieflayer-manual-' + (current || 'global');
+}
+function manualItems() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(manualKey()) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+}
+function saveManualItems(items) {
+  localStorage.setItem(manualKey(), JSON.stringify(items));
+}
+function incubationKey() {
+  return 'brieflayer-incubation-' + (current || 'global');
+}
+function incubatedIds() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(incubationKey()) || '[]');
+    return new Set(Array.isArray(parsed) ? parsed : []);
+  } catch (e) {
+    return new Set();
+  }
+}
+function saveIncubatedIds(ids) {
+  localStorage.setItem(incubationKey(), JSON.stringify([...ids]));
+}
+function isIncubated(id) {
+  return incubatedIds().has(id);
+}
+function removeIncubation(id) {
+  const ids = incubatedIds();
+  if (!ids.has(id)) return;
+  ids.delete(id);
+  saveIncubatedIds(ids);
+}
+function incubate(id) {
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  const summary = $('sum-' + id) ? $('sum-' + id).value : row.client_summary;
+  const ids = incubatedIds();
+  ids.add(id);
+  saveIncubatedIds(ids);
+  rows = rows.map(r => r.id === id ? { ...r, client_summary: summary } : r);
+  advanceStageIfDone();
+  render();
+  refreshBulletinBtn();
+  toast('Mis en incubation');
+}
+function manualId() {
+  return 'manual-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+}
+function renderManualList() {
+  if (!$('manual-list')) return;
+  const list = manualItems();
+  $('manual-list').innerHTML = list.length ? list.map(item => `
+    <div class="manual-item">
+      <strong>${esc(item.title || 'Information sans titre')}</strong>
+      <p>${esc(item.body || '')}</p>
+      ${item.source ? `<span>Source : ${esc(item.source)}</span>` : '<span>Source à compléter</span>'}
+      <div class="manual-actions"><button class="tab" type="button" onclick="deleteManualInfo('${item.id}')">Retirer</button></div>
+    </div>`).join('') : '<div class="empty">Aucune information manuelle en attente.</div>';
+}
+function openManualModal() {
+  const c = clients.find(x => x.id === current);
+  $('manual-client').textContent = c ? c.name : '';
+  $('manual-title').value = '';
+  $('manual-body').value = '';
+  $('manual-source').value = '';
+  renderManualList();
+  $('manual-modal').style.display = 'flex';
+}
+function closeManualModal() {
+  $('manual-modal').style.display = 'none';
+}
+function saveManualInfo() {
+  const title = $('manual-title').value.trim();
+  const body = $('manual-body').value.trim();
+  const source = $('manual-source').value.trim();
+  if (!title && !body) { toast('Ajoutez au moins un titre ou un contenu.'); return; }
+  const list = manualItems();
+  list.push({ id: manualId(), title, body, source, created_at: new Date().toISOString() });
+  saveManualItems(list);
+  $('manual-title').value = '';
+  $('manual-body').value = '';
+  $('manual-source').value = '';
+  renderManualList();
+  render();
+  refreshBulletinBtn();
+  toast('Info manuelle ajoutée au prochain prompt');
+}
+function deleteManualInfo(id) {
+  saveManualItems(manualItems().filter(item => item.id !== id));
+  renderManualList();
+  render();
+  refreshBulletinBtn();
+  toast('Info manuelle retirée');
+}
+function levelInfo(done, ready, manualCount) {
+  const boosted = done + manualCount;
+  if (ready >= 12 || boosted >= 30) return { icon: '🏁', label: 'Directeur de publication' };
+  if (ready >= 8 || boosted >= 20) return { icon: '⚡', label: 'Architecte du bulletin' };
+  if (ready >= 4 || boosted >= 12) return { icon: '🎯', label: 'Stratège de veille' };
+  if (ready >= 1 || boosted >= 5) return { icon: '🧭', label: 'Curateur confirmé' };
+  return { icon: '✦', label: 'Éclaireur' };
+}
+
+const LANES = [
+  { key: 'todo', cls: 'todo', step: '1', icon: '🧭', title: 'Garder ou jeter', note: 'Une carte à la fois, score décroissant', statuses: ['proposed', 'grey'] },
+  { key: 'selected', cls: 'selected', step: '2', icon: '🎯', title: 'Prochaine veille ou incubation', note: 'Parmi les gardés : intégrer ou attendre', statuses: ['approved'] },
+  { key: 'rejected', cls: 'rejected', step: '3', icon: '×', title: 'Jeté', note: 'Écarté mais récupérable en un clic', statuses: ['rejected'] },
+  { key: 'ready', cls: 'ready', step: '4', icon: '⚡', title: 'Prêt à générer', note: 'Ces informations alimentent le prompt du bulletin', statuses: ['edited'] }
+];
+function laneFor(row) {
+  return LANES.find(l => l.statuses.includes(row.status)) || LANES[0];
+}
+function fallbackStatus(row) {
+  return row.llm_score >= 60 ? 'proposed' : 'grey';
+}
+function statusForLane(row, laneKey) {
+  if (laneKey === 'todo') return fallbackStatus(row);
+  if (laneKey === 'selected') return 'approved';
+  if (laneKey === 'rejected') return 'rejected';
+  if (laneKey === 'ready') return 'edited';
+  return row.status;
+}
+function actionsFor(row) {
+  const back = fallbackStatus(row);
+  if (row.status === 'approved') return `
+        <button type="button" class="b-wait" onclick="incubate('${row.id}')">Mettre en incubation</button>
+        <button type="button" class="b-ready" onclick="decide('${row.id}', 'edited')">Intégrer à la prochaine veille</button>`;
+  if (row.status === 'edited') return `
+        <button type="button" class="b-no" onclick="decide('${row.id}', 'rejected')">Jeter</button>
+        <button type="button" class="b-soft" onclick="decide('${row.id}', 'approved')">Remettre dans les gardés</button>`;
+  if (row.status === 'rejected') return `
+        <button type="button" class="b-ok" onclick="decide('${row.id}', 'approved')">Garder</button>
+        <button type="button" class="b-soft" onclick="decide('${row.id}', '${back}')">Restaurer</button>`;
+  return `
+        <button type="button" class="b-no" onclick="decide('${row.id}', 'rejected')">Jeter</button>
+        <button type="button" class="b-ok" onclick="decide('${row.id}', 'approved')">Garder</button>`;
+}
+function groupRows(list) {
+  const grouped = Object.fromEntries(LANES.map(l => [l.key, []]));
+  grouped.incubation = [];
+  const incubated = incubatedIds();
+  list.forEach(r => {
+    if (r.status === 'approved' && incubated.has(r.id)) grouped.incubation.push(r);
+    else grouped[laneFor(r).key].push(r);
+  });
+  Object.values(grouped).forEach(g => g.sort(sortByScore));
+  return grouped;
+}
+function renderBoard(list) {
+  if (!list.length && !manualItems().length) { $('list').innerHTML = '<div class="empty">' + (rows.length ? 'Rien ne correspond à ces filtres.' : 'Rien à valider pour ce client. La veille tourne en continu, repassez plus tard dans la journée.') + '</div>'; return; }
+  const grouped = groupRows(list);
+  if (activeStage === 'intro') {
+    $('list').innerHTML = renderMission(list, grouped) + renderIntro(list, grouped);
+    return;
+  }
+  $('list').innerHTML = renderMission(list, grouped) + `<div class="journey">${renderStageNav(grouped)}${renderStagePanel(grouped)}</div>`;
+}
+function stageCounts(grouped) {
+  return {
+    todo: grouped.todo.length,
+    selected: grouped.selected.length,
+    incubation: grouped.incubation.length,
+    rejected: grouped.rejected.length,
+    ready: grouped.ready.length,
+    manual: manualItems().length
+  };
+}
+function renderIntro(list, grouped) {
+  const c = stageCounts(grouped);
+  const total = list.length;
+  const next = c.todo ? 'todo' : (c.selected ? 'selected' : (c.manual ? 'manual' : 'generate'));
+  const client = clients.find(x => x.id === current);
+  return `<section class="journey-hero">
+    <div>
+      <div class="journey-kicker">${esc(client ? client.name : 'Client')}</div>
+      <h1 class="journey-title">Traitement de veille</h1>
+      <p class="journey-copy">On déroule la revue comme une pile de cartes : garder ou jeter, puis décider ce qui part à la prochaine veille ou en incubation.</p>
+      <div class="journey-actions">
+        <button class="bigbtn" type="button" onclick="setStage('${next}')">▶ Commencer à traiter la veille<span class="arrow">→</span></button>
+        <button class="tab" type="button" onclick="openManualModal()">✚ Info manuelle</button>
+      </div>
+    </div>
+    <div class="quest-card">
+      <span>File active</span>
+      <strong>${total}</strong>
+      <span>${c.todo} à traiter · ${c.selected} gardé${c.selected > 1 ? 's' : ''} · ${c.incubation} en incubation · ${c.ready + c.manual} pour génération</span>
+    </div>
+  </section>`;
+}
+function renderStageNav(grouped) {
+  const c = stageCounts(grouped);
+  const tabs = [
+    { key: 'todo', label: '1. Garder / jeter', hint: `${c.todo} carte${c.todo > 1 ? 's' : ''} dans la pile`, icon: '🧭' },
+    { key: 'selected', label: '2. Veille / incubation', hint: `${c.selected} gardé${c.selected > 1 ? 's' : ''} à décider`, icon: '🎯' },
+    { key: 'manual', label: '3. Infos supplémentaires', hint: `${c.manual} complément${c.manual > 1 ? 's' : ''}`, icon: '✚' },
+    { key: 'generate', label: '4. Générer', hint: `${c.ready + c.manual} élément${c.ready + c.manual > 1 ? 's' : ''} prêt${c.ready + c.manual > 1 ? 's' : ''}`, icon: '⚡' }
+  ];
+  return `<nav class="stage-nav">${tabs.map(t => `<button class="stage-tab ${activeStage === t.key ? 'on' : ''}" type="button" onclick="setStage('${t.key}')"><strong>${t.icon} ${t.label}</strong><span>${t.hint}</span></button>`).join('')}</nav>`;
+}
+function renderStagePanel(grouped) {
+  if (activeStage === 'selected') return renderSelectedStage(grouped);
+  if (activeStage === 'manual') return renderManualStage(grouped);
+  if (activeStage === 'generate') return renderGenerateStage(grouped);
+  return renderTodoStage(grouped);
+}
+function renderTodoStage(grouped) {
+  const cards = grouped.todo;
+  const card = cards[0];
+  return `<section class="stage-panel todo">
+    <div class="stage-kicker">Première étape</div>
+    <h2 class="stage-title">Garder ou jeter</h2>
+    <p class="stage-copy">Mode pile : une carte à la fois, classée par scoring. Jetez ce qui sort du sujet, gardez ce qui mérite un second arbitrage.</p>
+    <div class="stage-actions">
+      <button class="tab" type="button" onclick="setStage('selected')">Voir les gardés</button>
+      <button class="tab" type="button" onclick="openManualModal()">✚ Info manuelle</button>
+    </div>
+    <div class="keyboard-tip">Astuce clavier : ← jeter · → garder</div>
+    <div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} carte${cards.length > 1 ? 's' : ''} dans la pile</div>${renderCard(card)}` : '<div class="empty">Pile terminée. Direction les gardés.</div>'}</div>
+  </section>`;
+}
+function renderSelectedStage(grouped) {
+  const cards = grouped.selected;
+  const card = cards[0];
+  const incubation = grouped.incubation;
+  return `<section class="stage-panel selected">
+    <div class="stage-kicker">Deuxième étape</div>
+    <h2 class="stage-title">Prochaine veille ou incubation</h2>
+    <p class="stage-copy">Parmi ce qui a été gardé, choisissez ce qui intègre la prochaine veille et ce qui reste en incubation ou en attente.</p>
+    <div class="stage-actions">
+      <button class="tab" type="button" onclick="setStage('todo')">Retour à la pile</button>
+      <button class="tab" type="button" onclick="setStage('manual')">Étape infos supplémentaires</button>
+    </div>
+    <div class="keyboard-tip">Astuce clavier : ← incubation / attente · → intégrer à la prochaine veille</div>
+    <div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} carte${cards.length > 1 ? 's' : ''} gardée${cards.length > 1 ? 's' : ''} à décider</div>${renderCard(card)}` : '<div class="empty">Aucune carte gardée à arbitrer.</div>'}</div>
+    <div class="manual-mini">${incubation.length ? incubation.map(item => `<div class="manual-item"><strong>${esc((item.items || {}).title || 'Information en incubation')}</strong><p>${esc(item.client_summary || item.rationale || '')}</p><span>Incubation / attente</span></div>`).join('') : ''}</div>
+  </section>`;
+}
+function renderManualStage(grouped) {
+  const manual = manualItems();
+  return `<section class="stage-panel selected">
+    <div class="stage-kicker">Troisième étape</div>
+    <h2 class="stage-title">Infos supplémentaires</h2>
+    <p class="stage-copy">Avant génération, ajoutez les signaux hors flux : retour terrain, échange client, intuition stratégique, contexte à ne pas perdre.</p>
+    <div class="stage-actions">
+      <button class="bigbtn" type="button" onclick="openManualModal()">✚ Ajouter une info supplémentaire</button>
+      <button class="tab" type="button" onclick="setStage('generate')">Passer à la génération</button>
+      <button class="tab" type="button" onclick="setStage('selected')">Retour aux gardés</button>
+    </div>
+    <div class="manual-mini">${manual.length ? manual.map(item => `<div class="manual-item"><strong>${esc(item.title || 'Information manuelle')}</strong><p>${esc(item.body || '')}</p><span>${esc(item.source || 'Source à compléter')}</span></div>`).join('') : '<div class="empty">Aucune info manuelle en attente.</div>'}</div>
+  </section>`;
+}
+function renderGenerateStage(grouped) {
+  const ready = grouped.ready;
+  const manual = manualItems();
+  const total = ready.length + manual.length;
+  return `<section class="stage-panel generate">
+    <div class="stage-kicker">Quatrième étape</div>
+    <h2 class="stage-title">Générer le bulletin</h2>
+    <p class="stage-copy">${total ? `${total} élément${total > 1 ? 's' : ''} prêt${total > 1 ? 's' : ''} pour alimenter le prompt.` : 'Rien à générer encore : passez au moins une carte en prêt à générer ou ajoutez une info manuelle.'}</p>
+    <div class="stage-meter">
+      <div class="mission-stat ready"><span class="mission-label">Prêts à générer</span><strong>${ready.length}</strong></div>
+      <div class="mission-stat"><span class="mission-label">Infos supp.</span><strong>${manual.length}</strong></div>
+      <div class="mission-stat"><span class="mission-label">En incubation</span><strong>${grouped.incubation.length}</strong></div>
+      <div class="mission-stat todo"><span class="mission-label">Restants</span><strong>${grouped.todo.length + grouped.selected.length}</strong></div>
+    </div>
+    <div class="stage-actions">
+      <button class="bigbtn" type="button" onclick="generateBulletin()" ${total ? '' : 'disabled'}>⚡ Générer le bulletin<span class="arrow">→</span></button>
+      <button class="tab" type="button" onclick="openManualModal()">✚ Ajouter une info</button>
+      <button class="tab" type="button" onclick="setStage('selected')">Retour aux gardés</button>
+    </div>
+    <div class="stage-grid">${ready.length ? ready.map(renderCard).join('') : '<div class="empty">Aucune carte prête à générer.</div>'}</div>
+    <div class="manual-mini">${manual.length ? manual.map(item => `<div class="manual-item"><strong>${esc(item.title || 'Information manuelle')}</strong><p>${esc(item.body || '')}</p><span>${esc(item.source || 'Source à compléter')}</span></div>`).join('') : ''}</div>
+  </section>`;
+}
+function renderMission(list, grouped) {
+  const total = list.length;
+  const todo = grouped.todo.length;
+  const selected = grouped.selected.length;
+  const incubation = grouped.incubation.length;
+  const rejected = grouped.rejected.length;
+  const ready = grouped.ready.length;
+  const manualCount = manualItems().length;
+  const done = selected + incubation + rejected + ready;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  const level = levelInfo(done, ready, manualCount);
+  return `<section class="mission">
+    <div class="mission-main">
+      <div class="mission-kicker">Progression de revue</div>
+      <div class="mission-title"><span class="level-icon">${level.icon}</span>${level.label}</div>
+      <div class="mission-track"><div class="mission-fill" style="width:${pct}%"></div></div>
+      <div class="mission-meta"><span>${pct}% revu</span></div>
+    </div>
+    <div class="mission-stat todo"><span class="mission-label">À traiter</span><strong>${todo}</strong></div>
+    <div class="mission-stat"><span class="mission-label">Gardés</span><strong>${selected}</strong></div>
+    <div class="mission-stat ready"><span class="mission-label">Prêts</span><strong>${ready}</strong></div>
+    <div class="mission-stat"><span class="mission-label">Incubation</span><strong>${incubation}</strong></div>
+  </section>`;
+}
+function renderCard(r) {
     const it = r.items || {};
     const [scls, slab] = scoreInfo(r.llm_score);
-    const dates = (Array.isArray(it.key_dates) ? it.key_dates : []).map(d => `<span class="badge echeance">📅 ${esc(d.date)} ${esc(d.libelle || d.label || '')}</span>`).join(' ');
-    return `<div class="card ${it.urgency === 'urgent' ? 'urgent' : ''}">
+    const dates = (Array.isArray(it.key_dates) ? it.key_dates : []).map(d => `<span class="badge echeance">${esc(d.date)} ${esc(d.libelle || d.label || '')}</span>`).join(' ');
+    return `<div class="card ${it.urgency === 'urgent' ? 'urgent' : ''} ${r.status === 'rejected' ? 'rejected-card' : ''}" draggable="true" data-id="${r.id}" ondragstart="dragCard(event, '${r.id}')" ondragend="endDrag(event)">
       <p class="t"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.title)}</a></p>
       <div class="meta">
         <span class="badge ${scls}">${r.llm_score} · ${slab}</span>
-        ${it.urgency === 'urgent' ? '<span class="badge u">URGENT</span>' : ''}
+        ${it.urgency === 'urgent' ? '<span class="badge u" title="Signal temporel ou sensible détecté en amont. Le tri reste fondé sur le score.">URGENT</span>' : ''}
         <span>${esc((it.published_at || '').slice(0, 10))}</span>
         <span>${esc(it.act_type || '')}</span>
         ${dates}
@@ -260,20 +660,102 @@ function renderList(list) {
       <p class="why"><b>Pourquoi :</b> ${esc(r.rationale)}</p>
       <textarea class="resume" id="sum-${r.id}">${esc(r.client_summary)}</textarea>
       <div class="acts">
-        <button type="button" class="b-ok" onclick="decide('${r.id}', 'approved')">✓ Garder</button>
-        <button type="button" class="b-no" onclick="decide('${r.id}', 'rejected')">✗ Écarter</button>
+        ${actionsFor(r)}
       </div>
     </div>`;
-  }).join('');
 }
 
+function dragCard(event, id) {
+  event.dataTransfer.setData('text/plain', id);
+  event.dataTransfer.effectAllowed = 'move';
+  event.currentTarget.classList.add('dragging');
+}
+function endDrag(event) {
+  event.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.lane-body.drop-target').forEach(x => x.classList.remove('drop-target'));
+}
+function allowDrop(event) {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'move';
+  event.currentTarget.classList.add('drop-target');
+}
+function leaveDrop(event) {
+  if (!event.currentTarget.contains(event.relatedTarget)) event.currentTarget.classList.remove('drop-target');
+}
+async function dropOnLane(event, laneKey) {
+  event.preventDefault();
+  event.currentTarget.classList.remove('drop-target');
+  const id = event.dataTransfer.getData('text/plain');
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  const next = statusForLane(row, laneKey);
+  if (next === row.status) return;
+  await decide(id, next);
+}
+
+function setStage(stage) {
+  activeStage = stage;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function activeKeyboardCard() {
+  const grouped = groupRows(filteredRows());
+  if (activeStage === 'todo') return grouped.todo[0] || null;
+  if (activeStage === 'selected') return grouped.selected[0] || null;
+  return null;
+}
+function shouldIgnoreShortcut(event) {
+  const el = event.target;
+  if (!el) return false;
+  if ($('manual-modal') && $('manual-modal').style.display !== 'none') return true;
+  if ($('modal') && $('modal').style.display !== 'none') return true;
+  return ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(el.tagName) || el.isContentEditable;
+}
+async function handleKeyboard(event) {
+  if (event.repeat || shouldIgnoreShortcut(event)) return;
+  const row = activeKeyboardCard();
+  if (!row) return;
+  if (activeStage === 'todo' && event.key === 'ArrowLeft') { event.preventDefault(); await decide(row.id, 'rejected'); }
+  if (activeStage === 'todo' && event.key === 'ArrowRight') { event.preventDefault(); await decide(row.id, 'approved'); }
+  if (activeStage === 'selected' && event.key === 'ArrowLeft') { event.preventDefault(); incubate(row.id); }
+  if (activeStage === 'selected' && event.key === 'ArrowRight') { event.preventDefault(); await decide(row.id, 'edited'); }
+}
+function advanceStageIfDone() {
+  const grouped = groupRows(filteredRows());
+  if (activeStage === 'todo' && !grouped.todo.length && grouped.selected.length) activeStage = 'selected';
+  if (activeStage === 'selected' && !grouped.selected.length) activeStage = 'manual';
+}
 async function decide(id, statut) {
   const summary = $('sum-' + id) ? $('sum-' + id).value : null;
-  const { error } = await sb.from('matches').update({ status: statut, client_summary: summary, reviewed_at: new Date().toISOString() }).eq('id', id);
+  const reviewDate = ['proposed', 'grey'].includes(statut) ? null : new Date().toISOString();
+  const { error } = await sb.from('matches').update({ status: statut, client_summary: summary, reviewed_at: reviewDate }).eq('id', id);
   if (error) { toast('Erreur : ' + error.message); return; }
-  rows = rows.filter(r => r.id !== id);
+  removeIncubation(id);
+  rows = rows.map(r => r.id === id ? { ...r, status: statut, client_summary: summary } : r);
+  advanceStageIfDone();
   renderThemes(); render(); renderTabs(); refreshBulletinBtn();
-  toast(statut === 'approved' ? 'Gardé pour le bulletin' : 'Écarté');
+  const labels = { proposed: 'Replacé à traiter', grey: 'Replacé en zone grise', approved: 'Gardé', edited: 'Intégré à la prochaine veille', rejected: 'Jeté' };
+  toast(labels[statut] || 'Mis à jour');
+}
+
+async function bulkSelected(statut) {
+  const incubated = incubatedIds();
+  const selected = rows.filter(r => r.status === 'approved' && !incubated.has(r.id));
+  if (!selected.length) { toast('Aucun élément mis de côté.'); return; }
+  const reviewDate = new Date().toISOString();
+  const updates = selected.map(r => {
+    const el = $('sum-' + r.id);
+    const summary = el ? el.value : r.client_summary;
+    return sb.from('matches').update({ status: statut, client_summary: summary, reviewed_at: reviewDate }).eq('id', r.id);
+  });
+  const results = await Promise.all(updates);
+  const failed = results.find(x => x.error);
+  if (failed) { toast('Erreur : ' + failed.error.message); return; }
+  const ids = new Set(selected.map(r => r.id));
+  rows = rows.map(r => ids.has(r.id) ? { ...r, status: statut } : r);
+  activeStage = statut === 'edited' ? 'manual' : 'todo';
+  renderThemes(); render(); renderTabs(); refreshBulletinBtn();
+  toast(statut === 'edited' ? 'Pile prête à générer' : 'Pile archivée');
 }
 
 async function approvedRows() {
@@ -281,17 +763,19 @@ async function approvedRows() {
   const pid = c.client_profiles[0].id;
   const { data } = await sb.from('matches')
     .select('id,rationale,client_summary,items(title,url,published_at,act_type,urgency,key_dates)')
-    .eq('profile_id', pid).in('status', ['approved', 'edited']).is('bulletin_id', null);
+    .eq('profile_id', pid).eq('status', 'edited').is('bulletin_id', null);
   return data || [];
 }
 
 async function refreshBulletinBtn() {
   const a = await approvedRows();
-  $('btn-bulletin').disabled = !a.length;
-  $('btn-bulletin').innerHTML = (a.length ? `Écrire le bulletin (${a.length})` : 'Écrire le bulletin') + '<span class="arrow">→</span>';
+  const manual = manualItems();
+  const total = a.length + manual.length;
+  $('btn-bulletin').disabled = !total;
+  $('btn-bulletin').innerHTML = (total ? `⚡ Générer le bulletin (${total})` : '⚡ Générer le bulletin') + '<span class="arrow">→</span>';
 }
 
-function buildPrompt(client, brief, items) {
+function buildPrompt(client, brief, items, manual) {
   const lignes = items.map((r, i) => {
     const it = r.items || {};
     const dates = (Array.isArray(it.key_dates) ? it.key_dates : []).map(d => `${d.date} (${d.libelle || d.label || 'échéance'})`).join(', ');
@@ -301,45 +785,97 @@ function buildPrompt(client, brief, items) {
    Pourquoi ça le concerne : ${r.rationale || ''}
    Source : ${it.url || ''}`;
   }).join('\n\n');
+  const complements = (manual || []).map((item, i) => `${i + 1}. ${item.title || 'Information manuelle'}
+   Ajout manuel : ${item.body || ''}
+   Source ou statut de vérification : ${item.source || 'source à compléter / information à vérifier'}
+   Ajouté le : ${(item.created_at || '').slice(0, 10) || 'n.c.'}`).join('\n\n');
 
-  return `Tu es consultant en affaires publiques chez AleVia. Rédige le bulletin de veille du client ${client} à partir des informations validées ci-dessous, au format des bulletins AleVia.
+  return `Tu es consultant en affaires publiques chez AleVia. Tu dois préparer le bulletin de veille de CLIENT_CIBLE = "${client}" à partir des informations validées ci-dessous.
 
-FORMAT À RESPECTER :
-- Titre : « Bulletin de veille » + numéro et période (demande-les moi).
-- Sections : « 1/ En France » (sous-rubriques : Parlement, Gouvernement, puis rubriques thématiques selon les angles du client), « 2/ En Europe », « 3/ International » — uniquement si la matière le justifie.
-- Chaque information : « Sujet - phrase d'accroche » en gras, puis 1 à 3 phrases factuelles de développement.
-- Quand un rappel de contexte est utile, l'introduire par « ⇒ Pour rappel : ».
-- Le lien source en clair sous chaque information.
-- Les questions écrites parlementaires : citées avec leur numéro, l'auteur, le groupe et la circonscription.
-- Terminer par un agenda (auditions, échéances, consultations) si des dates clés figurent ci-dessous.
-- Ton factuel et professionnel ; reprendre l'angle client indiqué pour chaque information, sans le recopier mot à mot.
+OBJECTIF
+Produire un bulletin prêt à envoyer, dans une forme proche des bulletins ASPI/ASPIE 2026 déjà parus, tout en adaptant les rubriques, le niveau de détail et les angles au client ${client}.
 
-PROFIL DU CLIENT :
+VARIABLES A ME DEMANDER AVANT REDACTION
+- Numéro du bulletin.
+- Période couverte, mois affiché et, si besoin, partie X/Y.
+- Existence ou non d'un bloc "Cartographie" et son lien.
+- Eventuel édito ou message prioritaire à faire ressortir.
+- Informations à regrouper, à supprimer ou à traiter en focus.
+
+FORME DE REFERENCE OBSERVEE DANS LES BULLETINS ASPI 2026
+- En-tête sobre :
+  Bulletin de veille n°[NUMERO] partie [X/Y]
+  [Mois Année]
+- Si pertinent : bloc "Cartographie" avec une phrase courte du type "La cartographie de ${client} est actualisée en temps réel : [lien]".
+- Architecture principale :
+  1/ En France
+    Parlement
+    Gouvernement
+    puis rubriques thématiques selon la matière : Industrie, Propriété intellectuelle, IA et cybersécurité, Confidentialité des juristes d'entreprise, Nomination, Evénement, Compétitivité, etc.
+    Focus - [angle transversal] si plusieurs informations dessinent une tendance.
+  2/ A l'international
+    Europe
+    International
+    puis rubriques thématiques utiles.
+- Chaque item doit commencer par un titre analytique en gras ou clairement détaché : "Sujet - enseignement principal."
+- Après le titre, rédiger 1 à 4 paragraphes factuels selon l'importance :
+  - 1 paragraphe court pour une simple nomination, un événement ou un signal faible ;
+  - 2 à 3 paragraphes pour un texte parlementaire, une initiative gouvernementale, un rapport ou un sujet européen important ;
+  - jusqu'à 4 paragraphes si le sujet structure une tendance majeure pour le client.
+- Mettre le lien source en clair immédiatement après chaque item.
+- Ajouter un "Focus - ..." lorsqu'un regroupement permet une lecture stratégique. Le focus doit synthétiser la tendance en 1 ou 2 paragraphes, sans répéter les items.
+- Terminer par un agenda uniquement si des dates clés sont présentes.
+
+STYLE REDACTIONNEL A RESPECTER
+- Ton factuel, professionnel, fluide, sans marketing.
+- Les phrases doivent expliquer pourquoi le sujet compte, sans écrire "pour le client" à chaque ligne.
+- Ne pas copier mécaniquement "Angle client" : l'utiliser pour orienter la rédaction.
+- Ne pas inventer de faits, dates, citations, auteurs, votes ou liens.
+- Les informations ajoutées manuellement peuvent être utilisées comme compléments, signaux faibles, éléments de contexte ou points d'attention. Si la source manque, les signaler comme à vérifier plutôt que les présenter comme établies.
+- Conserver les noms propres, institutions, numéros de textes, commissions, rapporteurs et échéances quand ils sont disponibles.
+- Pour les questions écrites parlementaires : mentionner le numéro, l'auteur, le groupe et la circonscription si fournis.
+- Pour ${client}, adapter les rubriques au profil ci-dessous. Si le client n'est pas ASPI/ASPIE, conserver la forme AleVia mais remplacer les rubriques PI par les rubriques du client.
+
+PROFIL DU CLIENT ${client} :
 ${brief}
 
-INFORMATIONS VALIDÉES (${items.length}) :
+INFORMATIONS PRETES A GENERER (${items.length}) :
 
-${lignes}
+${lignes || 'Aucune information issue du parcours de validation.'}
 
-AVANT DE RÉDIGER : pose-moi tes questions (numéro et période du bulletin, édito souhaité, informations à ajouter ou regrouper, précisions sur certains points). Je complèterai, puis tu rédigeras.`;
+INFORMATIONS AJOUTEES MANUELLEMENT (${(manual || []).length}) :
+
+${complements || 'Aucune information manuelle.'}
+
+AVANT DE REDIGER : commence par me poser les questions de variables manquantes. Quand je réponds, rédige directement le bulletin complet au format ci-dessus.`;
 }
 
-$('btn-bulletin').onclick = async () => {
+async function generateBulletin() {
   const c = clients.find(x => x.id === current); if (!c) return;
   const a = await approvedRows();
-  if (!a.length) return;
+  const manual = manualItems();
+  if (!a.length && !manual.length) return;
   const brief = c.client_profiles[0].brief || '';
-  const prompt = buildPrompt(c.name, brief, a);
+  const prompt = buildPrompt(c.name, brief, a, manual);
   const { data: bul, error } = await sb.from('bulletins').insert({ tenant_id: c.tenant_id, profile_id: c.client_profiles[0].id, prompt_text: prompt, status: 'draft' }).select('id').single();
   if (error) { toast('Erreur bulletin : ' + error.message); return; }
-  await sb.from('matches').update({ bulletin_id: bul.id }).in('id', a.map(r => r.id));
+  if (a.length) await sb.from('matches').update({ bulletin_id: bul.id }).in('id', a.map(r => r.id));
+  saveManualItems([]);
+  renderManualList();
+  await load();
   try { await navigator.clipboard.writeText(prompt); toast('Prompt copié dans le presse-papier'); } catch (e) { toast('Copie manuelle nécessaire'); }
   $('m-client').textContent = c.name;
   $('m-prompt').textContent = prompt;
   $('m-copy').onclick = async () => { try { await navigator.clipboard.writeText(prompt); toast('Copié'); } catch (e) {} };
   $('m-reopen').style.display = 'none';
   $('modal').style.display = 'flex';
-};
+}
+
+$('btn-bulletin').onclick = generateBulletin;
+
+$('btn-manual').onclick = openManualModal;
+$('manual-save').onclick = saveManualInfo;
+$('manual-close').onclick = closeManualModal;
 
 $('btn-dernier').onclick = async () => {
   const c = clients.find(x => x.id === current); if (!c) return;
@@ -354,7 +890,7 @@ $('btn-dernier').onclick = async () => {
   $('m-reopen').onclick = async () => {
     await sb.from('matches').update({ bulletin_id: null }).eq('bulletin_id', b.id);
     $('modal').style.display = 'none'; $('m-reopen').style.display = 'none';
-    toast('Sélection rouverte : ces informations comptent à nouveau pour « Écrire le bulletin »');
+    toast('Pile rouverte : ces informations comptent à nouveau pour la génération');
     load();
   };
   $('modal').style.display = 'flex';
@@ -371,7 +907,10 @@ $('btn-reset').onclick = async () => {
   renderTabs(); load();
 };
 
-window.switchTo = switchTo; window.decide = decide; window.toggleTheme = toggleTheme;
+document.addEventListener('keydown', handleKeyboard);
+
+window.switchTo = switchTo; window.decide = decide; window.incubate = incubate; window.toggleTheme = toggleTheme; window.setStage = setStage; window.bulkSelected = bulkSelected; window.generateBulletin = generateBulletin; window.openManualModal = openManualModal; window.deleteManualInfo = deleteManualInfo;
+window.dragCard = dragCard; window.endDrag = endDrag; window.allowDrop = allowDrop; window.leaveDrop = leaveDrop; window.dropOnLane = dropOnLane;
 (function start() {
   if (typeof supabase !== 'undefined') { init(); return; }
   const s = document.createElement('script');
