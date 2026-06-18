@@ -33,6 +33,7 @@
   .control-panel[open] summary::before { content: '-'; }
   .control-panel .panel-body { padding: 14px 16px 16px; }
   .review-toolbar { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .review-panel .review-toolbar { border: 0; padding: 0; margin-bottom: 0; }
   .review-toolbar .count-pill { padding: 7px 12px; border-radius: 999px; background: #f2f7f4; border: 1px solid #d5e8dd; color: #315c45; font-size: 13px; font-weight: 600; }
   .review-toolbar .spacer { flex: 1; min-width: 12px; }
   .period-picker { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
@@ -141,6 +142,9 @@
   .source-row.missing { background: #fff5f5; border-color: #f2caca; }
   .source-row.missing .source-host { color: #9a1c1c; }
   .source-row.missing .source-link { color: #9a1c1c; border-color: #f2caca; pointer-events: none; }
+  .source-row.internal { background: #fff7e5; border-color: #e8d7a8; }
+  .source-row.internal .source-host { color: #735613; }
+  .source-row.internal .source-link { color: #735613; border-color: #e8d7a8; pointer-events: none; }
   .watch-list { display: grid; gap: 10px; }
   .list-row { display: grid; grid-template-columns: minmax(98px, .55fr) minmax(118px, .65fr) minmax(120px, .7fr) minmax(260px, 2.4fr) minmax(170px, 1fr); gap: 10px; align-items: start; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
   .list-row:hover { border-color: #cbd5e1; }
@@ -212,10 +216,11 @@
   pre.prompt { white-space: pre-wrap; font-size: 12px; background: var(--cream); border: 1px solid var(--line); padding: 14px; border-radius: 10px; max-height: 45vh; overflow: auto; font-family: 'JetBrains Mono', ui-monospace, monospace; }
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 11px 22px; border-radius: 8px; font-size: 14px; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 99; }
   .toast.show { opacity: 1; }
-  .faq-section { margin-top: 28px; display: grid; gap: 10px; }
+  .faq-section { margin-top: 28px; }
   .faq-head { margin-bottom: 4px; }
   .faq-title { font-family: 'Inter Tight', sans-serif; font-size: clamp(30px, 4vw, 48px); line-height: 1; margin: 3px 0 0; letter-spacing: 0; }
   .faq-section .legend { margin-bottom: 0; }
+  .faq-body { display: grid; gap: 10px; }
   .faq-section .legend-body { max-width: 980px; }
   .faq-section .legend-body ul { margin: 0; padding-left: 18px; }
   .faq-section .legend-body li { margin: 0 0 6px; }
@@ -265,11 +270,9 @@
     </div>
   </details>
   <div id="list"></div>
-  <section class="faq-section" aria-label="Questions fréquentes">
-    <div class="faq-head">
-      <div class="stage-kicker">Aide</div>
-      <h2 class="faq-title">Questions fréquentes</h2>
-    </div>
+  <details class="control-panel faq-section" aria-label="Questions fréquentes">
+    <summary>FAQ - Questions fréquentes</summary>
+    <div class="panel-body faq-body">
     <details class="legend">
       <summary>À quoi sert cet écran ?</summary>
       <div class="legend-body">
@@ -342,6 +345,12 @@
       </div>
     </details>
     <details class="legend">
+      <summary>Pourquoi une source peut être marquée comme référence interne ?</summary>
+      <div class="legend-body">
+        <p>Quand une carte pointe vers `retrotest.local`, ce n'est pas une source primaire publiable : c'est une référence interne issue des blocs historiques. La carte doit alors être vérifiée et reliée à la vraie source avant d'entrer dans un bulletin client.</p>
+      </div>
+    </details>
+    <details class="legend">
       <summary>Que faire si je me trompe ?</summary>
       <div class="legend-body">
         <p>Une carte peut être reprise depuis les boutons d'action quand elle est encore visible. Le bouton « Réinitialiser » remet la revue du client à l'état initial : à utiliser avec prudence, surtout si plusieurs personnes travaillent sur le même client.</p>
@@ -353,7 +362,8 @@
         <p>Il rouvre le dernier prompt généré pour le client actif. C'est utile pour retrouver ce qui a été envoyé à l'IA, vérifier les cartes utilisées, ou rouvrir la pile si le bulletin doit être repris.</p>
       </div>
     </details>
-  </section>
+    </div>
+  </details>
 </main>
 
 <div class="modal-bg" id="modal" style="display:none">
@@ -432,7 +442,7 @@ async function load() {
   const pid = c.client_profiles[0].id;
   const statuts = showGrey ? ['proposed', 'grey', 'approved', 'edited', 'rejected'] : ['proposed', 'approved', 'edited', 'rejected'];
   const { data, error } = await sb.from('matches')
-    .select('id,llm_score,rationale,client_summary,status,items(title,url,published_at,act_type,urgency,key_dates,tags)')
+    .select('id,llm_score,rationale,client_summary,status,items(title,url,url_canonical,source_id,raw_content,published_at,act_type,urgency,key_dates,tags)')
     .eq('profile_id', pid).in('status', statuts).is('bulletin_id', null)
     .order('created_at', { ascending: false }).limit(200);
   if (error) { $('list').innerHTML = '<div class="empty">Erreur : ' + error.message + '</div>'; return; }
@@ -494,26 +504,51 @@ function render() {
 }
 
 function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
-function sourceInfo(url) {
-  const clean = String(url || '').trim();
-  if (!clean) return { url: '', host: 'Source absente', valid: false };
-  const valid = /^https?:\/\//i.test(clean);
-  if (!valid) return { url: clean, host: clean, valid: false };
+function sourceInfo(itemOrUrl) {
+  const item = itemOrUrl && typeof itemOrUrl === 'object' ? itemOrUrl : null;
+  const candidates = item ? [item.url_canonical, item.url] : [itemOrUrl];
+  const clean = String(candidates.find(Boolean) || '').trim();
+  if (!clean) return { url: '', host: 'Source primaire absente', valid: false, internal: false };
+  if (!/^https?:\/\//i.test(clean)) return { url: clean, host: clean, valid: false, internal: false };
   try {
     const parsed = new URL(clean);
-    return { url: clean, host: parsed.hostname.replace(/^www\./, ''), valid: true };
+    const host = parsed.hostname.replace(/^www\./, '');
+    const internal = host === 'retrotest.local' || host.endsWith('.local');
+    if (internal) {
+      const recovered = findPrimaryUrlInText(item ? item.raw_content : '');
+      if (recovered) return sourceInfo(recovered);
+      return { url: clean, host: 'Référence interne BriefLayer (' + host + ')', valid: false, internal: true };
+    }
+    return { url: clean, host, valid: true, internal: false };
   } catch (e) {
-    return { url: clean, host: clean, valid: false };
+    return { url: clean, host: clean, valid: false, internal: false };
   }
 }
+function findPrimaryUrlInText(text) {
+  const matches = String(text || '').match(/https?:\/\/[^\s<>"')]+/gi) || [];
+  return matches.find(u => {
+    try {
+      const host = new URL(u).hostname.replace(/^www\./, '');
+      return host !== 'retrotest.local' && !host.endsWith('.local');
+    } catch (e) {
+      return false;
+    }
+  }) || '';
+}
 function renderSource(source) {
-  return `<div class="source-row ${source.valid ? '' : 'missing'}">
+  return `<div class="source-row ${source.valid ? '' : (source.internal ? 'internal' : 'missing')}">
     <div class="source-main">
-      <span class="tile-kicker">Source primaire</span>
+      <span class="tile-kicker">${source.valid ? 'Source primaire' : 'Source à vérifier'}</span>
       <span class="source-host">${esc(source.host)}</span>
     </div>
-    ${source.valid ? `<a class="source-link" href="${esc(source.url)}" target="_blank" rel="noopener">Ouvrir la source →</a>` : '<span class="source-link">URL manquante</span>'}
+    ${source.valid ? `<a class="source-link" href="${esc(source.url)}" target="_blank" rel="noopener">Ouvrir la source →</a>` : `<span class="source-link">${source.internal ? 'Lien interne non publiable' : 'URL manquante'}</span>`}
   </div>`;
+}
+function sourceLine(item) {
+  const source = sourceInfo(item);
+  if (source.valid) return source.url;
+  if (source.internal) return 'SOURCE PRIMAIRE MANQUANTE - référence interne non publiable : ' + source.url;
+  return 'SOURCE PRIMAIRE MANQUANTE - à vérifier avant publication';
 }
 function scoreInfo(s) {
   if (s >= 80) return ['s-hi', 'Prioritaire', 'prioritaire', '80+'];
@@ -705,13 +740,18 @@ function renderBoard(list) {
   $('list').innerHTML = renderReviewToolbar(list) + renderStatsPanel(list, grouped) + `<div class="journey">${renderStageNav(grouped)}${renderStagePanel(grouped)}</div>`;
 }
 function renderReviewToolbar(list) {
-  return `<section class="review-toolbar" aria-label="Traitement de veille">
-    <span class="count-pill">${esc(periodLabel())} : ${list.length} / ${rows.length} chargés</span>
-    <span class="spacer"></span>
-    <button class="tab" type="button" onclick="openManualModal()">✚ Info supplémentaire</button>
-    <button class="tab" type="button" onclick="openLastBulletin()">↺ Dernier bulletin</button>
-    <button class="tab" type="button" onclick="resetReview()">↺ Réinitialiser</button>
-  </section>`;
+  return `<details class="control-panel review-panel" open>
+    <summary>Traitement de veille</summary>
+    <div class="panel-body">
+      <section class="review-toolbar" aria-label="Traitement de veille">
+        <span class="count-pill">${esc(periodLabel())} : ${list.length} / ${rows.length} chargés</span>
+        <span class="spacer"></span>
+        <button class="tab" type="button" onclick="openManualModal()">✚ Info supplémentaire</button>
+        <button class="tab" type="button" onclick="openLastBulletin()">↺ Dernier bulletin</button>
+        <button class="tab" type="button" onclick="resetReview()">↺ Réinitialiser</button>
+      </section>
+    </div>
+  </details>`;
 }
 function stageCounts(grouped) {
   return {
@@ -876,7 +916,7 @@ function renderListRow(r) {
   const [scls, slab, scoreClass, scoreRange] = scoreInfo(r.llm_score);
   const dateInfo = formatDateTile(it.published_at);
   const [statusClass, statusLabel] = statusInfo(r);
-  const source = sourceInfo(it.url);
+  const source = sourceInfo(it);
   const title = source.valid ? `<a href="${esc(source.url)}" target="_blank" rel="noopener">${esc(it.title)}</a>` : esc(it.title);
   return `<article class="list-row">
     <div class="list-cell"><span class="tile-kicker">Date</span><strong>${esc(dateInfo.main)}</strong><span>${esc(dateInfo.sub)}</span></div>
@@ -884,10 +924,7 @@ function renderListRow(r) {
     <div class="list-cell"><span class="tile-kicker">Statut</span><span class="status-chip ${statusClass}">${esc(statusLabel)}</span></div>
     <div class="list-cell list-title">
       <strong>${title}</strong>
-      <div class="source-row ${source.valid ? '' : 'missing'}">
-        <div class="source-main"><span class="tile-kicker">Source primaire</span><span class="source-host">${esc(source.host)}</span></div>
-        ${source.valid ? `<a class="source-link" href="${esc(source.url)}" target="_blank" rel="noopener">Ouvrir →</a>` : '<span class="source-link">URL manquante</span>'}
-      </div>
+      ${renderSource(source)}
       <div class="list-summary">${esc(r.client_summary || r.rationale || '')}</div>
     </div>
     <div class="list-actions">${actionsFor(r)}</div>
@@ -936,7 +973,7 @@ function renderCard(r) {
     const it = r.items || {};
     const [scls, slab, scoreClass, scoreRange] = scoreInfo(r.llm_score);
     const dateInfo = formatDateTile(it.published_at);
-    const source = sourceInfo(it.url);
+    const source = sourceInfo(it);
     const title = source.valid ? `<a href="${esc(source.url)}" target="_blank" rel="noopener">${esc(it.title)}</a>` : esc(it.title);
     const dates = (Array.isArray(it.key_dates) ? it.key_dates : []).map(d => `<span class="badge echeance">${esc(d.date)} ${esc(d.libelle || d.label || '')}</span>`).join(' ');
     return `<div class="card ${it.urgency === 'urgent' ? 'urgent' : ''} ${r.status === 'rejected' ? 'rejected-card' : ''}" draggable="true" data-id="${r.id}" ondragstart="dragCard(event, '${r.id}')" ondragend="endDrag(event)">
@@ -1094,7 +1131,7 @@ function buildPrompt(client, brief, items, manual) {
    Date : ${(it.published_at || '').slice(0, 10)} — Type : ${it.act_type || 'n.c.'}${it.urgency === 'urgent' ? ' — URGENT' : ''}${dates ? '\n   Échéances : ' + dates : ''}
    Angle client : ${r.client_summary || ''}
    Pourquoi ça le concerne : ${r.rationale || ''}
-   Source primaire : ${it.url || 'URL manquante - à vérifier avant publication'}`;
+   Source primaire : ${sourceLine(it)}`;
   }).join('\n\n');
   const complements = (manual || []).map((item, i) => `${i + 1}. ${item.title || 'Information manuelle'}
    Ajout manuel : ${item.body || ''}
