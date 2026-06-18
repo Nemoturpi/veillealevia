@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
 <style>
-  :root { --accent: #b22234; --accent-2: #8e1b2a; --ink: #1c1d22; --ink-mute: #6c6f76; --cream: #faf8f4; --card: #ffffff; --line: #e8e4da; --gold: #a8853b; --grey-z: #8a6d1a; }
+  :root { --accent: #b22234; --accent-2: #8e1b2a; --ink: #1c1d22; --ink-mute: #6c6f76; --cream: #faf8f4; --card: #ffffff; --line: #e8e4da; --gold: #a8853b; --grey-z: #8a6d1a; --step-keep: #5d9c78; --step-grey: #c39a3b; --step-bulletin: #4f7cac; --step-manual: #a96aa3; --step-generate: #b88945; --step-list: #64748b; }
   * { box-sizing: border-box; }
   body { margin: 0; font-family: 'Inter', system-ui, sans-serif; background: var(--cream); color: var(--ink); }
   header { background: #fff; border-bottom: 1px solid var(--line); padding: 14px 32px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
@@ -32,6 +32,12 @@
   .control-panel[open] summary { border-bottom: 1px solid var(--line); }
   .control-panel[open] summary::before { content: '-'; }
   .control-panel .panel-body { padding: 14px 16px 16px; }
+  .review-toolbar { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .review-toolbar .count-pill { padding: 7px 12px; border-radius: 999px; background: #f2f7f4; border: 1px solid #d5e8dd; color: #315c45; font-size: 13px; font-weight: 600; }
+  .review-toolbar .spacer { flex: 1; min-width: 12px; }
+  .period-picker { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+  .period-picker .tab { border-radius: 12px; padding: 8px 13px; }
+  .period-picker .tab.on { background: var(--step-keep); border-color: var(--step-keep); color: #fff; }
   .tabs { display: flex; gap: 8px; margin: 4px 0 14px; flex-wrap: wrap; }
   .tab { font-family: 'Inter Tight', sans-serif; padding: 8px 18px; border: 1px solid var(--line); background: #fff; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--ink); }
   .tab:hover { border-color: var(--accent); }
@@ -78,20 +84,30 @@
   .journey-title, .stage-title { font-family: 'Inter Tight', sans-serif; font-size: clamp(42px, 7vw, 88px); line-height: .95; letter-spacing: 0; margin: 0; }
   .journey-copy, .stage-copy { color: #4a4d55; font-size: clamp(16px, 2vw, 21px); line-height: 1.45; max-width: 760px; }
   .journey-actions, .stage-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .stage-actions .tab.on { background: #eef5fb; border-color: #c9ddef; color: #2f5f88; }
   .quest-card { border: 1px solid var(--line); border-radius: 8px; padding: 18px; background: var(--cream); display: grid; gap: 10px; }
   .quest-card strong { font-family: 'Inter Tight', sans-serif; font-size: clamp(30px, 4vw, 54px); line-height: .95; }
   .quest-card span { color: var(--ink-mute); font-size: 13px; }
-  .stage-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-  .stage-tab { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px; cursor: pointer; text-align: left; color: var(--ink); display: grid; gap: 6px; }
+  .stage-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+  .stage-tab { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px; cursor: pointer; text-align: left; color: var(--ink); display: grid; gap: 6px; border-left: 6px solid var(--line); }
   .stage-tab:hover { border-color: var(--accent); }
-  .stage-tab.on { background: var(--ink); color: #fff; border-color: var(--ink); }
-  .stage-tab.on span { color: #f3b6be; }
+  .stage-tab.on { color: var(--ink); box-shadow: inset 0 0 0 1px currentColor; }
+  .stage-tab.on span { color: #4a4d55; }
+  .stage-tab.todo { background: #f2f7f4; border-left-color: var(--step-keep); }
+  .stage-tab.grey { background: #fff7e5; border-left-color: var(--step-grey); }
+  .stage-tab.selected { background: #eef5fb; border-left-color: var(--step-bulletin); }
+  .stage-tab.manual { background: #fbf1f8; border-left-color: var(--step-manual); }
+  .stage-tab.generate { background: #fff7e9; border-left-color: var(--step-generate); }
+  .stage-tab.list { background: #f5f7fa; border-left-color: var(--step-list); }
   .stage-tab strong { font-family: 'Inter Tight', sans-serif; font-size: 19px; }
   .stage-tab span { color: var(--ink-mute); font-size: 12px; }
   .stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; align-items: start; }
-  .stage-panel.todo { border-left: 8px solid var(--accent); }
-  .stage-panel.selected { border-left: 8px solid #1f4d8a; }
-  .stage-panel.generate { border-left: 8px solid var(--gold); background: #fffdf7; }
+  .stage-panel.todo { border-left: 10px solid var(--step-keep); }
+  .stage-panel.grey { border-left: 10px solid var(--step-grey); background: #fffdf7; }
+  .stage-panel.selected { border-left: 10px solid var(--step-bulletin); }
+  .stage-panel.manual { border-left: 10px solid var(--step-manual); background: #fffaff; }
+  .stage-panel.generate { border-left: 10px solid var(--step-generate); background: #fffdf7; }
+  .stage-panel.list { border-left: 10px solid var(--step-list); background: #fbfcfe; }
   .stage-meter { display: grid; grid-template-columns: repeat(4, minmax(120px, 1fr)); gap: 10px; }
   .stage-meter .mission-stat { padding: 14px; }
   .swipe-frame { max-width: 760px; width: 100%; margin: 0 auto; display: grid; gap: 12px; }
@@ -107,6 +123,40 @@
   .card.dragging { opacity: .48; cursor: grabbing; }
   .card.urgent { border-left: 4px solid var(--accent); }
   .card.rejected-card { opacity: .72; }
+  .card-radar { display: grid; grid-template-columns: minmax(130px, .9fr) minmax(160px, 1.1fr); gap: 8px; margin-bottom: 10px; }
+  .date-tile, .score-tile { border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; min-width: 0; }
+  .date-tile { background: #f7fbff; border-color: #cfe0ef; color: #2f5f88; }
+  .score-tile { background: #f7f7f4; }
+  .score-tile.prioritaire { background: #fdeef0; border-color: #f0c2c9; color: var(--accent); }
+  .score-tile.pertinent { background: #eaf6ee; border-color: #cce6d4; color: #315c45; }
+  .score-tile.zone-grise { background: #fff7e5; border-color: #e3d5ae; color: var(--grey-z); }
+  .tile-kicker { display: block; font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-mute); font-weight: 700; margin-bottom: 4px; }
+  .date-main, .score-main { display: block; font-family: 'Inter Tight', sans-serif; font-size: 23px; line-height: 1; font-weight: 600; }
+  .date-sub, .score-sub { display: block; margin-top: 4px; font-size: 11.5px; color: currentColor; opacity: .78; }
+  .source-row { margin: 8px 0 10px; padding: 9px 10px; border: 1px solid #cfe0ef; border-radius: 8px; background: #f7fbff; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .source-main { display: grid; gap: 2px; min-width: 0; }
+  .source-host { color: #2f5f88; font-size: 12.5px; word-break: break-word; }
+  .source-link { display: inline-flex; align-items: center; justify-content: center; padding: 7px 10px; border-radius: 8px; background: #fff; border: 1px solid #b9d2e8; color: #2f5f88; font-family: 'Inter Tight', sans-serif; font-size: 12.5px; font-weight: 600; text-decoration: none; }
+  .source-link:hover { border-color: #2f5f88; }
+  .source-row.missing { background: #fff5f5; border-color: #f2caca; }
+  .source-row.missing .source-host { color: #9a1c1c; }
+  .source-row.missing .source-link { color: #9a1c1c; border-color: #f2caca; pointer-events: none; }
+  .watch-list { display: grid; gap: 10px; }
+  .list-row { display: grid; grid-template-columns: minmax(98px, .55fr) minmax(118px, .65fr) minmax(120px, .7fr) minmax(260px, 2.4fr) minmax(170px, 1fr); gap: 10px; align-items: start; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+  .list-row:hover { border-color: #cbd5e1; }
+  .list-cell { min-width: 0; font-size: 12.5px; color: var(--ink-mute); }
+  .list-cell strong { display: block; font-family: 'Inter Tight', sans-serif; color: var(--ink); font-size: 15px; line-height: 1.25; margin-bottom: 4px; }
+  .list-title a { color: var(--ink); text-decoration: none; }
+  .list-title a:hover { color: var(--accent); }
+  .list-summary { font-size: 12.5px; color: #4a4d55; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .list-actions { display: grid; grid-template-columns: 1fr; gap: 6px; }
+  .list-actions button { font-size: 12px; padding: 7px 9px; border-radius: 8px; font-family: 'Inter Tight', sans-serif; border: 1px solid transparent; cursor: pointer; }
+  .status-chip { display: inline-flex; align-items: center; border-radius: 999px; border: 1px solid var(--line); background: var(--cream); padding: 4px 9px; color: var(--ink); font-weight: 600; }
+  .status-chip.todo { background: #eaf6ee; border-color: #cce6d4; color: #315c45; }
+  .status-chip.selected { background: #eaf2fb; border-color: #c9ddef; color: #2f5f88; }
+  .status-chip.ready { background: #fff1d9; border-color: #ead09e; color: #735613; }
+  .status-chip.wait { background: #f3eaf6; border-color: #dec8e3; color: #70456b; }
+  .status-chip.ignored { background: #f4f4f5; border-color: #d4d4d8; color: #52525b; }
   .t { font-family: 'Inter Tight', sans-serif; font-size: 14.5px; font-weight: 600; margin: 0 0 6px; line-height: 1.32; }
   .t a { color: var(--ink); text-decoration: none; }
   .t a:hover { color: var(--accent); }
@@ -117,6 +167,11 @@
   .badge.s-grey { background: #f5edd8; border-color: #e3d5ae; color: var(--grey-z); }
   .badge.u { background: #fdeef0; border-color: #f0c2c9; color: var(--accent); font-weight: 600; }
   .badge.echeance { background: #eef2f8; border-color: #d4deed; color: #1f4d8a; }
+  .badge.stat-todo { background: #eaf6ee; border-color: #cce6d4; color: #315c45; }
+  .badge.stat-selected { background: #eaf2fb; border-color: #c9ddef; color: #2f5f88; }
+  .badge.stat-ready { background: #fff1d9; border-color: #ead09e; color: #735613; }
+  .badge.stat-wait { background: #f3eaf6; border-color: #dec8e3; color: #70456b; }
+  .badge.stat-grey { background: #f7efd8; border-color: #e3d5ae; color: var(--grey-z); }
   .why { font-size: 13.5px; color: #4a4d55; font-style: italic; margin: 8px 0; }
   .why b { color: var(--accent); font-style: normal; font-weight: 600; }
   textarea.resume { width: 100%; min-height: 70px; font-family: 'Source Serif 4', Georgia, serif; font-size: 13.5px; line-height: 1.45; padding: 9px; border: 1px solid var(--line); border-radius: 8px; background: #fffefb; resize: vertical; color: var(--ink); }
@@ -157,10 +212,18 @@
   pre.prompt { white-space: pre-wrap; font-size: 12px; background: var(--cream); border: 1px solid var(--line); padding: 14px; border-radius: 10px; max-height: 45vh; overflow: auto; font-family: 'JetBrains Mono', ui-monospace, monospace; }
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 11px 22px; border-radius: 8px; font-size: 14px; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 99; }
   .toast.show { opacity: 1; }
+  .faq-section { margin-top: 28px; display: grid; gap: 10px; }
+  .faq-head { margin-bottom: 4px; }
+  .faq-title { font-family: 'Inter Tight', sans-serif; font-size: clamp(30px, 4vw, 48px); line-height: 1; margin: 3px 0 0; letter-spacing: 0; }
+  .faq-section .legend { margin-bottom: 0; }
+  .faq-section .legend-body { max-width: 980px; }
+  .faq-section .legend-body ul { margin: 0; padding-left: 18px; }
+  .faq-section .legend-body li { margin: 0 0 6px; }
   footer { text-align: center; font-size: 11.5px; color: var(--ink-mute); padding: 26px; border-top: 1px solid var(--line); background: #fff; }
   footer .gold { color: var(--gold); }
   @media (max-width: 1180px) { .mission { grid-template-columns: repeat(2, minmax(220px, 1fr)); } .kanban { grid-template-columns: repeat(2, minmax(260px, 1fr)); } .journey-hero { grid-template-columns: 1fr; } .stage-meter { grid-template-columns: repeat(2, minmax(120px, 1fr)); } }
-  @media (max-width: 680px) { header { padding: 12px 16px; } header .hdr-info { margin-left: 0; } .mission, .kanban, .stage-nav, .stage-meter, .stats-legend .lg-row { grid-template-columns: 1fr; } .journey-title, .stage-title { font-size: 42px; } .bar { align-items: stretch; } .bar select, .bar button, .bigbtn { width: 100%; } }
+  @media (max-width: 980px) { .list-row { grid-template-columns: 1fr; } .list-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 680px) { header { padding: 12px 16px; } header .hdr-info { margin-left: 0; } .mission, .kanban, .stage-nav, .stage-meter, .stats-legend .lg-row, .card-radar { grid-template-columns: 1fr; } .journey-title, .stage-title { font-size: 42px; } .bar, .review-toolbar { align-items: stretch; } .bar select, .bar button, .bigbtn, .review-toolbar button, .review-toolbar .count-pill { width: 100%; } .list-actions { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -170,26 +233,16 @@
   <span class="hdr-info" id="hdr-info">connexion…</span>
 </header>
 <main>
-  <details class="legend">
-    <summary>Comment lire les scores ?</summary>
-    <div class="legend-body">
-      <p>Chaque information reçoit un score de 0 à 100 qui mesure la solidité du lien avec le périmètre de veille du client, accompagné d'un « Pourquoi » : la justification en une phrase.</p>
-      <div class="lg-row"><span class="badge s-hi">80 et + · prioritaire</span><span>le lien avec le périmètre est explicite et direct.</span></div>
-      <div class="lg-row"><span class="badge s-mid">60–79 · pertinent</span><span>lien réel mais indirect — c'est là que votre regard de consultant fait la différence.</span></div>
-      <div class="lg-row"><span class="badge s-grey">40–59 · zone grise</span><span>le lien n'a pas pu être établi clairement, sans pouvoir être exclu. Masquées par défaut ; l'étape « Zones grises » permet de les parcourir et repêcher.</span></div>
-      <div class="lg-row"><span class="badge u">URGENT</span><span>signal temporel ou sensible détecté en amont. Il attire l'œil, mais ne remplace pas le tri par score.</span></div>
-      <p style="margin-top:10px">En dessous de 40, l'information est écartée automatiquement et n'apparaît jamais. Vos décisions — garder ou écarter — servent ensuite à affiner les réglages de la veille.</p>
-    </div>
-  </details>
-
   <div class="tabs" id="tabs"></div>
   <details class="control-panel" id="filters-panel">
-    <summary>Filtres et actions secondaires</summary>
+    <summary>Filtres</summary>
     <div class="panel-body">
       <div class="bar">
         <select id="f-jours" onchange="render()">
           <option value="0">Toutes dates</option>
+          <option value="today">Aujourd'hui</option>
           <option value="1">Dernières 24 h</option>
+          <option value="3" selected>3 derniers jours</option>
           <option value="7">7 derniers jours</option>
           <option value="14">14 derniers jours</option>
           <option value="31">31 derniers jours</option>
@@ -208,16 +261,99 @@
           <option value="autre">Autre signal</option>
         </select>
         <span id="f-themes" style="display:flex;gap:6px;flex-wrap:wrap"></span>
-        <span style="flex:1"></span>
-        <span id="f-compte"></span>
-        <button class="tab" id="btn-manual" type="button">✚ Info supplémentaire</button>
-        <button class="tab" id="btn-dernier" type="button">↺ Dernier bulletin</button>
-        <button class="tab" id="btn-reset" type="button" title="Annule les décisions et bulletins de ce client : tout revient dans la file">↺ Réinitialiser</button>
-        <button class="bigbtn" id="btn-bulletin" type="button" disabled>⚡ Générer le bulletin<span class="arrow">→</span></button>
       </div>
     </div>
   </details>
   <div id="list"></div>
+  <section class="faq-section" aria-label="Questions fréquentes">
+    <div class="faq-head">
+      <div class="stage-kicker">Aide</div>
+      <h2 class="faq-title">Questions fréquentes</h2>
+    </div>
+    <details class="legend">
+      <summary>À quoi sert cet écran ?</summary>
+      <div class="legend-body">
+        <p>Il sert à relire les informations trouvées par la veille, décider ce qui mérite d'être gardé, mettre certains signaux En attente, ajouter du contexte manuel, puis préparer le prompt du prochain bulletin.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>D'où viennent les informations ?</summary>
+      <div class="legend-body">
+        <p>Les informations viennent des sources configurées dans BriefLayer. Les workflows collectent les flux, normalisent les contenus, les scorent par rapport au client, puis les stockent dans Supabase. Cette page sert d'interface de validation.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Comment lire les scores ?</summary>
+      <div class="legend-body">
+        <p>Chaque information reçoit un score de 0 à 100 qui mesure la solidité du lien avec le périmètre de veille du client, accompagné d'un « Pourquoi » : la justification en une phrase.</p>
+        <div class="lg-row"><span class="badge s-hi">80+ · Prioritaire</span><span>le lien avec le périmètre est explicite et direct.</span></div>
+        <div class="lg-row"><span class="badge s-mid">60-79 · Pertinent</span><span>lien réel mais indirect : c'est là que le regard de consultant fait la différence.</span></div>
+        <div class="lg-row"><span class="badge s-grey">40-59 · Zone grise</span><span>le lien n'a pas pu être établi clairement, sans pouvoir être exclu. Ces cartes sont masquées par défaut et se traitent via l'étape « Zones grises ».</span></div>
+        <div class="lg-row"><span class="badge u">URGENT</span><span>signal temporel ou sensible détecté en amont. Il attire l'œil, mais ne remplace pas le tri par score.</span></div>
+        <p style="margin-top:10px">En dessous de 40, l'information est ignorée automatiquement et n'apparaît pas dans la pile de revue.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Pourquoi une information du jour peut ne pas apparaître ?</summary>
+      <div class="legend-body">
+        <ul>
+          <li>Elle est sous le seuil de 40 et a été écartée automatiquement.</li>
+          <li>Elle est en Zone grise et n'a pas encore été chargée via l'étape dédiée.</li>
+          <li>Elle est hors période dans le filtre actif : aujourd'hui, 3 derniers jours ou tout.</li>
+          <li>Elle a déjà été ignorée, mise En attente, ou rattachée à un bulletin généré.</li>
+          <li>Le workflow de collecte ou de scoring du jour n'a pas encore fini de tourner.</li>
+        </ul>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Que veut dire Garder / Ignorer ?</summary>
+      <div class="legend-body">
+        <p>Garder signifie que l'information mérite une décision éditoriale. Ignorer signifie qu'elle ne sera pas utilisée pour ce bulletin. Ignorer n'efface pas la source : cela change son statut dans la base.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Que veut dire À arbitrer ?</summary>
+      <div class="legend-body">
+        <p>À arbitrer regroupe les cartes gardées lors de la première étape, mais pas encore envoyées vers le Prochain bulletin ni mises En attente. C'est la zone de second choix.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Quelle différence entre Prochain bulletin et En attente ?</summary>
+      <div class="legend-body">
+        <p>Prochain bulletin signifie que la carte sera utilisée dans le prompt de génération. En attente signifie que l'information reste intéressante, mais qu'elle est reportée pour plus tard et ne part pas dans le bulletin en cours.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>À quoi servent les informations supplémentaires ?</summary>
+      <div class="legend-body">
+        <p>Elles permettent d'ajouter une note interne, un retour terrain, une source hors flux ou un point de contexte. Elles sont incluses dans le prompt du prochain bulletin du client actif.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Que fait Générer le bulletin ?</summary>
+      <div class="legend-body">
+        <p>Le bouton crée un prompt complet à partir des cartes en Prochain bulletin et des informations supplémentaires. Il copie le prompt dans le presse-papier et le garde dans l'historique des bulletins.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Les décisions sont-elles partagées entre utilisateurs ?</summary>
+      <div class="legend-body">
+        <p>Les décisions principales, comme Garder, Ignorer et Prochain bulletin, sont enregistrées dans Supabase : elles sont donc partagées entre les personnes qui consultent la même base. Les éléments locaux du navigateur, comme certaines infos manuelles ou la file En attente selon le paramétrage actuel, peuvent rester propres au poste utilisé.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Que faire si je me trompe ?</summary>
+      <div class="legend-body">
+        <p>Une carte peut être reprise depuis les boutons d'action quand elle est encore visible. Le bouton « Réinitialiser » remet la revue du client à l'état initial : à utiliser avec prudence, surtout si plusieurs personnes travaillent sur le même client.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Que fait Dernier bulletin ?</summary>
+      <div class="legend-body">
+        <p>Il rouvre le dernier prompt généré pour le client actif. C'est utile pour retrouver ce qui a été envoyé à l'IA, vérifier les cartes utilisées, ou rouvrir la pile si le bulletin doit être repris.</p>
+      </div>
+    </details>
+  </section>
 </main>
 
 <div class="modal-bg" id="modal" style="display:none">
@@ -260,7 +396,7 @@ const EMBED = {
   url: 'https://xkqeqajeccsacocnfqca.supabase.co',
   key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhrcWVxYWplY2NzYWNvY25mcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNjc4OTIsImV4cCI6MjA5Njc0Mzg5Mn0.7NmmzyrXt-kVMBl-_WFqPuBP_9r-BAuIbavRO_sIryk'
 };
-let sb = null, clients = [], current = null, rows = [], themes = new Set(), activeStage = 'intro', showGrey = false;
+let sb = null, clients = [], current = null, rows = [], themes = new Set(), activeStage = 'intro', showGrey = false, includeIncubated = false;
 const TAGLABELS = { energie: 'Énergie', environnement: 'Environnement', sante: 'Santé', numerique: 'Numérique', donnees_personnelles: 'Données personnelles', fiscalite: 'Fiscalité', travail_emploi: 'Travail & emploi', transports: 'Transports', agriculture_alimentation: 'Agriculture', industrie: 'Industrie', finance: 'Finance', logement_urbanisme: 'Logement & urbanisme', education_recherche: 'Éducation & recherche', culture_medias: 'Culture & médias', defense_securite: 'Défense & sécurité', justice: 'Justice', collectivites_territoriales: 'Collectivités', europe_ue: 'Europe / UE', international: 'International', concurrence: 'Concurrence', marches_publics: 'Marchés publics', aides_etat: "Aides d'État", consommation: 'Consommation', institutions: 'Institutions' };
 
 const $ = id => document.getElementById(id);
@@ -288,7 +424,7 @@ async function renderTabs() {
     `<button type="button" class="tab ${c.id === current ? 'on' : ''}" onclick="switchTo('${c.id}')">${c.name}</button>`
   ).join('');
 }
-function switchTo(id) { current = id; activeStage = 'intro'; showGrey = false; renderTabs(); load(); }
+function switchTo(id) { current = id; activeStage = 'intro'; showGrey = false; includeIncubated = false; renderTabs(); load(); }
 
 async function load() {
   const c = clients.find(x => x.id === current);
@@ -310,9 +446,12 @@ function sortByScore(a, b) {
 }
 
 function filteredRows() {
-  const jours = +($('f-jours').value || 0);
+  const period = $('f-jours').value || '3';
+  const jours = Number(period) || 0;
   const type = $('f-type').value;
-  const cutoff = jours ? Date.now() - jours * 86400000 : 0;
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const cutoff = period === 'today' ? todayStart.getTime() : (jours ? Date.now() - jours * 86400000 : 0);
   return rows.filter(r => {
     const it = r.items || {};
     if (cutoff && new Date(it.published_at || 0).getTime() < cutoff) return false;
@@ -320,6 +459,26 @@ function filteredRows() {
     if (themes.size && !(it.tags || []).some(t => themes.has(t))) return false;
     return true;
   });
+}
+function periodLabel() {
+  return $('f-jours').selectedOptions[0] ? $('f-jours').selectedOptions[0].textContent : 'Période active';
+}
+function setPeriod(value) {
+  $('f-jours').value = value;
+  render();
+}
+function toggleIncubated() {
+  includeIncubated = !includeIncubated;
+  render();
+}
+function renderPeriodPicker() {
+  const value = $('f-jours').value || '3';
+  const options = [
+    ['today', "Aujourd'hui"],
+    ['3', '3 derniers jours'],
+    ['0', 'Tout']
+  ];
+  return `<div class="period-picker">${options.map(([v, label]) => `<button class="tab ${value === v ? 'on' : ''}" type="button" onclick="setPeriod('${v}')">${label}</button>`).join('')}</div>`;
 }
 function renderThemes() {
   const present = new Set();
@@ -331,15 +490,48 @@ function renderThemes() {
 function toggleTheme(t) { themes.has(t) ? themes.delete(t) : themes.add(t); renderThemes(); render(); }
 function render() {
   const list = filteredRows();
-  $('f-compte').textContent = rows.length ? ('File visible : ' + list.length + ' / ' + rows.length + ' chargés') : '';
   renderBoard(list);
 }
 
 function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+function sourceInfo(url) {
+  const clean = String(url || '').trim();
+  if (!clean) return { url: '', host: 'Source absente', valid: false };
+  const valid = /^https?:\/\//i.test(clean);
+  if (!valid) return { url: clean, host: clean, valid: false };
+  try {
+    const parsed = new URL(clean);
+    return { url: clean, host: parsed.hostname.replace(/^www\./, ''), valid: true };
+  } catch (e) {
+    return { url: clean, host: clean, valid: false };
+  }
+}
+function renderSource(source) {
+  return `<div class="source-row ${source.valid ? '' : 'missing'}">
+    <div class="source-main">
+      <span class="tile-kicker">Source primaire</span>
+      <span class="source-host">${esc(source.host)}</span>
+    </div>
+    ${source.valid ? `<a class="source-link" href="${esc(source.url)}" target="_blank" rel="noopener">Ouvrir la source →</a>` : '<span class="source-link">URL manquante</span>'}
+  </div>`;
+}
 function scoreInfo(s) {
-  if (s >= 80) return ['s-hi', 'prioritaire'];
-  if (s >= 60) return ['s-mid', 'pertinent'];
-  return ['s-grey', 'zone grise'];
+  if (s >= 80) return ['s-hi', 'Prioritaire', 'prioritaire', '80+'];
+  if (s >= 60) return ['s-mid', 'Pertinent', 'pertinent', '60-79'];
+  return ['s-grey', 'Zone grise', 'zone-grise', '40-59'];
+}
+function formatDateTile(value) {
+  if (!value) return { main: 'n.c.', sub: 'date absente' };
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return { main: String(value).slice(0, 10), sub: 'date brute' };
+  const now = new Date();
+  const start = new Date(d); start.setHours(0, 0, 0, 0);
+  const today = new Date(now); today.setHours(0, 0, 0, 0);
+  const diffDays = Math.round((today - start) / 86400000);
+  const main = d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }).replace('.', '');
+  const year = d.getFullYear() !== now.getFullYear() ? ` ${d.getFullYear()}` : '';
+  const sub = diffDays === 0 ? "aujourd'hui" : (diffDays === 1 ? 'hier' : `il y a ${diffDays} jours`);
+  return { main: main + year, sub };
 }
 
 function manualKey() {
@@ -378,6 +570,11 @@ function removeIncubation(id) {
   if (!ids.has(id)) return;
   ids.delete(id);
   saveIncubatedIds(ids);
+}
+function resumeIncubation(id) {
+  removeIncubation(id);
+  toast('Remis à arbitrer');
+  render();
 }
 function incubate(id) {
   const row = rows.find(r => r.id === id);
@@ -451,9 +648,9 @@ function levelInfo(done, ready, manualCount) {
 }
 
 const LANES = [
-  { key: 'todo', cls: 'todo', step: '1', icon: '🧭', title: 'Garder ou jeter', note: 'Une carte à la fois, score décroissant', statuses: ['proposed', 'grey'] },
-  { key: 'selected', cls: 'selected', step: '2', icon: '🎯', title: 'À arbitrer', note: 'Parmi les gardés : prochain bulletin ou attente', statuses: ['approved'] },
-  { key: 'rejected', cls: 'rejected', step: '3', icon: '×', title: 'Jeté', note: 'Écarté mais récupérable en un clic', statuses: ['rejected'] },
+  { key: 'todo', cls: 'todo', step: '1', icon: '🧭', title: 'Garder/Ignorer', note: 'Une carte à la fois, score décroissant', statuses: ['proposed', 'grey'] },
+  { key: 'selected', cls: 'selected', step: '2', icon: '🎯', title: 'À arbitrer', note: 'Parmi les gardés : prochain bulletin ou En attente', statuses: ['approved'] },
+  { key: 'rejected', cls: 'rejected', step: '3', icon: '×', title: 'Ignoré', note: 'Ignoré mais récupérable en un clic', statuses: ['rejected'] },
   { key: 'ready', cls: 'ready', step: '4', icon: '⚡', title: 'Prêt pour le prochain bulletin', note: 'Ces informations alimentent le prompt du bulletin', statuses: ['edited'] }
 ];
 function laneFor(row) {
@@ -471,17 +668,20 @@ function statusForLane(row, laneKey) {
 }
 function actionsFor(row) {
   const back = fallbackStatus(row);
+  if (row.status === 'approved' && isIncubated(row.id)) return `
+        <button type="button" class="b-soft" onclick="resumeIncubation('${row.id}')">Reprendre</button>
+        <button type="button" class="b-ready" onclick="decide('${row.id}', 'edited')">Intégrer au prochain bulletin</button>`;
   if (row.status === 'approved') return `
-        <button type="button" class="b-wait" onclick="incubate('${row.id}')">Mettre en attente</button>
+        <button type="button" class="b-wait" onclick="incubate('${row.id}')">Mettre En attente</button>
         <button type="button" class="b-ready" onclick="decide('${row.id}', 'edited')">Intégrer au prochain bulletin</button>`;
   if (row.status === 'edited') return `
-        <button type="button" class="b-no" onclick="decide('${row.id}', 'rejected')">Jeter</button>
+        <button type="button" class="b-no" onclick="decide('${row.id}', 'rejected')">Ignorer</button>
         <button type="button" class="b-soft" onclick="decide('${row.id}', 'approved')">Remettre à arbitrer</button>`;
   if (row.status === 'rejected') return `
         <button type="button" class="b-ok" onclick="decide('${row.id}', 'approved')">Garder</button>
         <button type="button" class="b-soft" onclick="decide('${row.id}', '${back}')">Restaurer</button>`;
   return `
-        <button type="button" class="b-no" onclick="decide('${row.id}', 'rejected')">Jeter</button>
+        <button type="button" class="b-no" onclick="decide('${row.id}', 'rejected')">Ignorer</button>
         <button type="button" class="b-ok" onclick="decide('${row.id}', 'approved')">Garder</button>`;
 }
 function groupRows(list) {
@@ -489,20 +689,29 @@ function groupRows(list) {
   grouped.incubation = [];
   const incubated = incubatedIds();
   list.forEach(r => {
-    if (r.status === 'approved' && incubated.has(r.id)) grouped.incubation.push(r);
+    if (!includeIncubated && r.status === 'approved' && incubated.has(r.id)) grouped.incubation.push(r);
     else grouped[laneFor(r).key].push(r);
   });
   Object.values(grouped).forEach(g => g.sort(sortByScore));
   return grouped;
 }
 function renderBoard(list) {
-  if (!list.length && !manualItems().length) { $('list').innerHTML = '<div class="empty">' + (rows.length ? 'Rien ne correspond à ces filtres.' : 'Rien à valider pour ce client. La veille tourne en continu, repassez plus tard dans la journée.') + '</div>'; return; }
+  if (!list.length && !manualItems().length) { $('list').innerHTML = renderReviewToolbar(list) + '<div class="empty">' + (rows.length ? 'Rien ne correspond à ces filtres.' : 'Rien à valider pour ce client. La veille tourne en continu, repassez plus tard dans la journée.') + '</div>'; return; }
   const grouped = groupRows(list);
   if (activeStage === 'intro') {
-    $('list').innerHTML = renderStatsPanel(list, grouped) + renderIntro(list, grouped);
+    $('list').innerHTML = renderReviewToolbar(list) + renderStatsPanel(list, grouped) + renderIntro(list, grouped);
     return;
   }
-  $('list').innerHTML = renderStatsPanel(list, grouped) + `<div class="journey">${renderStageNav(grouped)}${renderStagePanel(grouped)}</div>`;
+  $('list').innerHTML = renderReviewToolbar(list) + renderStatsPanel(list, grouped) + `<div class="journey">${renderStageNav(grouped)}${renderStagePanel(grouped)}</div>`;
+}
+function renderReviewToolbar(list) {
+  return `<section class="review-toolbar" aria-label="Traitement de veille">
+    <span class="count-pill">${esc(periodLabel())} : ${list.length} / ${rows.length} chargés</span>
+    <span class="spacer"></span>
+    <button class="tab" type="button" onclick="openManualModal()">✚ Info supplémentaire</button>
+    <button class="tab" type="button" onclick="openLastBulletin()">↺ Dernier bulletin</button>
+    <button class="tab" type="button" onclick="resetReview()">↺ Réinitialiser</button>
+  </section>`;
 }
 function stageCounts(grouped) {
   return {
@@ -523,7 +732,7 @@ function renderIntro(list, grouped) {
     <div>
       <div class="journey-kicker">${esc(client ? client.name : 'Client')}</div>
       <h1 class="journey-title">Traitement de veille</h1>
-      <p class="journey-copy">On déroule la revue comme une pile de cartes : garder ou jeter, puis décider ce qui part au prochain bulletin ou reste en attente.</p>
+      <p class="journey-copy">On déroule la revue comme une pile de cartes : garder ou ignorer, puis décider ce qui part au prochain bulletin ou reste en attente.</p>
       <div class="journey-actions">
         <button class="bigbtn" type="button" onclick="setStage('${next}')">▶ Commencer à traiter la veille<span class="arrow">→</span></button>
         <button class="tab" type="button" onclick="openManualModal()">✚ Info manuelle</button>
@@ -539,32 +748,34 @@ function renderIntro(list, grouped) {
 function renderStageNav(grouped) {
   const c = stageCounts(grouped);
   const tabs = [
-    { key: 'todo', label: '1. Garder / jeter', hint: `${c.todo} carte${c.todo > 1 ? 's' : ''} dans la pile`, icon: '🧭' },
-    { key: 'grey', label: '1b. Zones grises', hint: showGrey ? 'scores 40-59 inclus' : 'charger les scores 40-59', icon: '◐' },
-    { key: 'selected', label: '2. Bulletin / attente', hint: `${c.selected} à arbitrer`, icon: '🎯' },
-    { key: 'manual', label: '3. Infos supplémentaires', hint: `${c.manual} complément${c.manual > 1 ? 's' : ''}`, icon: '✚' },
-    { key: 'generate', label: '4. Générer', hint: `${c.ready + c.manual} pour prochain bulletin`, icon: '⚡' }
+    { key: 'todo', cls: 'todo', label: '1. Garder/Ignorer', hint: `${c.todo} carte${c.todo > 1 ? 's' : ''} dans la pile`, icon: '🧭' },
+    { key: 'grey', cls: 'grey', label: '1b. Zones grises', hint: showGrey ? 'scores 40-59 inclus' : 'charger les scores 40-59', icon: '◐' },
+    { key: 'selected', cls: 'selected', label: '2. Bulletin/En attente', hint: `${c.selected} à arbitrer`, icon: '🎯' },
+    { key: 'manual', cls: 'manual', label: '3. Infos supplémentaires', hint: `${c.manual} complément${c.manual > 1 ? 's' : ''}`, icon: '✚' },
+    { key: 'generate', cls: 'generate', label: '4. Générer', hint: `${c.ready + c.manual} pour prochain bulletin`, icon: '⚡' },
+    { key: 'list', cls: 'list', label: 'Vue liste', hint: `${c.todo + c.selected + c.incubation + c.ready + c.rejected} élément${c.todo + c.selected + c.incubation + c.ready + c.rejected > 1 ? 's' : ''}`, icon: '☰' }
   ];
-  return `<nav class="stage-nav">${tabs.map(t => `<button class="stage-tab ${activeStage === t.key ? 'on' : ''}" type="button" onclick="setStage('${t.key}')"><strong>${t.icon} ${t.label}</strong><span>${t.hint}</span></button>`).join('')}</nav>`;
+  return `<nav class="stage-nav">${tabs.map(t => `<button class="stage-tab ${t.cls} ${activeStage === t.key ? 'on' : ''}" type="button" onclick="setStage('${t.key}')"><strong>${t.icon} ${t.label}</strong><span>${t.hint}</span></button>`).join('')}</nav>`;
 }
 function renderStagePanel(grouped) {
   if (activeStage === 'grey') return renderGreyStage(grouped);
   if (activeStage === 'selected') return renderSelectedStage(grouped);
   if (activeStage === 'manual') return renderManualStage(grouped);
   if (activeStage === 'generate') return renderGenerateStage(grouped);
+  if (activeStage === 'list') return renderListStage(grouped);
   return renderTodoStage(grouped);
 }
 function renderGreyStage(grouped) {
   const greyRows = rows.filter(r => r.status === 'grey');
-  return `<section class="stage-panel todo">
+  return `<section class="stage-panel grey">
     <div class="stage-kicker">Étape optionnelle</div>
     <h2 class="stage-title">Traiter les zones grises</h2>
     <p class="stage-copy">Les zones grises sont les scores 40-59 : le lien client est possible, mais pas assez net pour entrer directement dans la pile principale.</p>
     <div class="stage-actions">
       <button class="bigbtn" type="button" onclick="enableGrey()" ${showGrey ? 'disabled' : ''}>Afficher et traiter les zones grises</button>
-      <button class="tab" type="button" onclick="setStage('todo')">Retour garder / jeter</button>
+      <button class="tab" type="button" onclick="setStage('todo')">Retour Garder/Ignorer</button>
     </div>
-    <div class="keyboard-tip">${showGrey ? `${greyRows.length} zone${greyRows.length > 1 ? 's' : ''} grise${greyRows.length > 1 ? 's' : ''} chargée${greyRows.length > 1 ? 's' : ''}. Elles sont maintenant dans la pile garder / jeter.` : 'Activez-les seulement si la pile principale est trop courte ou si vous voulez repêcher des signaux faibles.'}</div>
+    <div class="keyboard-tip">${showGrey ? `${greyRows.length} zone${greyRows.length > 1 ? 's' : ''} grise${greyRows.length > 1 ? 's' : ''} chargée${greyRows.length > 1 ? 's' : ''}. Elles sont maintenant dans la pile Garder/Ignorer.` : 'Activez-les seulement si la pile principale est trop courte ou si vous voulez repêcher des signaux faibles.'}</div>
   </section>`;
 }
 function renderTodoStage(grouped) {
@@ -572,13 +783,15 @@ function renderTodoStage(grouped) {
   const card = cards[0];
   return `<section class="stage-panel todo">
     <div class="stage-kicker">Première étape</div>
-    <h2 class="stage-title">Garder ou jeter</h2>
-    <p class="stage-copy">Mode pile : une carte à la fois, classée par scoring. Jetez ce qui sort du sujet, gardez ce qui mérite un second arbitrage.</p>
+    <h2 class="stage-title">Garder/Ignorer</h2>
+    <p class="stage-copy">Mode pile : une carte à la fois, classée par scoring. Ignorez ce qui sort du sujet, gardez ce qui mérite un second arbitrage.</p>
     <div class="stage-actions">
+      ${renderPeriodPicker()}
+      <button class="tab ${includeIncubated ? 'on' : ''}" type="button" onclick="toggleIncubated()">${includeIncubated ? 'En attente incluses' : 'Inclure En attente'}</button>
       <button class="tab" type="button" onclick="setStage('selected')">Voir les infos à arbitrer</button>
       <button class="tab" type="button" onclick="openManualModal()">✚ Info manuelle</button>
     </div>
-    <div class="keyboard-tip">Astuce clavier : ← jeter · → garder</div>
+    <div class="keyboard-tip">Astuce clavier : ← ignorer · → garder</div>
     <div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} carte${cards.length > 1 ? 's' : ''} dans la pile</div>${renderCard(card)}` : '<div class="empty">Pile terminée. Direction les infos à arbitrer.</div>'}</div>
   </section>`;
 }
@@ -588,20 +801,20 @@ function renderSelectedStage(grouped) {
   const incubation = grouped.incubation;
   return `<section class="stage-panel selected">
     <div class="stage-kicker">Deuxième étape</div>
-    <h2 class="stage-title">Prochain bulletin ou attente</h2>
+    <h2 class="stage-title">Bulletin/En attente</h2>
     <p class="stage-copy">Parmi ce qui a été gardé, choisissez ce qui intègre le prochain bulletin et ce qui reste en attente.</p>
     <div class="stage-actions">
       <button class="tab" type="button" onclick="setStage('todo')">Retour à la pile</button>
       <button class="tab" type="button" onclick="setStage('manual')">Étape infos supplémentaires</button>
     </div>
-    <div class="keyboard-tip">Astuce clavier : ← mettre en attente · → intégrer au prochain bulletin</div>
+    <div class="keyboard-tip">Astuce clavier : ← mettre En attente · → intégrer au prochain bulletin</div>
     <div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} carte${cards.length > 1 ? 's' : ''} à arbitrer</div>${renderCard(card)}` : '<div class="empty">Aucune carte à arbitrer.</div>'}</div>
     <div class="manual-mini">${incubation.length ? incubation.map(item => `<div class="manual-item"><strong>${esc((item.items || {}).title || 'Information en attente')}</strong><p>${esc(item.client_summary || item.rationale || '')}</p><span>En attente</span></div>`).join('') : ''}</div>
   </section>`;
 }
 function renderManualStage(grouped) {
   const manual = manualItems();
-  return `<section class="stage-panel selected">
+  return `<section class="stage-panel manual">
     <div class="stage-kicker">Troisième étape</div>
     <h2 class="stage-title">Infos supplémentaires</h2>
     <p class="stage-copy">Avant génération, ajoutez les signaux hors flux : retour terrain, échange client, intuition stratégique, contexte à ne pas perdre.</p>
@@ -636,6 +849,50 @@ function renderGenerateStage(grouped) {
     <div class="manual-mini">${manual.length ? manual.map(item => `<div class="manual-item"><strong>${esc(item.title || 'Information manuelle')}</strong><p>${esc(item.body || '')}</p><span>${esc(item.source || 'Source à compléter')}</span></div>`).join('') : ''}</div>
   </section>`;
 }
+function renderListStage(grouped) {
+  const all = [...grouped.todo, ...grouped.selected, ...grouped.incubation, ...grouped.ready, ...grouped.rejected]
+    .sort((a, b) => String((b.items || {}).published_at || '').localeCompare(String((a.items || {}).published_at || '')) || (b.llm_score - a.llm_score));
+  return `<section class="stage-panel list">
+    <div class="stage-kicker">Vue optionnelle</div>
+    <h2 class="stage-title">Vue liste</h2>
+    <p class="stage-copy">Lecture d'ensemble des informations de la période active, avec date, score, statut et actions rapides.</p>
+    <div class="stage-actions">
+      ${renderPeriodPicker()}
+      <button class="tab ${includeIncubated ? 'on' : ''}" type="button" onclick="toggleIncubated()">${includeIncubated ? 'En attente incluses' : 'Inclure En attente'}</button>
+      <button class="tab" type="button" onclick="setStage('todo')">Retour au mode pile</button>
+    </div>
+    <div class="watch-list">${all.length ? all.map(renderListRow).join('') : '<div class="empty">Aucune information dans cette vue.</div>'}</div>
+  </section>`;
+}
+function statusInfo(row) {
+  if (row.status === 'approved' && isIncubated(row.id)) return ['wait', 'En attente'];
+  if (row.status === 'approved') return ['selected', 'À arbitrer'];
+  if (row.status === 'edited') return ['ready', 'Prochain bulletin'];
+  if (row.status === 'rejected') return ['ignored', 'Ignoré'];
+  return ['todo', row.status === 'grey' ? 'Zone grise' : 'À traiter'];
+}
+function renderListRow(r) {
+  const it = r.items || {};
+  const [scls, slab, scoreClass, scoreRange] = scoreInfo(r.llm_score);
+  const dateInfo = formatDateTile(it.published_at);
+  const [statusClass, statusLabel] = statusInfo(r);
+  const source = sourceInfo(it.url);
+  const title = source.valid ? `<a href="${esc(source.url)}" target="_blank" rel="noopener">${esc(it.title)}</a>` : esc(it.title);
+  return `<article class="list-row">
+    <div class="list-cell"><span class="tile-kicker">Date</span><strong>${esc(dateInfo.main)}</strong><span>${esc(dateInfo.sub)}</span></div>
+    <div class="list-cell"><span class="tile-kicker">Score</span><span class="badge ${scls}">${r.llm_score} · ${esc(slab)}</span><span class="date-sub">seuil ${scoreRange}</span></div>
+    <div class="list-cell"><span class="tile-kicker">Statut</span><span class="status-chip ${statusClass}">${esc(statusLabel)}</span></div>
+    <div class="list-cell list-title">
+      <strong>${title}</strong>
+      <div class="source-row ${source.valid ? '' : 'missing'}">
+        <div class="source-main"><span class="tile-kicker">Source primaire</span><span class="source-host">${esc(source.host)}</span></div>
+        ${source.valid ? `<a class="source-link" href="${esc(source.url)}" target="_blank" rel="noopener">Ouvrir →</a>` : '<span class="source-link">URL manquante</span>'}
+      </div>
+      <div class="list-summary">${esc(r.client_summary || r.rationale || '')}</div>
+    </div>
+    <div class="list-actions">${actionsFor(r)}</div>
+  </article>`;
+}
 function renderStatsPanel(list, grouped) {
   return `<details class="control-panel">
     <summary>Statistiques de revue</summary>
@@ -644,11 +901,11 @@ function renderStatsPanel(list, grouped) {
 }
 function renderStatsLegend() {
   return `<div class="stats-legend">
-    <div class="lg-row"><span class="badge">À traiter</span><span>cartes dans la pile de décision : garder ou jeter.</span></div>
-    <div class="lg-row"><span class="badge">À arbitrer</span><span>cartes gardées, mais pas encore envoyées vers le prochain bulletin ni mises en attente.</span></div>
-    <div class="lg-row"><span class="badge">Prochain bulletin</span><span>cartes validées pour alimenter la génération du bulletin.</span></div>
-    <div class="lg-row"><span class="badge">En attente</span><span>cartes intéressantes mais reportées : à reprendre plus tard, hors prochain bulletin.</span></div>
-    <div class="lg-row"><span class="badge s-grey">Zones grises</span><span>scores 40-59, chargés uniquement via l'étape dédiée.</span></div>
+    <div class="lg-row"><span class="badge stat-todo">À traiter</span><span>cartes dans la pile de décision : garder ou ignorer.</span></div>
+    <div class="lg-row"><span class="badge stat-selected">À arbitrer</span><span>cartes gardées, mais pas encore envoyées vers le prochain bulletin ni mises En attente.</span></div>
+    <div class="lg-row"><span class="badge stat-ready">Prochain bulletin</span><span>cartes validées pour alimenter la génération du bulletin.</span></div>
+    <div class="lg-row"><span class="badge stat-wait">En attente</span><span>cartes intéressantes mais reportées : à reprendre plus tard, hors prochain bulletin.</span></div>
+    <div class="lg-row"><span class="badge stat-grey">Zones grises</span><span>scores 40-59, chargés uniquement via l'étape dédiée.</span></div>
   </div>`;
 }
 function renderMission(list, grouped) {
@@ -677,17 +934,32 @@ function renderMission(list, grouped) {
 }
 function renderCard(r) {
     const it = r.items || {};
-    const [scls, slab] = scoreInfo(r.llm_score);
+    const [scls, slab, scoreClass, scoreRange] = scoreInfo(r.llm_score);
+    const dateInfo = formatDateTile(it.published_at);
+    const source = sourceInfo(it.url);
+    const title = source.valid ? `<a href="${esc(source.url)}" target="_blank" rel="noopener">${esc(it.title)}</a>` : esc(it.title);
     const dates = (Array.isArray(it.key_dates) ? it.key_dates : []).map(d => `<span class="badge echeance">${esc(d.date)} ${esc(d.libelle || d.label || '')}</span>`).join(' ');
     return `<div class="card ${it.urgency === 'urgent' ? 'urgent' : ''} ${r.status === 'rejected' ? 'rejected-card' : ''}" draggable="true" data-id="${r.id}" ondragstart="dragCard(event, '${r.id}')" ondragend="endDrag(event)">
-      <p class="t"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.title)}</a></p>
+      <div class="card-radar">
+        <div class="date-tile">
+          <span class="tile-kicker">Date</span>
+          <span class="date-main">${esc(dateInfo.main)}</span>
+          <span class="date-sub">${esc(dateInfo.sub)}</span>
+        </div>
+        <div class="score-tile ${scoreClass}">
+          <span class="tile-kicker">Pertinence</span>
+          <span class="score-main">${r.llm_score}</span>
+          <span class="score-sub">${esc(slab)} · seuil ${scoreRange}</span>
+        </div>
+      </div>
+      <p class="t">${title}</p>
       <div class="meta">
-        <span class="badge ${scls}">${r.llm_score} · ${slab}</span>
+        <span class="badge ${scls}">${esc(slab)}</span>
         ${it.urgency === 'urgent' ? '<span class="badge u" title="Signal temporel ou sensible détecté en amont. Le tri reste fondé sur le score.">URGENT</span>' : ''}
-        <span>${esc((it.published_at || '').slice(0, 10))}</span>
         <span>${esc(it.act_type || '')}</span>
         ${dates}
       </div>
+      ${renderSource(source)}
       <p class="why"><b>Pourquoi :</b> ${esc(r.rationale)}</p>
       <textarea class="resume" id="sum-${r.id}">${esc(r.client_summary)}</textarea>
       <div class="acts">
@@ -771,7 +1043,7 @@ async function decide(id, statut) {
   rows = rows.map(r => r.id === id ? { ...r, status: statut, client_summary: summary } : r);
   advanceStageIfDone();
   renderThemes(); render(); renderTabs(); refreshBulletinBtn();
-  const labels = { proposed: 'Replacé à traiter', grey: 'Replacé en zone grise', approved: 'À arbitrer', edited: 'Prêt pour le prochain bulletin', rejected: 'Jeté' };
+  const labels = { proposed: 'Replacé à traiter', grey: 'Replacé en zone grise', approved: 'À arbitrer', edited: 'Prêt pour le prochain bulletin', rejected: 'Ignoré' };
   toast(labels[statut] || 'Mis à jour');
 }
 
@@ -808,8 +1080,10 @@ async function refreshBulletinBtn() {
   const a = await approvedRows();
   const manual = manualItems();
   const total = a.length + manual.length;
-  $('btn-bulletin').disabled = !total;
-  $('btn-bulletin').innerHTML = (total ? `⚡ Générer le bulletin (${total})` : '⚡ Générer le bulletin') + '<span class="arrow">→</span>';
+  const btn = $('btn-bulletin');
+  if (!btn) return;
+  btn.disabled = !total;
+  btn.innerHTML = (total ? `⚡ Générer le bulletin (${total})` : '⚡ Générer le bulletin') + '<span class="arrow">→</span>';
 }
 
 function buildPrompt(client, brief, items, manual) {
@@ -820,7 +1094,7 @@ function buildPrompt(client, brief, items, manual) {
    Date : ${(it.published_at || '').slice(0, 10)} — Type : ${it.act_type || 'n.c.'}${it.urgency === 'urgent' ? ' — URGENT' : ''}${dates ? '\n   Échéances : ' + dates : ''}
    Angle client : ${r.client_summary || ''}
    Pourquoi ça le concerne : ${r.rationale || ''}
-   Source : ${it.url || ''}`;
+   Source primaire : ${it.url || 'URL manquante - à vérifier avant publication'}`;
   }).join('\n\n');
   const complements = (manual || []).map((item, i) => `${i + 1}. ${item.title || 'Information manuelle'}
    Ajout manuel : ${item.body || ''}
@@ -908,13 +1182,10 @@ async function generateBulletin() {
   $('modal').style.display = 'flex';
 }
 
-$('btn-bulletin').onclick = generateBulletin;
-
-$('btn-manual').onclick = openManualModal;
 $('manual-save').onclick = saveManualInfo;
 $('manual-close').onclick = closeManualModal;
 
-$('btn-dernier').onclick = async () => {
+async function openLastBulletin() {
   const c = clients.find(x => x.id === current); if (!c) return;
   const { data } = await sb.from('bulletins').select('id,prompt_text,created_at').eq('profile_id', c.client_profiles[0].id).order('created_at', { ascending: false }).limit(1);
   if (!data || !data.length) { toast('Aucun bulletin généré pour ce client.'); return; }
@@ -931,23 +1202,25 @@ $('btn-dernier').onclick = async () => {
     load();
   };
   $('modal').style.display = 'flex';
-};
+}
 
-$('btn-reset').onclick = async () => {
+async function resetReview() {
   const c = clients.find(x => x.id === current); if (!c) return;
-  if (!confirm('Remettre toutes les propositions de ' + c.name + ' à l\'état initial ?\nLes décisions garder/écarter et les bulletins générés seront annulés.')) return;
+  if (!confirm('Remettre toutes les propositions de ' + c.name + ' à l\'état initial ?\nLes décisions Garder/Ignorer et les bulletins générés seront annulés.')) return;
   const pid = c.client_profiles[0].id;
   const r1 = await sb.from('matches').update({ status: 'proposed', reviewed_at: null, bulletin_id: null }).eq('profile_id', pid).gte('llm_score', 60);
   const r2 = await sb.from('matches').update({ status: 'grey', reviewed_at: null, bulletin_id: null }).eq('profile_id', pid).lt('llm_score', 60);
   if (r1.error || r2.error) { toast('Erreur : ' + (r1.error || r2.error).message); return; }
   saveIncubatedIds(new Set());
-  toast('Démo réinitialisée : toutes les propositions sont de retour');
+  includeIncubated = false;
+  toast('Réinitialisé : toutes les propositions sont de retour');
   renderTabs(); load();
-};
+}
 
 document.addEventListener('keydown', handleKeyboard);
 
-window.switchTo = switchTo; window.decide = decide; window.incubate = incubate; window.toggleTheme = toggleTheme; window.setStage = setStage; window.enableGrey = enableGrey; window.bulkSelected = bulkSelected; window.generateBulletin = generateBulletin; window.openManualModal = openManualModal; window.deleteManualInfo = deleteManualInfo;
+window.switchTo = switchTo; window.decide = decide; window.incubate = incubate; window.resumeIncubation = resumeIncubation; window.toggleTheme = toggleTheme; window.setStage = setStage; window.enableGrey = enableGrey; window.bulkSelected = bulkSelected; window.generateBulletin = generateBulletin; window.openManualModal = openManualModal; window.deleteManualInfo = deleteManualInfo;
+window.setPeriod = setPeriod; window.toggleIncubated = toggleIncubated; window.openLastBulletin = openLastBulletin; window.resetReview = resetReview;
 window.dragCard = dragCard; window.endDrag = endDrag; window.allowDrop = allowDrop; window.leaveDrop = leaveDrop; window.dropOnLane = dropOnLane;
 (function start() {
   if (typeof supabase !== 'undefined') { init(); return; }
