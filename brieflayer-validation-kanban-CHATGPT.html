@@ -23,6 +23,15 @@
   .legend .legend-body { padding: 14px 18px 18px; font-size: 13.5px; line-height: 1.65; color: var(--ink-mute); }
   .legend .legend-body p { margin: 0 0 10px; }
   .legend .lg-row { display: flex; gap: 10px; align-items: baseline; margin-bottom: 8px; }
+  .stats-legend { display: grid; gap: 8px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .stats-legend .lg-row { display: grid; grid-template-columns: minmax(150px, 190px) minmax(0, 1fr); gap: 12px; align-items: start; color: var(--ink-mute); font-size: 13px; line-height: 1.45; }
+  .stats-legend .badge { justify-self: start; white-space: nowrap; font-weight: 600; color: var(--ink); }
+  .control-panel { background: #fff; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 14px; }
+  .control-panel summary { cursor: pointer; padding: 12px 16px; font-family: 'Inter Tight', sans-serif; font-size: 14px; font-weight: 600; list-style: none; }
+  .control-panel summary::before { content: '+'; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-right: 8px; border-radius: 6px; background: var(--cream); border: 1px solid var(--line); color: var(--ink-mute); }
+  .control-panel[open] summary { border-bottom: 1px solid var(--line); }
+  .control-panel[open] summary::before { content: '-'; }
+  .control-panel .panel-body { padding: 14px 16px 16px; }
   .tabs { display: flex; gap: 8px; margin: 4px 0 14px; flex-wrap: wrap; }
   .tab { font-family: 'Inter Tight', sans-serif; padding: 8px 18px; border: 1px solid var(--line); background: #fff; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--ink); }
   .tab:hover { border-color: var(--accent); }
@@ -151,7 +160,7 @@
   footer { text-align: center; font-size: 11.5px; color: var(--ink-mute); padding: 26px; border-top: 1px solid var(--line); background: #fff; }
   footer .gold { color: var(--gold); }
   @media (max-width: 1180px) { .mission { grid-template-columns: repeat(2, minmax(220px, 1fr)); } .kanban { grid-template-columns: repeat(2, minmax(260px, 1fr)); } .journey-hero { grid-template-columns: 1fr; } .stage-meter { grid-template-columns: repeat(2, minmax(120px, 1fr)); } }
-  @media (max-width: 680px) { header { padding: 12px 16px; } header .hdr-info { margin-left: 0; } .mission, .kanban, .stage-nav, .stage-meter { grid-template-columns: 1fr; } .journey-title, .stage-title { font-size: 42px; } .bar { align-items: stretch; } .bar select, .bar button, .bigbtn { width: 100%; } }
+  @media (max-width: 680px) { header { padding: 12px 16px; } header .hdr-info { margin-left: 0; } .mission, .kanban, .stage-nav, .stage-meter, .stats-legend .lg-row { grid-template-columns: 1fr; } .journey-title, .stage-title { font-size: 42px; } .bar { align-items: stretch; } .bar select, .bar button, .bigbtn { width: 100%; } }
 </style>
 </head>
 <body>
@@ -167,50 +176,54 @@
       <p>Chaque information reçoit un score de 0 à 100 qui mesure la solidité du lien avec le périmètre de veille du client, accompagné d'un « Pourquoi » : la justification en une phrase.</p>
       <div class="lg-row"><span class="badge s-hi">80 et + · prioritaire</span><span>le lien avec le périmètre est explicite et direct.</span></div>
       <div class="lg-row"><span class="badge s-mid">60–79 · pertinent</span><span>lien réel mais indirect — c'est là que votre regard de consultant fait la différence.</span></div>
-      <div class="lg-row"><span class="badge s-grey">40–59 · zone grise</span><span>le lien n'a pas pu être établi clairement, sans pouvoir être exclu. Masquées par défaut ; cochez « zone grise » pour les parcourir et repêcher.</span></div>
+      <div class="lg-row"><span class="badge s-grey">40–59 · zone grise</span><span>le lien n'a pas pu être établi clairement, sans pouvoir être exclu. Masquées par défaut ; l'étape « Zones grises » permet de les parcourir et repêcher.</span></div>
       <div class="lg-row"><span class="badge u">URGENT</span><span>signal temporel ou sensible détecté en amont. Il attire l'œil, mais ne remplace pas le tri par score.</span></div>
       <p style="margin-top:10px">En dessous de 40, l'information est écartée automatiquement et n'apparaît jamais. Vos décisions — garder ou écarter — servent ensuite à affiner les réglages de la veille.</p>
     </div>
   </details>
 
   <div class="tabs" id="tabs"></div>
-  <div class="bar">
-    <select id="f-jours" onchange="render()">
-      <option value="0">Toutes dates</option>
-      <option value="1">Dernières 24 h</option>
-      <option value="7">7 derniers jours</option>
-      <option value="14">14 derniers jours</option>
-      <option value="31">31 derniers jours</option>
-    </select>
-    <select id="f-type" onchange="render()">
-      <option value="">Tous types</option>
-      <option value="projet_loi">Projet de loi</option>
-      <option value="proposition_loi">Proposition de loi</option>
-      <option value="decret">Décret</option>
-      <option value="arrete">Arrêté</option>
-      <option value="consultation">Consultation</option>
-      <option value="jurisprudence">Jurisprudence</option>
-      <option value="rapport">Rapport</option>
-      <option value="communication_institutionnelle">Communication institutionnelle</option>
-      <option value="actu_secteur">Actualité sectorielle</option>
-      <option value="autre">Autre</option>
-    </select>
-    <label><input type="checkbox" id="show-grey"> afficher les zones grises (40–59)</label>
-    <span id="f-themes" style="display:flex;gap:6px;flex-wrap:wrap"></span>
-    <span style="flex:1"></span>
-    <span id="f-compte"></span>
-    <button class="tab" id="btn-manual" type="button">✚ Info supplémentaire</button>
-    <button class="tab" id="btn-dernier" type="button">↺ Dernier bulletin</button>
-    <button class="tab" id="btn-reset" type="button" title="Annule les décisions et bulletins de ce client : tout revient dans la file">↺ Réinitialiser (démo)</button>
-    <button class="bigbtn" id="btn-bulletin" type="button" disabled>⚡ Générer le bulletin<span class="arrow">→</span></button>
-  </div>
+  <details class="control-panel" id="filters-panel">
+    <summary>Filtres et actions secondaires</summary>
+    <div class="panel-body">
+      <div class="bar">
+        <select id="f-jours" onchange="render()">
+          <option value="0">Toutes dates</option>
+          <option value="1">Dernières 24 h</option>
+          <option value="7">7 derniers jours</option>
+          <option value="14">14 derniers jours</option>
+          <option value="31">31 derniers jours</option>
+        </select>
+        <select id="f-type" onchange="render()">
+          <option value="">Toutes catégories</option>
+          <option value="projet_loi">Texte législatif - projet de loi</option>
+          <option value="proposition_loi">Texte législatif - proposition de loi</option>
+          <option value="decret">Texte réglementaire - décret</option>
+          <option value="arrete">Texte réglementaire - arrêté</option>
+          <option value="consultation">Consultation publique</option>
+          <option value="jurisprudence">Décision / jurisprudence</option>
+          <option value="rapport">Rapport / étude</option>
+          <option value="communication_institutionnelle">Communication institutionnelle</option>
+          <option value="actu_secteur">Actualité sectorielle</option>
+          <option value="autre">Autre signal</option>
+        </select>
+        <span id="f-themes" style="display:flex;gap:6px;flex-wrap:wrap"></span>
+        <span style="flex:1"></span>
+        <span id="f-compte"></span>
+        <button class="tab" id="btn-manual" type="button">✚ Info supplémentaire</button>
+        <button class="tab" id="btn-dernier" type="button">↺ Dernier bulletin</button>
+        <button class="tab" id="btn-reset" type="button" title="Annule les décisions et bulletins de ce client : tout revient dans la file">↺ Réinitialiser</button>
+        <button class="bigbtn" id="btn-bulletin" type="button" disabled>⚡ Générer le bulletin<span class="arrow">→</span></button>
+      </div>
+    </div>
+  </details>
   <div id="list"></div>
 </main>
 
 <div class="modal-bg" id="modal" style="display:none">
   <div class="panel">
     <h2>Prompt du bulletin — <span id="m-client"></span></h2>
-    <p class="hint">Le prompt est copié : collez-le dans Claude (ou votre IA habituelle), répondez à ses questions, ajoutez votre édito. Les cartes « prêt à générer » et les infos manuelles du client actif sont utilisées.</p>
+    <p class="hint">Le prompt est copié : collez-le dans Claude (ou votre IA habituelle), répondez à ses questions, ajoutez votre édito. Les cartes « prochain bulletin » et les infos supplémentaires du client actif sont utilisées.</p>
     <pre class="prompt" id="m-prompt"></pre>
     <div style="margin-top:12px; display:flex; gap:10px">
       <button class="bigbtn" id="m-copy" type="button">Copier à nouveau</button>
@@ -247,7 +260,7 @@ const EMBED = {
   url: 'https://xkqeqajeccsacocnfqca.supabase.co',
   key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhrcWVxYWplY2NzYWNvY25mcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNjc4OTIsImV4cCI6MjA5Njc0Mzg5Mn0.7NmmzyrXt-kVMBl-_WFqPuBP_9r-BAuIbavRO_sIryk'
 };
-let sb = null, clients = [], current = null, rows = [], themes = new Set(), activeStage = 'intro';
+let sb = null, clients = [], current = null, rows = [], themes = new Set(), activeStage = 'intro', showGrey = false;
 const TAGLABELS = { energie: 'Énergie', environnement: 'Environnement', sante: 'Santé', numerique: 'Numérique', donnees_personnelles: 'Données personnelles', fiscalite: 'Fiscalité', travail_emploi: 'Travail & emploi', transports: 'Transports', agriculture_alimentation: 'Agriculture', industrie: 'Industrie', finance: 'Finance', logement_urbanisme: 'Logement & urbanisme', education_recherche: 'Éducation & recherche', culture_medias: 'Culture & médias', defense_securite: 'Défense & sécurité', justice: 'Justice', collectivites_territoriales: 'Collectivités', europe_ue: 'Europe / UE', international: 'International', concurrence: 'Concurrence', marches_publics: 'Marchés publics', aides_etat: "Aides d'État", consommation: 'Consommation', institutions: 'Institutions' };
 
 const $ = id => document.getElementById(id);
@@ -259,7 +272,6 @@ function init() {
   loadClients().catch(e => { $('list').innerHTML = '<div class="empty">⚠ Erreur : ' + e.message + '</div>'; });
 }
 
-$('show-grey').onchange = () => load();
 $('m-close').onclick = () => { $('modal').style.display = 'none'; load(); };
 
 async function loadClients() {
@@ -271,29 +283,18 @@ async function loadClients() {
   renderTabs(); load();
 }
 
-async function counts() {
-  const out = {};
-  for (const c of clients) {
-    const pid = c.client_profiles[0].id;
-    const { count } = await sb.from('matches').select('id', { count: 'exact', head: true }).eq('profile_id', pid).in('status', ['proposed', 'grey', 'approved', 'edited', 'rejected']).is('bulletin_id', null);
-    out[c.id] = count || 0;
-  }
-  return out;
-}
-
 async function renderTabs() {
-  const n = await counts();
   $('tabs').innerHTML = clients.map(c =>
-    `<button type="button" class="tab ${c.id === current ? 'on' : ''}" onclick="switchTo('${c.id}')">${c.name} <span class="n">(${n[c.id] ?? 0})</span></button>`
+    `<button type="button" class="tab ${c.id === current ? 'on' : ''}" onclick="switchTo('${c.id}')">${c.name}</button>`
   ).join('');
 }
-function switchTo(id) { current = id; activeStage = 'intro'; renderTabs(); load(); }
+function switchTo(id) { current = id; activeStage = 'intro'; showGrey = false; renderTabs(); load(); }
 
 async function load() {
   const c = clients.find(x => x.id === current);
   if (!c) { $('list').innerHTML = '<div class="empty">Aucun client configuré.</div>'; return; }
   const pid = c.client_profiles[0].id;
-  const statuts = $('show-grey').checked ? ['proposed', 'grey', 'approved', 'edited', 'rejected'] : ['proposed', 'approved', 'edited', 'rejected'];
+  const statuts = showGrey ? ['proposed', 'grey', 'approved', 'edited', 'rejected'] : ['proposed', 'approved', 'edited', 'rejected'];
   const { data, error } = await sb.from('matches')
     .select('id,llm_score,rationale,client_summary,status,items(title,url,published_at,act_type,urgency,key_dates,tags)')
     .eq('profile_id', pid).in('status', statuts).is('bulletin_id', null)
@@ -330,7 +331,7 @@ function renderThemes() {
 function toggleTheme(t) { themes.has(t) ? themes.delete(t) : themes.add(t); renderThemes(); render(); }
 function render() {
   const list = filteredRows();
-  $('f-compte').textContent = rows.length ? (list.length + ' / ' + rows.length) : '';
+  $('f-compte').textContent = rows.length ? ('File visible : ' + list.length + ' / ' + rows.length + ' chargés') : '';
   renderBoard(list);
 }
 
@@ -389,7 +390,7 @@ function incubate(id) {
   advanceStageIfDone();
   render();
   refreshBulletinBtn();
-  toast('Mis en incubation');
+  toast('Mis en attente');
 }
 function manualId() {
   return 'manual-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
@@ -451,9 +452,9 @@ function levelInfo(done, ready, manualCount) {
 
 const LANES = [
   { key: 'todo', cls: 'todo', step: '1', icon: '🧭', title: 'Garder ou jeter', note: 'Une carte à la fois, score décroissant', statuses: ['proposed', 'grey'] },
-  { key: 'selected', cls: 'selected', step: '2', icon: '🎯', title: 'Prochaine veille ou incubation', note: 'Parmi les gardés : intégrer ou attendre', statuses: ['approved'] },
+  { key: 'selected', cls: 'selected', step: '2', icon: '🎯', title: 'À arbitrer', note: 'Parmi les gardés : prochain bulletin ou attente', statuses: ['approved'] },
   { key: 'rejected', cls: 'rejected', step: '3', icon: '×', title: 'Jeté', note: 'Écarté mais récupérable en un clic', statuses: ['rejected'] },
-  { key: 'ready', cls: 'ready', step: '4', icon: '⚡', title: 'Prêt à générer', note: 'Ces informations alimentent le prompt du bulletin', statuses: ['edited'] }
+  { key: 'ready', cls: 'ready', step: '4', icon: '⚡', title: 'Prêt pour le prochain bulletin', note: 'Ces informations alimentent le prompt du bulletin', statuses: ['edited'] }
 ];
 function laneFor(row) {
   return LANES.find(l => l.statuses.includes(row.status)) || LANES[0];
@@ -471,11 +472,11 @@ function statusForLane(row, laneKey) {
 function actionsFor(row) {
   const back = fallbackStatus(row);
   if (row.status === 'approved') return `
-        <button type="button" class="b-wait" onclick="incubate('${row.id}')">Mettre en incubation</button>
-        <button type="button" class="b-ready" onclick="decide('${row.id}', 'edited')">Intégrer à la prochaine veille</button>`;
+        <button type="button" class="b-wait" onclick="incubate('${row.id}')">Mettre en attente</button>
+        <button type="button" class="b-ready" onclick="decide('${row.id}', 'edited')">Intégrer au prochain bulletin</button>`;
   if (row.status === 'edited') return `
         <button type="button" class="b-no" onclick="decide('${row.id}', 'rejected')">Jeter</button>
-        <button type="button" class="b-soft" onclick="decide('${row.id}', 'approved')">Remettre dans les gardés</button>`;
+        <button type="button" class="b-soft" onclick="decide('${row.id}', 'approved')">Remettre à arbitrer</button>`;
   if (row.status === 'rejected') return `
         <button type="button" class="b-ok" onclick="decide('${row.id}', 'approved')">Garder</button>
         <button type="button" class="b-soft" onclick="decide('${row.id}', '${back}')">Restaurer</button>`;
@@ -498,10 +499,10 @@ function renderBoard(list) {
   if (!list.length && !manualItems().length) { $('list').innerHTML = '<div class="empty">' + (rows.length ? 'Rien ne correspond à ces filtres.' : 'Rien à valider pour ce client. La veille tourne en continu, repassez plus tard dans la journée.') + '</div>'; return; }
   const grouped = groupRows(list);
   if (activeStage === 'intro') {
-    $('list').innerHTML = renderMission(list, grouped) + renderIntro(list, grouped);
+    $('list').innerHTML = renderStatsPanel(list, grouped) + renderIntro(list, grouped);
     return;
   }
-  $('list').innerHTML = renderMission(list, grouped) + `<div class="journey">${renderStageNav(grouped)}${renderStagePanel(grouped)}</div>`;
+  $('list').innerHTML = renderStatsPanel(list, grouped) + `<div class="journey">${renderStageNav(grouped)}${renderStagePanel(grouped)}</div>`;
 }
 function stageCounts(grouped) {
   return {
@@ -522,7 +523,7 @@ function renderIntro(list, grouped) {
     <div>
       <div class="journey-kicker">${esc(client ? client.name : 'Client')}</div>
       <h1 class="journey-title">Traitement de veille</h1>
-      <p class="journey-copy">On déroule la revue comme une pile de cartes : garder ou jeter, puis décider ce qui part à la prochaine veille ou en incubation.</p>
+      <p class="journey-copy">On déroule la revue comme une pile de cartes : garder ou jeter, puis décider ce qui part au prochain bulletin ou reste en attente.</p>
       <div class="journey-actions">
         <button class="bigbtn" type="button" onclick="setStage('${next}')">▶ Commencer à traiter la veille<span class="arrow">→</span></button>
         <button class="tab" type="button" onclick="openManualModal()">✚ Info manuelle</button>
@@ -531,7 +532,7 @@ function renderIntro(list, grouped) {
     <div class="quest-card">
       <span>File active</span>
       <strong>${total}</strong>
-      <span>${c.todo} à traiter · ${c.selected} gardé${c.selected > 1 ? 's' : ''} · ${c.incubation} en incubation · ${c.ready + c.manual} pour génération</span>
+      <span>${c.todo} à traiter · ${c.selected} à arbitrer · ${c.incubation} en attente · ${c.ready + c.manual} pour le prochain bulletin</span>
     </div>
   </section>`;
 }
@@ -539,17 +540,32 @@ function renderStageNav(grouped) {
   const c = stageCounts(grouped);
   const tabs = [
     { key: 'todo', label: '1. Garder / jeter', hint: `${c.todo} carte${c.todo > 1 ? 's' : ''} dans la pile`, icon: '🧭' },
-    { key: 'selected', label: '2. Veille / incubation', hint: `${c.selected} gardé${c.selected > 1 ? 's' : ''} à décider`, icon: '🎯' },
+    { key: 'grey', label: '1b. Zones grises', hint: showGrey ? 'scores 40-59 inclus' : 'charger les scores 40-59', icon: '◐' },
+    { key: 'selected', label: '2. Bulletin / attente', hint: `${c.selected} à arbitrer`, icon: '🎯' },
     { key: 'manual', label: '3. Infos supplémentaires', hint: `${c.manual} complément${c.manual > 1 ? 's' : ''}`, icon: '✚' },
-    { key: 'generate', label: '4. Générer', hint: `${c.ready + c.manual} élément${c.ready + c.manual > 1 ? 's' : ''} prêt${c.ready + c.manual > 1 ? 's' : ''}`, icon: '⚡' }
+    { key: 'generate', label: '4. Générer', hint: `${c.ready + c.manual} pour prochain bulletin`, icon: '⚡' }
   ];
   return `<nav class="stage-nav">${tabs.map(t => `<button class="stage-tab ${activeStage === t.key ? 'on' : ''}" type="button" onclick="setStage('${t.key}')"><strong>${t.icon} ${t.label}</strong><span>${t.hint}</span></button>`).join('')}</nav>`;
 }
 function renderStagePanel(grouped) {
+  if (activeStage === 'grey') return renderGreyStage(grouped);
   if (activeStage === 'selected') return renderSelectedStage(grouped);
   if (activeStage === 'manual') return renderManualStage(grouped);
   if (activeStage === 'generate') return renderGenerateStage(grouped);
   return renderTodoStage(grouped);
+}
+function renderGreyStage(grouped) {
+  const greyRows = rows.filter(r => r.status === 'grey');
+  return `<section class="stage-panel todo">
+    <div class="stage-kicker">Étape optionnelle</div>
+    <h2 class="stage-title">Traiter les zones grises</h2>
+    <p class="stage-copy">Les zones grises sont les scores 40-59 : le lien client est possible, mais pas assez net pour entrer directement dans la pile principale.</p>
+    <div class="stage-actions">
+      <button class="bigbtn" type="button" onclick="enableGrey()" ${showGrey ? 'disabled' : ''}>Afficher et traiter les zones grises</button>
+      <button class="tab" type="button" onclick="setStage('todo')">Retour garder / jeter</button>
+    </div>
+    <div class="keyboard-tip">${showGrey ? `${greyRows.length} zone${greyRows.length > 1 ? 's' : ''} grise${greyRows.length > 1 ? 's' : ''} chargée${greyRows.length > 1 ? 's' : ''}. Elles sont maintenant dans la pile garder / jeter.` : 'Activez-les seulement si la pile principale est trop courte ou si vous voulez repêcher des signaux faibles.'}</div>
+  </section>`;
 }
 function renderTodoStage(grouped) {
   const cards = grouped.todo;
@@ -559,11 +575,11 @@ function renderTodoStage(grouped) {
     <h2 class="stage-title">Garder ou jeter</h2>
     <p class="stage-copy">Mode pile : une carte à la fois, classée par scoring. Jetez ce qui sort du sujet, gardez ce qui mérite un second arbitrage.</p>
     <div class="stage-actions">
-      <button class="tab" type="button" onclick="setStage('selected')">Voir les gardés</button>
+      <button class="tab" type="button" onclick="setStage('selected')">Voir les infos à arbitrer</button>
       <button class="tab" type="button" onclick="openManualModal()">✚ Info manuelle</button>
     </div>
     <div class="keyboard-tip">Astuce clavier : ← jeter · → garder</div>
-    <div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} carte${cards.length > 1 ? 's' : ''} dans la pile</div>${renderCard(card)}` : '<div class="empty">Pile terminée. Direction les gardés.</div>'}</div>
+    <div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} carte${cards.length > 1 ? 's' : ''} dans la pile</div>${renderCard(card)}` : '<div class="empty">Pile terminée. Direction les infos à arbitrer.</div>'}</div>
   </section>`;
 }
 function renderSelectedStage(grouped) {
@@ -572,15 +588,15 @@ function renderSelectedStage(grouped) {
   const incubation = grouped.incubation;
   return `<section class="stage-panel selected">
     <div class="stage-kicker">Deuxième étape</div>
-    <h2 class="stage-title">Prochaine veille ou incubation</h2>
-    <p class="stage-copy">Parmi ce qui a été gardé, choisissez ce qui intègre la prochaine veille et ce qui reste en incubation ou en attente.</p>
+    <h2 class="stage-title">Prochain bulletin ou attente</h2>
+    <p class="stage-copy">Parmi ce qui a été gardé, choisissez ce qui intègre le prochain bulletin et ce qui reste en attente.</p>
     <div class="stage-actions">
       <button class="tab" type="button" onclick="setStage('todo')">Retour à la pile</button>
       <button class="tab" type="button" onclick="setStage('manual')">Étape infos supplémentaires</button>
     </div>
-    <div class="keyboard-tip">Astuce clavier : ← incubation / attente · → intégrer à la prochaine veille</div>
-    <div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} carte${cards.length > 1 ? 's' : ''} gardée${cards.length > 1 ? 's' : ''} à décider</div>${renderCard(card)}` : '<div class="empty">Aucune carte gardée à arbitrer.</div>'}</div>
-    <div class="manual-mini">${incubation.length ? incubation.map(item => `<div class="manual-item"><strong>${esc((item.items || {}).title || 'Information en incubation')}</strong><p>${esc(item.client_summary || item.rationale || '')}</p><span>Incubation / attente</span></div>`).join('') : ''}</div>
+    <div class="keyboard-tip">Astuce clavier : ← mettre en attente · → intégrer au prochain bulletin</div>
+    <div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} carte${cards.length > 1 ? 's' : ''} à arbitrer</div>${renderCard(card)}` : '<div class="empty">Aucune carte à arbitrer.</div>'}</div>
+    <div class="manual-mini">${incubation.length ? incubation.map(item => `<div class="manual-item"><strong>${esc((item.items || {}).title || 'Information en attente')}</strong><p>${esc(item.client_summary || item.rationale || '')}</p><span>En attente</span></div>`).join('') : ''}</div>
   </section>`;
 }
 function renderManualStage(grouped) {
@@ -592,7 +608,7 @@ function renderManualStage(grouped) {
     <div class="stage-actions">
       <button class="bigbtn" type="button" onclick="openManualModal()">✚ Ajouter une info supplémentaire</button>
       <button class="tab" type="button" onclick="setStage('generate')">Passer à la génération</button>
-      <button class="tab" type="button" onclick="setStage('selected')">Retour aux gardés</button>
+      <button class="tab" type="button" onclick="setStage('selected')">Retour aux arbitrages</button>
     </div>
     <div class="manual-mini">${manual.length ? manual.map(item => `<div class="manual-item"><strong>${esc(item.title || 'Information manuelle')}</strong><p>${esc(item.body || '')}</p><span>${esc(item.source || 'Source à compléter')}</span></div>`).join('') : '<div class="empty">Aucune info manuelle en attente.</div>'}</div>
   </section>`;
@@ -604,21 +620,36 @@ function renderGenerateStage(grouped) {
   return `<section class="stage-panel generate">
     <div class="stage-kicker">Quatrième étape</div>
     <h2 class="stage-title">Générer le bulletin</h2>
-    <p class="stage-copy">${total ? `${total} élément${total > 1 ? 's' : ''} prêt${total > 1 ? 's' : ''} pour alimenter le prompt.` : 'Rien à générer encore : passez au moins une carte en prêt à générer ou ajoutez une info manuelle.'}</p>
+    <p class="stage-copy">${total ? `${total} élément${total > 1 ? 's' : ''} prêt${total > 1 ? 's' : ''} pour le prochain bulletin.` : 'Rien à générer encore : intégrez au moins une carte au prochain bulletin ou ajoutez une info manuelle.'}</p>
     <div class="stage-meter">
-      <div class="mission-stat ready"><span class="mission-label">Prêts à générer</span><strong>${ready.length}</strong></div>
+      <div class="mission-stat ready"><span class="mission-label">Prochain bulletin</span><strong>${ready.length}</strong></div>
       <div class="mission-stat"><span class="mission-label">Infos supp.</span><strong>${manual.length}</strong></div>
-      <div class="mission-stat"><span class="mission-label">En incubation</span><strong>${grouped.incubation.length}</strong></div>
+      <div class="mission-stat"><span class="mission-label">En attente</span><strong>${grouped.incubation.length}</strong></div>
       <div class="mission-stat todo"><span class="mission-label">Restants</span><strong>${grouped.todo.length + grouped.selected.length}</strong></div>
     </div>
     <div class="stage-actions">
       <button class="bigbtn" type="button" onclick="generateBulletin()" ${total ? '' : 'disabled'}>⚡ Générer le bulletin<span class="arrow">→</span></button>
       <button class="tab" type="button" onclick="openManualModal()">✚ Ajouter une info</button>
-      <button class="tab" type="button" onclick="setStage('selected')">Retour aux gardés</button>
+      <button class="tab" type="button" onclick="setStage('selected')">Retour aux arbitrages</button>
     </div>
-    <div class="stage-grid">${ready.length ? ready.map(renderCard).join('') : '<div class="empty">Aucune carte prête à générer.</div>'}</div>
+    <div class="stage-grid">${ready.length ? ready.map(renderCard).join('') : '<div class="empty">Aucune carte prête pour le prochain bulletin.</div>'}</div>
     <div class="manual-mini">${manual.length ? manual.map(item => `<div class="manual-item"><strong>${esc(item.title || 'Information manuelle')}</strong><p>${esc(item.body || '')}</p><span>${esc(item.source || 'Source à compléter')}</span></div>`).join('') : ''}</div>
   </section>`;
+}
+function renderStatsPanel(list, grouped) {
+  return `<details class="control-panel">
+    <summary>Statistiques de revue</summary>
+    <div class="panel-body">${renderMission(list, grouped)}${renderStatsLegend()}</div>
+  </details>`;
+}
+function renderStatsLegend() {
+  return `<div class="stats-legend">
+    <div class="lg-row"><span class="badge">À traiter</span><span>cartes dans la pile de décision : garder ou jeter.</span></div>
+    <div class="lg-row"><span class="badge">À arbitrer</span><span>cartes gardées, mais pas encore envoyées vers le prochain bulletin ni mises en attente.</span></div>
+    <div class="lg-row"><span class="badge">Prochain bulletin</span><span>cartes validées pour alimenter la génération du bulletin.</span></div>
+    <div class="lg-row"><span class="badge">En attente</span><span>cartes intéressantes mais reportées : à reprendre plus tard, hors prochain bulletin.</span></div>
+    <div class="lg-row"><span class="badge s-grey">Zones grises</span><span>scores 40-59, chargés uniquement via l'étape dédiée.</span></div>
+  </div>`;
 }
 function renderMission(list, grouped) {
   const total = list.length;
@@ -639,9 +670,9 @@ function renderMission(list, grouped) {
       <div class="mission-meta"><span>${pct}% revu</span></div>
     </div>
     <div class="mission-stat todo"><span class="mission-label">À traiter</span><strong>${todo}</strong></div>
-    <div class="mission-stat"><span class="mission-label">Gardés</span><strong>${selected}</strong></div>
-    <div class="mission-stat ready"><span class="mission-label">Prêts</span><strong>${ready}</strong></div>
-    <div class="mission-stat"><span class="mission-label">Incubation</span><strong>${incubation}</strong></div>
+    <div class="mission-stat"><span class="mission-label">À arbitrer</span><strong>${selected}</strong></div>
+    <div class="mission-stat ready"><span class="mission-label">Prochain bulletin</span><strong>${ready}</strong></div>
+    <div class="mission-stat"><span class="mission-label">En attente</span><strong>${incubation}</strong></div>
   </section>`;
 }
 function renderCard(r) {
@@ -698,6 +729,12 @@ function setStage(stage) {
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+async function enableGrey() {
+  showGrey = true;
+  activeStage = 'todo';
+  await load();
+  toast('Zones grises ajoutées à la pile');
+}
 function activeKeyboardCard() {
   const grouped = groupRows(filteredRows());
   if (activeStage === 'todo') return grouped.todo[0] || null;
@@ -734,7 +771,7 @@ async function decide(id, statut) {
   rows = rows.map(r => r.id === id ? { ...r, status: statut, client_summary: summary } : r);
   advanceStageIfDone();
   renderThemes(); render(); renderTabs(); refreshBulletinBtn();
-  const labels = { proposed: 'Replacé à traiter', grey: 'Replacé en zone grise', approved: 'Gardé', edited: 'Intégré à la prochaine veille', rejected: 'Jeté' };
+  const labels = { proposed: 'Replacé à traiter', grey: 'Replacé en zone grise', approved: 'À arbitrer', edited: 'Prêt pour le prochain bulletin', rejected: 'Jeté' };
   toast(labels[statut] || 'Mis à jour');
 }
 
@@ -903,13 +940,14 @@ $('btn-reset').onclick = async () => {
   const r1 = await sb.from('matches').update({ status: 'proposed', reviewed_at: null, bulletin_id: null }).eq('profile_id', pid).gte('llm_score', 60);
   const r2 = await sb.from('matches').update({ status: 'grey', reviewed_at: null, bulletin_id: null }).eq('profile_id', pid).lt('llm_score', 60);
   if (r1.error || r2.error) { toast('Erreur : ' + (r1.error || r2.error).message); return; }
+  saveIncubatedIds(new Set());
   toast('Démo réinitialisée : toutes les propositions sont de retour');
   renderTabs(); load();
 };
 
 document.addEventListener('keydown', handleKeyboard);
 
-window.switchTo = switchTo; window.decide = decide; window.incubate = incubate; window.toggleTheme = toggleTheme; window.setStage = setStage; window.bulkSelected = bulkSelected; window.generateBulletin = generateBulletin; window.openManualModal = openManualModal; window.deleteManualInfo = deleteManualInfo;
+window.switchTo = switchTo; window.decide = decide; window.incubate = incubate; window.toggleTheme = toggleTheme; window.setStage = setStage; window.enableGrey = enableGrey; window.bulkSelected = bulkSelected; window.generateBulletin = generateBulletin; window.openManualModal = openManualModal; window.deleteManualInfo = deleteManualInfo;
 window.dragCard = dragCard; window.endDrag = endDrag; window.allowDrop = allowDrop; window.leaveDrop = leaveDrop; window.dropOnLane = dropOnLane;
 (function start() {
   if (typeof supabase !== 'undefined') { init(); return; }
