@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
 <style>
-  :root { --accent: #b22234; --accent-2: #8e1b2a; --ink: #1c1d22; --ink-mute: #6c6f76; --cream: #faf8f4; --card: #ffffff; --line: #e8e4da; --gold: #a8853b; --grey-z: #8a6d1a; --step-keep: #5d9c78; --step-grey: #c39a3b; --step-bulletin: #4f7cac; --step-manual: #a96aa3; --step-generate: #b88945; --step-list: #64748b; }
+  :root { --accent: #b22234; --accent-2: #8e1b2a; --ink: #1c1d22; --ink-mute: #6c6f76; --cream: #faf8f4; --card: #ffffff; --line: #e8e4da; --gold: #a8853b; --grey-z: #71717a; --step-keep: #00a86b; --step-grey: #8b8f98; --step-bulletin: #2478ff; --step-manual: #9b5de5; --step-generate: #ff9f1c; --step-list: #06a6c9; }
   * { box-sizing: border-box; }
   body { margin: 0; font-family: 'Inter', system-ui, sans-serif; background: var(--cream); color: var(--ink); }
   header { background: #fff; border-bottom: 1px solid var(--line); padding: 14px 32px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
@@ -32,10 +32,6 @@
   .control-panel[open] summary { border-bottom: 1px solid var(--line); }
   .control-panel[open] summary::before { content: '-'; }
   .control-panel .panel-body { padding: 14px 16px 16px; }
-  .review-toolbar { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
-  .review-panel .review-toolbar { border: 0; padding: 0; margin-bottom: 0; }
-  .review-toolbar .count-pill { padding: 7px 12px; border-radius: 999px; background: #f2f7f4; border: 1px solid #d5e8dd; color: #315c45; font-size: 13px; font-weight: 600; }
-  .review-toolbar .spacer { flex: 1; min-width: 12px; }
   .period-picker { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
   .period-picker .tab { border-radius: 12px; padding: 8px 13px; }
   .period-picker .tab.on { background: var(--step-keep); border-color: var(--step-keep); color: #fff; }
@@ -45,6 +41,11 @@
   .tab.on { background: var(--ink); color: #fff; border-color: var(--ink); }
   .tab .n { color: var(--accent); font-weight: 600; }
   .tab.on .n { color: #f3b6be; }
+  .client-tabs { gap: 10px; margin: 0 0 18px; }
+  .client-tabs .tab { min-width: 150px; padding: 14px 22px; border-radius: 8px; border-left-width: 6px; font-size: 18px; font-weight: 650; text-align: center; text-transform: uppercase; }
+  .client-tabs .tab:hover { border-color: var(--step-bulletin); }
+  .client-tabs .tab.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .hidden-filters { display: none; }
   .bar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; font-size: 13px; color: var(--ink-mute); flex-wrap: wrap; }
   .bar select { padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font-size: 12.5px; font-family: 'Inter', sans-serif; color: var(--ink); }
   .chip { padding: 4px 12px; border: 1px solid var(--line); border-radius: 14px; background: #fff; cursor: pointer; font-size: 12px; font-family: 'Inter', sans-serif; color: var(--ink); }
@@ -78,39 +79,73 @@
   .lane.selected .lane-head, .lane.selected .lane-note { background: #f8fbff; }
   .lane.rejected { background: #fbfaf8; }
   .journey { display: grid; gap: 18px; }
-  .journey-hero, .stage-panel { min-height: calc(100vh - 245px); background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: clamp(22px, 4vw, 52px); display: grid; align-content: center; gap: 22px; }
+  .journey-hero, .stage-panel { min-height: calc(100vh - 245px); background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: clamp(18px, 2.4vw, 32px); display: grid; align-content: center; gap: 14px; }
   .journey-hero { grid-template-columns: minmax(260px, 1.1fr) minmax(260px, .9fr); align-items: center; }
   .stage-panel { align-content: start; }
   .journey-kicker, .stage-kicker { font-size: 12px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: .12em; font-weight: 700; }
   .journey-title, .stage-title { font-family: 'Inter Tight', sans-serif; font-size: clamp(42px, 7vw, 88px); line-height: .95; letter-spacing: 0; margin: 0; }
   .journey-copy, .stage-copy { color: #4a4d55; font-size: clamp(16px, 2vw, 21px); line-height: 1.45; max-width: 760px; }
+  .stage-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-family: 'Inter Tight', sans-serif; font-size: clamp(24px, 3vw, 34px); line-height: 1.05; }
+  .stage-head .stage-kicker { font-size: inherit; color: var(--ink-mute); text-transform: none; letter-spacing: 0; font-weight: 600; }
+  .stage-head .stage-kicker::after { content: ' ·'; }
+  .stage-head .stage-title { font-size: inherit; line-height: inherit; font-weight: 600; }
+  .stage-copy.compact { margin: -6px 0 0; font-size: 13px; line-height: 1.35; max-width: 820px; color: var(--ink-mute); }
   .journey-actions, .stage-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-  .stage-actions .tab.on { background: #eef5fb; border-color: #c9ddef; color: #2f5f88; }
+  .stage-toolbar { position: sticky; top: 0; z-index: 5; margin: -2px 0 2px; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.94); box-shadow: 0 10px 26px rgba(28,29,34,.06); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; }
+  .stage-actions { min-width: 0; }
+  .stage-actions .tab { border-radius: 8px; padding: 9px 14px; }
+  .stage-actions .tab.on { background: #e8f7ff; border-color: #8ad8ef; color: #02708a; }
+  .stage-viewbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding-left: 12px; border-left: 1px solid var(--line); }
+  .view-toggle { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #8ad8ef !important; background: #e8f7ff; color: #02708a; font-family: 'Inter Tight', sans-serif; font-size: 14px; font-weight: 700; box-shadow: inset 0 0 0 1px rgba(6,166,201,.16); border-radius: 8px; padding: 9px 14px; cursor: pointer; }
+  .view-toggle svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .view-toggle.on { background: var(--step-list) !important; border-color: var(--step-list) !important; color: #fff !important; }
+  .reset-step { background: #fafafa; color: #52525b; }
+  .suggestion-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+  .suggestion-actions .tab { border-radius: 8px; }
   .quest-card { border: 1px solid var(--line); border-radius: 8px; padding: 18px; background: var(--cream); display: grid; gap: 10px; }
   .quest-card strong { font-family: 'Inter Tight', sans-serif; font-size: clamp(30px, 4vw, 54px); line-height: .95; }
   .quest-card span { color: var(--ink-mute); font-size: 13px; }
   .stage-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
-  .stage-tab { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px; cursor: pointer; text-align: left; color: var(--ink); display: grid; gap: 6px; border-left: 6px solid var(--line); }
+  .stage-tab { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px; cursor: pointer; text-align: left; color: var(--ink); display: grid; gap: 6px; border-left: 7px solid var(--line); }
   .stage-tab:hover { border-color: var(--accent); }
   .stage-tab.on { color: var(--ink); box-shadow: inset 0 0 0 1px currentColor; }
   .stage-tab.on span { color: #4a4d55; }
-  .stage-tab.todo { background: #f2f7f4; border-left-color: var(--step-keep); }
-  .stage-tab.grey { background: #fff7e5; border-left-color: var(--step-grey); }
-  .stage-tab.selected { background: #eef5fb; border-left-color: var(--step-bulletin); }
-  .stage-tab.manual { background: #fbf1f8; border-left-color: var(--step-manual); }
-  .stage-tab.generate { background: #fff7e9; border-left-color: var(--step-generate); }
-  .stage-tab.list { background: #f5f7fa; border-left-color: var(--step-list); }
+  .stage-tab.todo { background: #e7fff5; border-left-color: var(--step-keep); }
+  .stage-tab.grey { background: #f1f2f4; border-left-color: var(--step-grey); }
+  .stage-tab.selected { background: #e8f0ff; border-left-color: var(--step-bulletin); }
+  .stage-tab.manual { background: #f4ebff; border-left-color: var(--step-manual); }
+  .stage-tab.generate { background: #fff3df; border-left-color: var(--step-generate); }
+  .stage-tab.list { background: #e8f7ff; border-left-color: var(--step-list); }
   .stage-tab strong { font-family: 'Inter Tight', sans-serif; font-size: 19px; }
   .stage-tab span { color: var(--ink-mute); font-size: 12px; }
   .stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; align-items: start; }
-  .stage-panel.todo { border-left: 10px solid var(--step-keep); }
-  .stage-panel.grey { border-left: 10px solid var(--step-grey); background: #fffdf7; }
-  .stage-panel.selected { border-left: 10px solid var(--step-bulletin); }
-  .stage-panel.manual { border-left: 10px solid var(--step-manual); background: #fffaff; }
-  .stage-panel.generate { border-left: 10px solid var(--step-generate); background: #fffdf7; }
+  .stage-panel.todo { border-left: 12px solid var(--step-keep); }
+  .stage-panel.grey { border-left: 12px solid var(--step-grey); background: #f7f7f8; }
+  .stage-panel.selected { border-left: 12px solid var(--step-bulletin); }
+  .stage-panel.manual { border-left: 12px solid var(--step-manual); background: #fbf8ff; }
+  .stage-panel.generate { border-left: 12px solid var(--step-generate); background: #fffaf2; }
   .stage-panel.list { border-left: 10px solid var(--step-list); background: #fbfcfe; }
-  .stage-meter { display: grid; grid-template-columns: repeat(4, minmax(120px, 1fr)); gap: 10px; }
-  .stage-meter .mission-stat { padding: 14px; }
+  .stage-summary { border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.72); padding: 10px 12px; display: grid; gap: 8px; }
+  .stage-summary strong { font-family: 'Inter Tight', sans-serif; font-size: 16px; }
+  .stage-summary span { color: var(--ink-mute); font-size: 12.5px; line-height: 1.35; }
+  .split-list { display: grid; grid-template-columns: repeat(2, minmax(260px, 1fr)); gap: 12px; align-items: start; }
+  .generate-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; align-items: start; }
+  .split-col { border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 12px; display: grid; gap: 10px; }
+  .split-col.keep { border-top: 5px solid var(--step-keep); }
+  .split-col.reject { border-top: 5px solid #c62828; }
+  .split-col.wait { border-top: 5px solid var(--step-manual); }
+  .split-col.ready { border-top: 5px solid var(--step-generate); }
+  .split-col h3 { margin: 0; font-family: 'Inter Tight', sans-serif; font-size: 20px; }
+  .compact-list { display: grid; gap: 8px; }
+  .split-col .list-row { grid-template-columns: 1fr; }
+  .split-col .list-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mini-row { border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: #fffefb; display: grid; gap: 5px; }
+  .mini-row strong { font-family: 'Inter Tight', sans-serif; font-size: 14px; line-height: 1.25; }
+  .mini-row span { color: var(--ink-mute); font-size: 12px; }
+  .generate-layout { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(280px, 420px); gap: 18px; align-items: start; }
+  .generate-side { border: 1px solid #ead09e; background: #fff8ec; border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+  .generate-side .bigbtn { width: 100%; justify-content: center; }
+  .doc-future { width: 100%; background: #fff; color: #735613; border: 1px dashed #d6bd81; padding: 12px 16px; border-radius: 8px; font-family: 'Inter Tight', sans-serif; font-size: 15px; font-weight: 600; cursor: not-allowed; }
   .swipe-frame { max-width: 760px; width: 100%; margin: 0 auto; display: grid; gap: 12px; }
   .swipe-count { justify-self: center; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--cream); color: var(--ink-mute); font-size: 12px; font-weight: 600; }
   .swipe-frame .card { margin: 0; box-shadow: 0 18px 45px rgba(28,29,34,.12); }
@@ -119,6 +154,10 @@
   .keyboard-tip { max-width: 760px; margin: 0 auto; padding: 10px 12px; border: 1px dashed var(--line); border-radius: 8px; background: #fffefb; color: var(--ink-mute); font-size: 12.5px; text-align: center; }
   .manual-mini { display: grid; gap: 8px; margin-top: 8px; }
   .manual-mini .manual-item { background: #fff; }
+  .recall-box { border: 1px solid #dbe3ee; border-radius: 8px; background: #f8fbff; padding: 12px; display: grid; gap: 10px; }
+  .recall-head { display: flex; gap: 10px; justify-content: space-between; align-items: baseline; flex-wrap: wrap; }
+  .recall-head strong { font-family: 'Inter Tight', sans-serif; font-size: 16px; }
+  .recall-head span { color: var(--ink-mute); font-size: 12px; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 0 rgba(28,29,34,.03); }
   .card[draggable="true"] { cursor: grab; }
   .card.dragging { opacity: .48; cursor: grabbing; }
@@ -130,7 +169,7 @@
   .score-tile { background: #f7f7f4; }
   .score-tile.prioritaire { background: #fdeef0; border-color: #f0c2c9; color: var(--accent); }
   .score-tile.pertinent { background: #eaf6ee; border-color: #cce6d4; color: #315c45; }
-  .score-tile.zone-grise { background: #fff7e5; border-color: #e3d5ae; color: var(--grey-z); }
+  .score-tile.zone-grise { background: #f1f2f4; border-color: #d4d4d8; color: var(--grey-z); }
   .tile-kicker { display: block; font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-mute); font-weight: 700; margin-bottom: 4px; }
   .date-main, .score-main { display: block; font-family: 'Inter Tight', sans-serif; font-size: 23px; line-height: 1; font-weight: 600; }
   .date-sub, .score-sub { display: block; margin-top: 4px; font-size: 11.5px; color: currentColor; opacity: .78; }
@@ -142,9 +181,9 @@
   .source-row.missing { background: #fff5f5; border-color: #f2caca; }
   .source-row.missing .source-host { color: #9a1c1c; }
   .source-row.missing .source-link { color: #9a1c1c; border-color: #f2caca; pointer-events: none; }
-  .source-row.internal { background: #fff7e5; border-color: #e8d7a8; }
-  .source-row.internal .source-host { color: #735613; }
-  .source-row.internal .source-link { color: #735613; border-color: #e8d7a8; pointer-events: none; }
+  .source-row.internal { background: #fff7ed; border-color: #fdba74; }
+  .source-row.internal .tile-kicker, .source-row.internal .source-host { color: #9a3412; }
+  .source-row.internal .source-link { color: #9a3412; border-color: #fdba74; pointer-events: none; }
   .watch-list { display: grid; gap: 10px; }
   .list-row { display: grid; grid-template-columns: minmax(98px, .55fr) minmax(118px, .65fr) minmax(120px, .7fr) minmax(260px, 2.4fr) minmax(170px, 1fr); gap: 10px; align-items: start; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
   .list-row:hover { border-color: #cbd5e1; }
@@ -168,14 +207,14 @@
   .badge { padding: 2px 9px; border-radius: 10px; background: var(--cream); border: 1px solid var(--line); color: var(--ink-mute); }
   .badge.s-hi { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
   .badge.s-mid { background: var(--ink); border-color: var(--ink); color: #fff; }
-  .badge.s-grey { background: #f5edd8; border-color: #e3d5ae; color: var(--grey-z); }
+  .badge.s-grey { background: #f1f2f4; border-color: #d4d4d8; color: var(--grey-z); }
   .badge.u { background: #fdeef0; border-color: #f0c2c9; color: var(--accent); font-weight: 600; }
   .badge.echeance { background: #eef2f8; border-color: #d4deed; color: #1f4d8a; }
   .badge.stat-todo { background: #eaf6ee; border-color: #cce6d4; color: #315c45; }
   .badge.stat-selected { background: #eaf2fb; border-color: #c9ddef; color: #2f5f88; }
   .badge.stat-ready { background: #fff1d9; border-color: #ead09e; color: #735613; }
   .badge.stat-wait { background: #f3eaf6; border-color: #dec8e3; color: #70456b; }
-  .badge.stat-grey { background: #f7efd8; border-color: #e3d5ae; color: var(--grey-z); }
+  .badge.stat-grey { background: #f1f2f4; border-color: #d4d4d8; color: var(--grey-z); }
   .why { font-size: 13.5px; color: #4a4d55; font-style: italic; margin: 8px 0; }
   .why b { color: var(--accent); font-style: normal; font-weight: 600; }
   textarea.resume { width: 100%; min-height: 70px; font-family: 'Source Serif 4', Georgia, serif; font-size: 13.5px; line-height: 1.45; padding: 9px; border: 1px solid var(--line); border-radius: 8px; background: #fffefb; resize: vertical; color: var(--ink); }
@@ -226,9 +265,9 @@
   .faq-section .legend-body li { margin: 0 0 6px; }
   footer { text-align: center; font-size: 11.5px; color: var(--ink-mute); padding: 26px; border-top: 1px solid var(--line); background: #fff; }
   footer .gold { color: var(--gold); }
-  @media (max-width: 1180px) { .mission { grid-template-columns: repeat(2, minmax(220px, 1fr)); } .kanban { grid-template-columns: repeat(2, minmax(260px, 1fr)); } .journey-hero { grid-template-columns: 1fr; } .stage-meter { grid-template-columns: repeat(2, minmax(120px, 1fr)); } }
+  @media (max-width: 1180px) { .mission { grid-template-columns: repeat(2, minmax(220px, 1fr)); } .kanban { grid-template-columns: repeat(2, minmax(260px, 1fr)); } .journey-hero, .generate-layout { grid-template-columns: 1fr; } }
   @media (max-width: 980px) { .list-row { grid-template-columns: 1fr; } .list-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 680px) { header { padding: 12px 16px; } header .hdr-info { margin-left: 0; } .mission, .kanban, .stage-nav, .stage-meter, .stats-legend .lg-row, .card-radar { grid-template-columns: 1fr; } .journey-title, .stage-title { font-size: 42px; } .bar, .review-toolbar { align-items: stretch; } .bar select, .bar button, .bigbtn, .review-toolbar button, .review-toolbar .count-pill { width: 100%; } .list-actions { grid-template-columns: 1fr; } }
+  @media (max-width: 680px) { header { padding: 12px 16px; } header .hdr-info { margin-left: 0; } .mission, .kanban, .stage-nav, .split-list, .stats-legend .lg-row, .card-radar, .stage-toolbar { grid-template-columns: 1fr; } .journey-title, .stage-title { font-size: 42px; } .stage-head { font-size: 28px; } .bar { align-items: stretch; } .bar select, .bar button, .bigbtn { width: 100%; } .stage-viewbar { justify-content: stretch; padding-left: 0; border-left: 0; border-top: 1px solid var(--line); padding-top: 10px; } .stage-viewbar .view-toggle { width: 100%; } .list-actions { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -238,37 +277,28 @@
   <span class="hdr-info" id="hdr-info">connexion…</span>
 </header>
 <main>
-  <div class="tabs" id="tabs"></div>
-  <details class="control-panel" id="filters-panel">
-    <summary>Filtres</summary>
-    <div class="panel-body">
-      <div class="bar">
-        <select id="f-jours" onchange="render()">
-          <option value="0">Toutes dates</option>
-          <option value="today">Aujourd'hui</option>
-          <option value="1">Dernières 24 h</option>
-          <option value="3" selected>3 derniers jours</option>
-          <option value="7">7 derniers jours</option>
-          <option value="14">14 derniers jours</option>
-          <option value="31">31 derniers jours</option>
-        </select>
-        <select id="f-type" onchange="render()">
-          <option value="">Toutes catégories</option>
-          <option value="projet_loi">Texte législatif - projet de loi</option>
-          <option value="proposition_loi">Texte législatif - proposition de loi</option>
-          <option value="decret">Texte réglementaire - décret</option>
-          <option value="arrete">Texte réglementaire - arrêté</option>
-          <option value="consultation">Consultation publique</option>
-          <option value="jurisprudence">Décision / jurisprudence</option>
-          <option value="rapport">Rapport / étude</option>
-          <option value="communication_institutionnelle">Communication institutionnelle</option>
-          <option value="actu_secteur">Actualité sectorielle</option>
-          <option value="autre">Autre signal</option>
-        </select>
-        <span id="f-themes" style="display:flex;gap:6px;flex-wrap:wrap"></span>
-      </div>
-    </div>
-  </details>
+  <div class="tabs client-tabs" id="tabs"></div>
+  <select id="f-jours" onchange="render()" style="display:none" aria-hidden="true">
+    <option value="today">Aujourd'hui</option>
+    <option value="3" selected>3 derniers jours</option>
+    <option value="0">Tout</option>
+  </select>
+  <div class="hidden-filters" aria-hidden="true">
+    <select id="f-type" onchange="render()">
+      <option value="">Toutes catégories</option>
+      <option value="projet_loi">Texte législatif - projet de loi</option>
+      <option value="proposition_loi">Texte législatif - proposition de loi</option>
+      <option value="decret">Texte réglementaire - décret</option>
+      <option value="arrete">Texte réglementaire - arrêté</option>
+      <option value="consultation">Consultation publique</option>
+      <option value="jurisprudence">Décision / jurisprudence</option>
+      <option value="rapport">Rapport / étude</option>
+      <option value="communication_institutionnelle">Communication institutionnelle</option>
+      <option value="actu_secteur">Actualité sectorielle</option>
+      <option value="autre">Autre signal</option>
+    </select>
+    <span id="f-themes"></span>
+  </div>
   <div id="list"></div>
   <details class="control-panel faq-section" aria-label="Questions fréquentes">
     <summary>FAQ - Questions fréquentes</summary>
@@ -291,7 +321,7 @@
         <p>Chaque information reçoit un score de 0 à 100 qui mesure la solidité du lien avec le périmètre de veille du client, accompagné d'un « Pourquoi » : la justification en une phrase.</p>
         <div class="lg-row"><span class="badge s-hi">80+ · Prioritaire</span><span>le lien avec le périmètre est explicite et direct.</span></div>
         <div class="lg-row"><span class="badge s-mid">60-79 · Pertinent</span><span>lien réel mais indirect : c'est là que le regard de consultant fait la différence.</span></div>
-        <div class="lg-row"><span class="badge s-grey">40-59 · Zone grise</span><span>le lien n'a pas pu être établi clairement, sans pouvoir être exclu. Ces cartes sont masquées par défaut et se traitent via l'étape « Zones grises ».</span></div>
+        <div class="lg-row"><span class="badge s-grey">40-59 · Signal faible</span><span>le lien n'a pas pu être établi clairement, sans pouvoir être exclu. Ces cartes se traitent via l'étape « Trier les signaux faibles ».</span></div>
         <div class="lg-row"><span class="badge u">URGENT</span><span>signal temporel ou sensible détecté en amont. Il attire l'œil, mais ne remplace pas le tri par score.</span></div>
         <p style="margin-top:10px">En dessous de 40, l'information est ignorée automatiquement et n'apparaît pas dans la pile de revue.</p>
       </div>
@@ -347,7 +377,7 @@
     <details class="legend">
       <summary>Pourquoi une source peut être marquée comme référence interne ?</summary>
       <div class="legend-body">
-        <p>Quand une carte pointe vers `retrotest.local`, ce n'est pas une source primaire publiable : c'est une référence interne issue des blocs historiques. La carte doit alors être vérifiée et reliée à la vraie source avant d'entrer dans un bulletin client.</p>
+        <p>Quand une carte pointe vers retrotest.local, BriefLayer, un domaine .local ou une référence interne, ce n'est pas une source primaire publiable. La carte doit alors être vérifiée et reliée à la vraie source avant d'entrer dans un bulletin client.</p>
       </div>
     </details>
     <details class="legend">
@@ -406,7 +436,7 @@ const EMBED = {
   url: 'https://xkqeqajeccsacocnfqca.supabase.co',
   key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhrcWVxYWplY2NzYWNvY25mcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNjc4OTIsImV4cCI6MjA5Njc0Mzg5Mn0.7NmmzyrXt-kVMBl-_WFqPuBP_9r-BAuIbavRO_sIryk'
 };
-let sb = null, clients = [], current = null, rows = [], themes = new Set(), activeStage = 'intro', showGrey = false, includeIncubated = false;
+let sb = null, clients = [], current = null, rows = [], themes = new Set(), activeStage = 'todo', showGrey = true, includeIncubated = false, listMode = false;
 const TAGLABELS = { energie: 'Énergie', environnement: 'Environnement', sante: 'Santé', numerique: 'Numérique', donnees_personnelles: 'Données personnelles', fiscalite: 'Fiscalité', travail_emploi: 'Travail & emploi', transports: 'Transports', agriculture_alimentation: 'Agriculture', industrie: 'Industrie', finance: 'Finance', logement_urbanisme: 'Logement & urbanisme', education_recherche: 'Éducation & recherche', culture_medias: 'Culture & médias', defense_securite: 'Défense & sécurité', justice: 'Justice', collectivites_territoriales: 'Collectivités', europe_ue: 'Europe / UE', international: 'International', concurrence: 'Concurrence', marches_publics: 'Marchés publics', aides_etat: "Aides d'État", consommation: 'Consommation', institutions: 'Institutions' };
 
 const $ = id => document.getElementById(id);
@@ -434,17 +464,17 @@ async function renderTabs() {
     `<button type="button" class="tab ${c.id === current ? 'on' : ''}" onclick="switchTo('${c.id}')">${c.name}</button>`
   ).join('');
 }
-function switchTo(id) { current = id; activeStage = 'intro'; showGrey = false; includeIncubated = false; renderTabs(); load(); }
+function switchTo(id) { current = id; activeStage = 'todo'; showGrey = true; includeIncubated = false; listMode = false; renderTabs(); load(); }
 
 async function load() {
   const c = clients.find(x => x.id === current);
   if (!c) { $('list').innerHTML = '<div class="empty">Aucun client configuré.</div>'; return; }
   const pid = c.client_profiles[0].id;
-  const statuts = showGrey ? ['proposed', 'grey', 'approved', 'edited', 'rejected'] : ['proposed', 'approved', 'edited', 'rejected'];
+  const statuts = ['proposed', 'grey', 'approved', 'incubated', 'edited', 'rejected'];
   const { data, error } = await sb.from('matches')
-    .select('id,llm_score,rationale,client_summary,status,items(title,url,url_canonical,source_id,raw_content,published_at,act_type,urgency,key_dates,tags)')
+    .select('id,llm_score,rationale,client_summary,status,reviewed_at,items(title,url,url_canonical,source_id,raw_content,published_at,act_type,urgency,key_dates,tags)', { count: 'exact' })
     .eq('profile_id', pid).in('status', statuts).is('bulletin_id', null)
-    .order('created_at', { ascending: false }).limit(200);
+    .order('created_at', { ascending: false }).limit(1000);
   if (error) { $('list').innerHTML = '<div class="empty">Erreur : ' + error.message + '</div>'; return; }
   rows = data || [];
   rows.sort(sortByScore);
@@ -481,6 +511,10 @@ function toggleIncubated() {
   includeIncubated = !includeIncubated;
   render();
 }
+function toggleListMode() {
+  listMode = !listMode;
+  render();
+}
 function renderPeriodPicker() {
   const value = $('f-jours').value || '3';
   const options = [
@@ -504,16 +538,28 @@ function render() {
 }
 
 function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+function isInternalSourceHost(host) {
+  const h = String(host || '').replace(/^www\./, '').toLowerCase();
+  return h === 'retrotest.local' || h.endsWith('.local') || h === 'brieflayer.app' || h.endsWith('.brieflayer.app') || h.includes('brieflayer');
+}
+function isInternalSourceText(value) {
+  return /retrotest\.local|brieflayer|référence interne|reference interne/i.test(String(value || ''));
+}
 function sourceInfo(itemOrUrl) {
   const item = itemOrUrl && typeof itemOrUrl === 'object' ? itemOrUrl : null;
   const candidates = item ? [item.url_canonical, item.url] : [itemOrUrl];
   const clean = String(candidates.find(Boolean) || '').trim();
   if (!clean) return { url: '', host: 'Source primaire absente', valid: false, internal: false };
-  if (!/^https?:\/\//i.test(clean)) return { url: clean, host: clean, valid: false, internal: false };
+  if (!/^https?:\/\//i.test(clean)) {
+    const recovered = findPrimaryUrlInText(item ? item.raw_content : '');
+    if (recovered) return sourceInfo(recovered);
+    if (isInternalSourceText(clean)) return { url: clean, host: 'Référence interne BriefLayer', valid: false, internal: true };
+    return { url: clean, host: clean, valid: false, internal: false };
+  }
   try {
     const parsed = new URL(clean);
     const host = parsed.hostname.replace(/^www\./, '');
-    const internal = host === 'retrotest.local' || host.endsWith('.local');
+    const internal = isInternalSourceHost(host);
     if (internal) {
       const recovered = findPrimaryUrlInText(item ? item.raw_content : '');
       if (recovered) return sourceInfo(recovered);
@@ -529,7 +575,7 @@ function findPrimaryUrlInText(text) {
   return matches.find(u => {
     try {
       const host = new URL(u).hostname.replace(/^www\./, '');
-      return host !== 'retrotest.local' && !host.endsWith('.local');
+      return !isInternalSourceHost(host);
     } catch (e) {
       return false;
     }
@@ -538,10 +584,10 @@ function findPrimaryUrlInText(text) {
 function renderSource(source) {
   return `<div class="source-row ${source.valid ? '' : (source.internal ? 'internal' : 'missing')}">
     <div class="source-main">
-      <span class="tile-kicker">${source.valid ? 'Source primaire' : 'Source à vérifier'}</span>
+      <span class="tile-kicker">${source.valid ? 'Source primaire' : (source.internal ? 'Source primaire à retrouver' : 'Source à vérifier')}</span>
       <span class="source-host">${esc(source.host)}</span>
     </div>
-    ${source.valid ? `<a class="source-link" href="${esc(source.url)}" target="_blank" rel="noopener">Ouvrir la source →</a>` : `<span class="source-link">${source.internal ? 'Lien interne non publiable' : 'URL manquante'}</span>`}
+    ${source.valid ? `<a class="source-link" href="${esc(source.url)}" target="_blank" rel="noopener">Ouvrir la source →</a>` : `<span class="source-link">${source.internal ? 'Référence interne non publiable' : 'URL manquante'}</span>`}
   </div>`;
 }
 function sourceLine(item) {
@@ -549,6 +595,9 @@ function sourceLine(item) {
   if (source.valid) return source.url;
   if (source.internal) return 'SOURCE PRIMAIRE MANQUANTE - référence interne non publiable : ' + source.url;
   return 'SOURCE PRIMAIRE MANQUANTE - à vérifier avant publication';
+}
+function missingPrimarySources(items) {
+  return (items || []).filter(r => !sourceInfo((r || {}).items || {}).valid);
 }
 function scoreInfo(s) {
   if (s >= 80) return ['s-hi', 'Prioritaire', 'prioritaire', '80+'];
@@ -597,8 +646,9 @@ function incubatedIds() {
 function saveIncubatedIds(ids) {
   localStorage.setItem(incubationKey(), JSON.stringify([...ids]));
 }
-function isIncubated(id) {
-  return incubatedIds().has(id);
+function isIncubated(rowOrId) {
+  if (rowOrId && typeof rowOrId === 'object') return rowOrId.status === 'incubated' || incubatedIds().has(rowOrId.id);
+  return incubatedIds().has(rowOrId);
 }
 function removeIncubation(id) {
   const ids = incubatedIds();
@@ -606,19 +656,57 @@ function removeIncubation(id) {
   ids.delete(id);
   saveIncubatedIds(ids);
 }
-function resumeIncubation(id) {
+async function resumeIncubation(id) {
+  const row = rows.find(r => r.id === id);
+  if (row && row.status === 'incubated') {
+    const { error } = await sb.from('matches').update({ status: 'approved', reviewed_at: null }).eq('id', id);
+    if (error) { toast('Erreur : ' + error.message); return; }
+  }
   removeIncubation(id);
+  rows = rows.map(r => r.id === id ? { ...r, status: 'approved' } : r);
   toast('Remis à arbitrer');
-  render();
+  render(); refreshBulletinBtn();
 }
-function incubate(id) {
+async function recallIncubationToTodo(id) {
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  const next = fallbackStatus(row);
+  const { error } = await sb.from('matches').update({ status: next, reviewed_at: null }).eq('id', id);
+  if (error) { toast('Erreur : ' + error.message); return; }
+  removeIncubation(id);
+  rows = rows.map(r => r.id === id ? { ...r, status: next, reviewed_at: null } : r);
+  activeStage = 'todo';
+  toast('Remis dans la pile');
+  render(); refreshBulletinBtn();
+}
+async function recallReadyToTodo(id) {
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  const next = fallbackStatus(row);
+  const { error } = await sb.from('matches').update({ status: next, reviewed_at: null, bulletin_id: null }).eq('id', id);
+  if (error) { toast('Erreur : ' + error.message); return; }
+  rows = rows.map(r => r.id === id ? { ...r, status: next, reviewed_at: null, bulletin_id: null } : r);
+  activeStage = next === 'grey' ? 'grey' : 'todo';
+  toast('Remis dans la pile');
+  render(); refreshBulletinBtn();
+}
+async function incubate(id) {
   const row = rows.find(r => r.id === id);
   if (!row) return;
   const summary = $('sum-' + id) ? $('sum-' + id).value : row.client_summary;
-  const ids = incubatedIds();
-  ids.add(id);
-  saveIncubatedIds(ids);
-  rows = rows.map(r => r.id === id ? { ...r, client_summary: summary } : r);
+  const { error } = await sb.from('matches').update({ status: 'incubated', client_summary: summary, reviewed_at: new Date().toISOString() }).eq('id', id);
+  if (error) {
+    const ids = incubatedIds();
+    ids.add(id);
+    saveIncubatedIds(ids);
+    rows = rows.map(r => r.id === id ? { ...r, client_summary: summary } : r);
+    advanceStageIfDone();
+    render(); refreshBulletinBtn();
+    toast('Mis en attente localement : ' + error.message);
+    return;
+  }
+  removeIncubation(id);
+  rows = rows.map(r => r.id === id ? { ...r, status: 'incubated', client_summary: summary } : r);
   advanceStageIfDone();
   render();
   refreshBulletinBtn();
@@ -683,7 +771,7 @@ function levelInfo(done, ready, manualCount) {
 }
 
 const LANES = [
-  { key: 'todo', cls: 'todo', step: '1', icon: '🧭', title: 'Garder/Ignorer', note: 'Une carte à la fois, score décroissant', statuses: ['proposed', 'grey'] },
+  { key: 'todo', cls: 'todo', step: '1', icon: '🧭', title: 'Trier les infos', note: 'Garder ou ignorer, score décroissant', statuses: ['proposed'] },
   { key: 'selected', cls: 'selected', step: '2', icon: '🎯', title: 'À arbitrer', note: 'Parmi les gardés : prochain bulletin ou En attente', statuses: ['approved'] },
   { key: 'rejected', cls: 'rejected', step: '3', icon: '×', title: 'Ignoré', note: 'Ignoré mais récupérable en un clic', statuses: ['rejected'] },
   { key: 'ready', cls: 'ready', step: '4', icon: '⚡', title: 'Prêt pour le prochain bulletin', note: 'Ces informations alimentent le prompt du bulletin', statuses: ['edited'] }
@@ -694,6 +782,15 @@ function laneFor(row) {
 function fallbackStatus(row) {
   return row.llm_score >= 60 ? 'proposed' : 'grey';
 }
+function isPreviousReady(row) {
+  if (!row || row.status !== 'edited') return false;
+  if (!row.reviewed_at) return true;
+  const reviewed = new Date(row.reviewed_at);
+  if (Number.isNaN(reviewed.getTime())) return true;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return reviewed.getTime() < today.getTime();
+}
 function statusForLane(row, laneKey) {
   if (laneKey === 'todo') return fallbackStatus(row);
   if (laneKey === 'selected') return 'approved';
@@ -703,7 +800,7 @@ function statusForLane(row, laneKey) {
 }
 function actionsFor(row) {
   const back = fallbackStatus(row);
-  if (row.status === 'approved' && isIncubated(row.id)) return `
+  if (isIncubated(row)) return `
         <button type="button" class="b-soft" onclick="resumeIncubation('${row.id}')">Reprendre</button>
         <button type="button" class="b-ready" onclick="decide('${row.id}', 'edited')">Intégrer au prochain bulletin</button>`;
   if (row.status === 'approved') return `
@@ -721,79 +818,52 @@ function actionsFor(row) {
 }
 function groupRows(list) {
   const grouped = Object.fromEntries(LANES.map(l => [l.key, []]));
+  grouped.grey = [];
   grouped.incubation = [];
   const incubated = incubatedIds();
   list.forEach(r => {
-    if (!includeIncubated && r.status === 'approved' && incubated.has(r.id)) grouped.incubation.push(r);
+    if (r.status === 'grey') grouped.grey.push(r);
+    else if (r.status === 'incubated') (includeIncubated ? grouped.selected : grouped.incubation).push(r);
+    else if (!includeIncubated && r.status === 'approved' && incubated.has(r.id)) grouped.incubation.push(r);
     else grouped[laneFor(r).key].push(r);
   });
   Object.values(grouped).forEach(g => g.sort(sortByScore));
   return grouped;
 }
 function renderBoard(list) {
-  if (!list.length && !manualItems().length) { $('list').innerHTML = renderReviewToolbar(list) + '<div class="empty">' + (rows.length ? 'Rien ne correspond à ces filtres.' : 'Rien à valider pour ce client. La veille tourne en continu, repassez plus tard dans la journée.') + '</div>'; return; }
   const grouped = groupRows(list);
-  if (activeStage === 'intro') {
-    $('list').innerHTML = renderReviewToolbar(list) + renderStatsPanel(list, grouped) + renderIntro(list, grouped);
-    return;
-  }
-  $('list').innerHTML = renderReviewToolbar(list) + renderStatsPanel(list, grouped) + `<div class="journey">${renderStageNav(grouped)}${renderStagePanel(grouped)}</div>`;
+  $('list').innerHTML = `<div class="journey">${renderStageNav(grouped)}${renderStagePanel(grouped)}</div>`;
 }
-function renderReviewToolbar(list) {
-  return `<details class="control-panel review-panel" open>
-    <summary>Traitement de veille</summary>
-    <div class="panel-body">
-      <section class="review-toolbar" aria-label="Traitement de veille">
-        <span class="count-pill">${esc(periodLabel())} : ${list.length} / ${rows.length} chargés</span>
-        <span class="spacer"></span>
-        <button class="tab" type="button" onclick="openManualModal()">✚ Info supplémentaire</button>
-        <button class="tab" type="button" onclick="openLastBulletin()">↺ Dernier bulletin</button>
-        <button class="tab" type="button" onclick="resetReview()">↺ Réinitialiser</button>
-      </section>
-    </div>
-  </details>`;
+function resetAction() {
+  return '<button class="tab reset-step" type="button" onclick="resetCurrentStep()">↺ Réinitialiser cette étape</button>';
+}
+function stageTools(actions = '', options = {}) {
+  const { view = true } = options;
+  const primary = actions || resetAction();
+  return `<div class="stage-toolbar">
+    <div class="stage-actions">${primary}${actions ? resetAction() : ''}</div>
+    ${view ? `<div class="stage-viewbar">${listToggleButton()}</div>` : ''}
+  </div>`;
 }
 function stageCounts(grouped) {
   return {
     todo: grouped.todo.length,
     selected: grouped.selected.length,
+    grey: grouped.grey.length,
     incubation: grouped.incubation.length,
     rejected: grouped.rejected.length,
     ready: grouped.ready.length,
     manual: manualItems().length
   };
 }
-function renderIntro(list, grouped) {
-  const c = stageCounts(grouped);
-  const total = list.length;
-  const next = c.todo ? 'todo' : (c.selected ? 'selected' : (c.manual ? 'manual' : 'generate'));
-  const client = clients.find(x => x.id === current);
-  return `<section class="journey-hero">
-    <div>
-      <div class="journey-kicker">${esc(client ? client.name : 'Client')}</div>
-      <h1 class="journey-title">Traitement de veille</h1>
-      <p class="journey-copy">On déroule la revue comme une pile de cartes : garder ou ignorer, puis décider ce qui part au prochain bulletin ou reste en attente.</p>
-      <div class="journey-actions">
-        <button class="bigbtn" type="button" onclick="setStage('${next}')">▶ Commencer à traiter la veille<span class="arrow">→</span></button>
-        <button class="tab" type="button" onclick="openManualModal()">✚ Info manuelle</button>
-      </div>
-    </div>
-    <div class="quest-card">
-      <span>File active</span>
-      <strong>${total}</strong>
-      <span>${c.todo} à traiter · ${c.selected} à arbitrer · ${c.incubation} en attente · ${c.ready + c.manual} pour le prochain bulletin</span>
-    </div>
-  </section>`;
-}
 function renderStageNav(grouped) {
   const c = stageCounts(grouped);
   const tabs = [
-    { key: 'todo', cls: 'todo', label: '1. Garder/Ignorer', hint: `${c.todo} carte${c.todo > 1 ? 's' : ''} dans la pile`, icon: '🧭' },
-    { key: 'grey', cls: 'grey', label: '1b. Zones grises', hint: showGrey ? 'scores 40-59 inclus' : 'charger les scores 40-59', icon: '◐' },
-    { key: 'selected', cls: 'selected', label: '2. Bulletin/En attente', hint: `${c.selected} à arbitrer`, icon: '🎯' },
-    { key: 'manual', cls: 'manual', label: '3. Infos supplémentaires', hint: `${c.manual} complément${c.manual > 1 ? 's' : ''}`, icon: '✚' },
-    { key: 'generate', cls: 'generate', label: '4. Générer', hint: `${c.ready + c.manual} pour prochain bulletin`, icon: '⚡' },
-    { key: 'list', cls: 'list', label: 'Vue liste', hint: `${c.todo + c.selected + c.incubation + c.ready + c.rejected} élément${c.todo + c.selected + c.incubation + c.ready + c.rejected > 1 ? 's' : ''}`, icon: '☰' }
+    { key: 'todo', cls: 'todo', label: '1. Trier les infos', hint: `${c.todo} info(s) à trier`, icon: '🧭' },
+    { key: 'grey', cls: 'grey', label: '1b. Trier les signaux faibles', hint: `${c.grey} info(s) sous 60/100`, icon: '◐' },
+    { key: 'selected', cls: 'selected', label: '2. Choisir le bulletin', hint: `${c.selected} carte${c.selected > 1 ? 's' : ''} à orienter`, icon: '🎯' },
+    { key: 'manual', cls: 'manual', label: '3. Ajouter des infos', hint: `${c.manual} ajout${c.manual > 1 ? 's' : ''} manuel${c.manual > 1 ? 's' : ''}`, icon: '✚' },
+    { key: 'generate', cls: 'generate', label: '4. Voir le bulletin', hint: `${c.ready + c.manual} élément${c.ready + c.manual > 1 ? 's' : ''} retenu${c.ready + c.manual > 1 ? 's' : ''}`, icon: '◎' }
   ];
   return `<nav class="stage-nav">${tabs.map(t => `<button class="stage-tab ${t.cls} ${activeStage === t.key ? 'on' : ''}" type="button" onclick="setStage('${t.key}')"><strong>${t.icon} ${t.label}</strong><span>${t.hint}</span></button>`).join('')}</nav>`;
 }
@@ -802,37 +872,142 @@ function renderStagePanel(grouped) {
   if (activeStage === 'selected') return renderSelectedStage(grouped);
   if (activeStage === 'manual') return renderManualStage(grouped);
   if (activeStage === 'generate') return renderGenerateStage(grouped);
-  if (activeStage === 'list') return renderListStage(grouped);
   return renderTodoStage(grouped);
 }
-function renderGreyStage(grouped) {
-  const greyRows = rows.filter(r => r.status === 'grey');
-  return `<section class="stage-panel grey">
-    <div class="stage-kicker">Étape optionnelle</div>
-    <h2 class="stage-title">Traiter les zones grises</h2>
-    <p class="stage-copy">Les zones grises sont les scores 40-59 : le lien client est possible, mais pas assez net pour entrer directement dans la pile principale.</p>
-    <div class="stage-actions">
-      <button class="bigbtn" type="button" onclick="enableGrey()" ${showGrey ? 'disabled' : ''}>Afficher et traiter les zones grises</button>
-      <button class="tab" type="button" onclick="setStage('todo')">Retour Garder/Ignorer</button>
+function stageHeader(step, title, copy) {
+  return `<div class="stage-head"><span class="stage-kicker">${esc(step)}</span><h2 class="stage-title">${esc(title)}</h2></div>
+    <p class="stage-copy compact">${esc(copy)}</p>`;
+}
+function stageSummary(main, detail, showPeriod = true) {
+  return `<div class="stage-summary">
+    <strong>${esc(showPeriod ? `${periodLabel()} : ${main}` : main)}</strong>
+    <span>${esc(detail)}</span>
+    ${showPeriod ? renderPeriodPicker() : ''}
+  </div>`;
+}
+function emptyTodoSuggestion(count) {
+  if (count) return '';
+  const isToday = ($('f-jours').value || '3') === 'today';
+  return `<div class="keyboard-tip">
+    ${isToday ? "Aucune information visible aujourd'hui. Il y a peut-être des signaux faibles à examiner, ou des éléments récents sur les 3 derniers jours." : 'Aucune information dans cette période. Vous pouvez examiner les signaux faibles ou élargir la période.'}
+    <div class="suggestion-actions">
+      <button class="tab" type="button" onclick="setStage('grey')">Voir les signaux faibles</button>
+      ${isToday ? `<button class="tab" type="button" onclick="setPeriod('3')">Passer aux 3 derniers jours</button>` : ''}
     </div>
-    <div class="keyboard-tip">${showGrey ? `${greyRows.length} zone${greyRows.length > 1 ? 's' : ''} grise${greyRows.length > 1 ? 's' : ''} chargée${greyRows.length > 1 ? 's' : ''}. Elles sont maintenant dans la pile Garder/Ignorer.` : 'Activez-les seulement si la pile principale est trop courte ou si vous voulez repêcher des signaux faibles.'}</div>
+  </div>`;
+}
+function listToggleButton() {
+  const icon = listMode
+    ? '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="3"></rect><path d="M8 9h8M8 13h5"></path></svg>'
+    : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+  return `<button class="view-toggle ${listMode ? 'on' : ''}" type="button" onclick="toggleListMode()">${icon}<span>${listMode ? 'Cartes' : 'Vue liste'}</span></button>`;
+}
+function miniRow(r) {
+  const it = r.items || {};
+  const dateInfo = formatDateTile(it.published_at);
+  const [, slab] = scoreInfo(r.llm_score);
+  const source = sourceInfo(it);
+  return `<div class="mini-row">
+    <strong>${esc(it.title || 'Information sans titre')}</strong>
+    <span>${esc(dateInfo.main)} · ${r.llm_score} · ${esc(slab)}</span>
+    <span>${source.valid ? 'Source : ' + esc(source.host) : 'Source à vérifier : ' + esc(source.host)}</span>
+    <span>${esc(r.client_summary || r.rationale || '')}</span>
+  </div>`;
+}
+function manualMiniRow(item) {
+  return `<div class="mini-row">
+    <strong>${esc(item.title || 'Information manuelle')}</strong>
+    <span>${esc(item.source || 'Source à compléter')}</span>
+    <span>${esc(item.body || '')}</span>
+  </div>`;
+}
+function splitColumn(cls, title, items, renderItem = miniRow) {
+  return `<section class="split-col ${cls}">
+    <h3>${esc(title)}</h3>
+    <div class="compact-list">${items.length ? items.map(renderItem).join('') : '<div class="empty">Rien ici pour le moment.</div>'}</div>
+  </section>`;
+}
+function renderStepSplit(left, right) {
+  return `<div class="split-list">${left}${right}</div>`;
+}
+function renderActionColumn(cls, title, items) {
+  return splitColumn(cls, title, items, renderListRow);
+}
+function renderIncubationRecall(grouped) {
+  const items = grouped.incubation || [];
+  if (!items.length) return '';
+  return `<section class="recall-box">
+    <div class="recall-head">
+      <strong>En attente à réinvoquer</strong>
+      <span>${items.length} carte${items.length > 1 ? 's' : ''} mise${items.length > 1 ? 's' : ''} de côté</span>
+    </div>
+    <div class="compact-list">${items.map(r => {
+      const it = r.items || {};
+      return `<div class="mini-row">
+        <strong>${esc(it.title || 'Information en attente')}</strong>
+        <span>${esc(r.client_summary || r.rationale || '')}</span>
+        <div class="list-actions"><button type="button" class="b-soft" onclick="recallIncubationToTodo('${r.id}')">Remettre dans la pile</button></div>
+      </div>`;
+    }).join('')}</div>
+  </section>`;
+}
+function renderPreviousReadyRecall(grouped) {
+  const items = (grouped.ready || []).filter(isPreviousReady);
+  if (!items.length) return '';
+  return `<section class="recall-box">
+    <div class="recall-head">
+      <strong>Retenues précédemment</strong>
+      <span>${items.length} info${items.length > 1 ? 's' : ''} pas encore intégrée${items.length > 1 ? 's' : ''}</span>
+    </div>
+    <div class="compact-list">${items.map(r => {
+      const it = r.items || {};
+      return `<div class="mini-row">
+        <strong>${esc(it.title || 'Information retenue')}</strong>
+        <span>${esc(r.client_summary || r.rationale || '')}</span>
+        <div class="list-actions"><button type="button" class="b-soft" onclick="recallReadyToTodo('${r.id}')">Remettre dans la pile</button></div>
+      </div>`;
+    }).join('')}</div>
+  </section>`;
+}
+function renderGenerateRecap(ready, manual) {
+  const previous = ready.filter(isPreviousReady);
+  const current = ready.filter(r => !isPreviousReady(r));
+  return `<div class="generate-columns">
+    ${splitColumn('wait', 'Contexte ajouté', manual, manualMiniRow)}
+    ${splitColumn('ready', 'Retenues précédemment', previous)}
+    ${splitColumn('ready', 'À intégrer au bulletin', current)}
+  </div>`;
+}
+function renderGenerateList(ready, manual) {
+  const previous = ready.filter(isPreviousReady);
+  const current = ready.filter(r => !isPreviousReady(r));
+  return `<div class="generate-columns">
+    ${splitColumn('wait', 'Contexte ajouté', manual, manualMiniRow)}
+    ${splitColumn('ready', 'Retenues précédemment', previous, renderListRow)}
+    ${splitColumn('ready', 'À intégrer au bulletin', current, renderListRow)}
+  </div>`;
+}
+function renderGreyStage(grouped) {
+  const cards = grouped.grey;
+  const card = cards[0];
+  return `<section class="stage-panel grey">
+    ${stageHeader('Étape optionnelle', 'Trier les signaux faibles', 'Trier les informations dont le score est inférieur à 60/100.')}
+    ${stageSummary(`${cards.length} signal(aux) faible(s) à trier`, 'Ils sont affichés directement ici, sans chargement manuel.')}
+    ${stageTools()}
+    ${listMode ? renderStepSplit(renderActionColumn('reject', 'À ignorer ou déjà ignorés', [...cards, ...grouped.rejected.filter(r => r.llm_score < 60)]), renderActionColumn('keep', 'Repêchés pour la suite', [...grouped.selected, ...grouped.ready].filter(r => r.llm_score < 60))) : `<div class="keyboard-tip">Astuce clavier : ← ignorer · → garder</div><div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} signal${cards.length > 1 ? 'aux' : ''} faible${cards.length > 1 ? 's' : ''} à trier</div>${renderCard(card)}` : '<div class="empty">Aucun signal faible à trier sur cette période.</div>'}</div>`}
   </section>`;
 }
 function renderTodoStage(grouped) {
   const cards = grouped.todo;
   const card = cards[0];
   return `<section class="stage-panel todo">
-    <div class="stage-kicker">Première étape</div>
-    <h2 class="stage-title">Garder/Ignorer</h2>
-    <p class="stage-copy">Mode pile : une carte à la fois, classée par scoring. Ignorez ce qui sort du sujet, gardez ce qui mérite un second arbitrage.</p>
-    <div class="stage-actions">
-      ${renderPeriodPicker()}
-      <button class="tab ${includeIncubated ? 'on' : ''}" type="button" onclick="toggleIncubated()">${includeIncubated ? 'En attente incluses' : 'Inclure En attente'}</button>
-      <button class="tab" type="button" onclick="setStage('selected')">Voir les infos à arbitrer</button>
-      <button class="tab" type="button" onclick="openManualModal()">✚ Info manuelle</button>
-    </div>
-    <div class="keyboard-tip">Astuce clavier : ← ignorer · → garder</div>
-    <div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} carte${cards.length > 1 ? 's' : ''} dans la pile</div>${renderCard(card)}` : '<div class="empty">Pile terminée. Direction les infos à arbitrer.</div>'}</div>
+    ${stageHeader('Première étape', 'Trier les infos', 'Une carte à la fois : garder ce qui mérite arbitrage, ignorer le hors sujet.')}
+    ${stageSummary(`${cards.length} information(s) encore à traiter`, `${grouped.selected.length} gardée(s) pour arbitrage · ${grouped.rejected.length} ignorée(s).`)}
+    ${stageTools()}
+    ${emptyTodoSuggestion(cards.length)}
+    ${renderIncubationRecall(grouped)}
+    ${renderPreviousReadyRecall(grouped)}
+    ${listMode ? renderStepSplit(renderActionColumn('reject', 'À trier ou ignorées', [...cards, ...grouped.rejected.filter(r => r.llm_score >= 60)]), renderActionColumn('keep', 'Gardées pour la suite', [...grouped.selected, ...grouped.ready].filter(r => r.llm_score >= 60))) : `<div class="keyboard-tip">Astuce clavier : ← ignorer · → garder</div><div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} carte${cards.length > 1 ? 's' : ''} dans la pile</div>${renderCard(card)}` : '<div class="empty">Pile terminée. Direction les infos à arbitrer.</div>'}</div>`}
   </section>`;
 }
 function renderSelectedStage(grouped) {
@@ -840,30 +1015,22 @@ function renderSelectedStage(grouped) {
   const card = cards[0];
   const incubation = grouped.incubation;
   return `<section class="stage-panel selected">
-    <div class="stage-kicker">Deuxième étape</div>
-    <h2 class="stage-title">Bulletin/En attente</h2>
-    <p class="stage-copy">Parmi ce qui a été gardé, choisissez ce qui intègre le prochain bulletin et ce qui reste en attente.</p>
-    <div class="stage-actions">
-      <button class="tab" type="button" onclick="setStage('todo')">Retour à la pile</button>
-      <button class="tab" type="button" onclick="setStage('manual')">Étape infos supplémentaires</button>
-    </div>
-    <div class="keyboard-tip">Astuce clavier : ← mettre En attente · → intégrer au prochain bulletin</div>
-    <div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} carte${cards.length > 1 ? 's' : ''} à arbitrer</div>${renderCard(card)}` : '<div class="empty">Aucune carte à arbitrer.</div>'}</div>
-    <div class="manual-mini">${incubation.length ? incubation.map(item => `<div class="manual-item"><strong>${esc((item.items || {}).title || 'Information en attente')}</strong><p>${esc(item.client_summary || item.rationale || '')}</p><span>En attente</span></div>`).join('') : ''}</div>
+    ${stageHeader('Deuxième étape', 'Choisir le bulletin', 'Envoyer au prochain bulletin ou laisser en attente.')}
+    ${stageSummary(`${cards.length} information(s) à arbitrer`, `${grouped.ready.length} pour le prochain bulletin · ${incubation.length} en attente.`)}
+    ${stageTools()}
+    ${listMode ? renderStepSplit(renderActionColumn('wait', 'À orienter ou en attente', [...cards, ...incubation]), renderActionColumn('ready', 'Pour le prochain bulletin', grouped.ready)) : `<div class="keyboard-tip">Astuce clavier : ← mettre En attente · → intégrer au prochain bulletin</div><div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} carte${cards.length > 1 ? 's' : ''} à arbitrer</div>${renderCard(card)}` : '<div class="empty">Aucune carte à arbitrer.</div>'}</div><div class="manual-mini">${incubation.length ? incubation.map(item => `<div class="manual-item"><strong>${esc((item.items || {}).title || 'Information en attente')}</strong><p>${esc(item.client_summary || item.rationale || '')}</p><span>En attente</span></div>`).join('') : ''}</div>`}
   </section>`;
 }
 function renderManualStage(grouped) {
   const manual = manualItems();
   return `<section class="stage-panel manual">
-    <div class="stage-kicker">Troisième étape</div>
-    <h2 class="stage-title">Infos supplémentaires</h2>
-    <p class="stage-copy">Avant génération, ajoutez les signaux hors flux : retour terrain, échange client, intuition stratégique, contexte à ne pas perdre.</p>
-    <div class="stage-actions">
+    ${stageHeader('Troisième étape', 'Ajouter des infos', 'Ajouter uniquement le contexte hors flux utile au bulletin.')}
+    ${stageSummary(`${manual.length} information(s) supplémentaire(s)`, `${grouped.ready.length} carte(s) déjà prêtes pour le bulletin.`)}
+    ${stageTools()}
+    <div class="manual-mini">
       <button class="bigbtn" type="button" onclick="openManualModal()">✚ Ajouter une info supplémentaire</button>
-      <button class="tab" type="button" onclick="setStage('generate')">Passer à la génération</button>
-      <button class="tab" type="button" onclick="setStage('selected')">Retour aux arbitrages</button>
     </div>
-    <div class="manual-mini">${manual.length ? manual.map(item => `<div class="manual-item"><strong>${esc(item.title || 'Information manuelle')}</strong><p>${esc(item.body || '')}</p><span>${esc(item.source || 'Source à compléter')}</span></div>`).join('') : '<div class="empty">Aucune info manuelle en attente.</div>'}</div>
+    ${listMode ? renderStepSplit(splitColumn('wait', 'Cartes déjà retenues', grouped.ready), splitColumn('ready', 'Infos ajoutées au prompt', manual, manualMiniRow)) : `<div class="manual-mini">${manual.length ? manual.map(item => `<div class="manual-item"><strong>${esc(item.title || 'Information manuelle')}</strong><p>${esc(item.body || '')}</p><span>${esc(item.source || 'Source à compléter')}</span></div>`).join('') : '<div class="empty">Aucune info manuelle en attente.</div>'}</div>`}
   </section>`;
 }
 function renderGenerateStage(grouped) {
@@ -871,41 +1038,20 @@ function renderGenerateStage(grouped) {
   const manual = manualItems();
   const total = ready.length + manual.length;
   return `<section class="stage-panel generate">
-    <div class="stage-kicker">Quatrième étape</div>
-    <h2 class="stage-title">Générer le bulletin</h2>
-    <p class="stage-copy">${total ? `${total} élément${total > 1 ? 's' : ''} prêt${total > 1 ? 's' : ''} pour le prochain bulletin.` : 'Rien à générer encore : intégrez au moins une carte au prochain bulletin ou ajoutez une info manuelle.'}</p>
-    <div class="stage-meter">
-      <div class="mission-stat ready"><span class="mission-label">Prochain bulletin</span><strong>${ready.length}</strong></div>
-      <div class="mission-stat"><span class="mission-label">Infos supp.</span><strong>${manual.length}</strong></div>
-      <div class="mission-stat"><span class="mission-label">En attente</span><strong>${grouped.incubation.length}</strong></div>
-      <div class="mission-stat todo"><span class="mission-label">Restants</span><strong>${grouped.todo.length + grouped.selected.length}</strong></div>
+    ${stageHeader('Quatrième étape', 'Voir le bulletin', total ? `${total} élément${total > 1 ? 's' : ''} prêt${total > 1 ? 's' : ''} pour le prochain bulletin.` : 'Ajoutez au moins une carte ou une info manuelle avant de générer.')}
+    ${stageSummary(`${ready.length} carte(s) + ${manual.length} info(s) manuelle(s)`, 'Récapitulatif des éléments qui partiront dans le prompt du bulletin.')}
+    <div class="generate-layout">
+      <div>${listMode ? renderGenerateList(ready, manual) : renderGenerateRecap(ready, manual)}</div>
+      <aside class="generate-side" aria-label="Options de génération">
+        <button class="bigbtn" type="button" onclick="generateBulletin()" ${total ? '' : 'disabled'}>⚡ Générer par prompt<span class="arrow">→</span></button>
+        <button class="doc-future" type="button" disabled>Générer directement le document</button>
+        <button class="tab" type="button" onclick="openLastBulletin()">◉ Voir le dernier bulletin</button>
+      </aside>
     </div>
-    <div class="stage-actions">
-      <button class="bigbtn" type="button" onclick="generateBulletin()" ${total ? '' : 'disabled'}>⚡ Générer le bulletin<span class="arrow">→</span></button>
-      <button class="tab" type="button" onclick="openManualModal()">✚ Ajouter une info</button>
-      <button class="tab" type="button" onclick="setStage('selected')">Retour aux arbitrages</button>
-    </div>
-    <div class="stage-grid">${ready.length ? ready.map(renderCard).join('') : '<div class="empty">Aucune carte prête pour le prochain bulletin.</div>'}</div>
-    <div class="manual-mini">${manual.length ? manual.map(item => `<div class="manual-item"><strong>${esc(item.title || 'Information manuelle')}</strong><p>${esc(item.body || '')}</p><span>${esc(item.source || 'Source à compléter')}</span></div>`).join('') : ''}</div>
-  </section>`;
-}
-function renderListStage(grouped) {
-  const all = [...grouped.todo, ...grouped.selected, ...grouped.incubation, ...grouped.ready, ...grouped.rejected]
-    .sort((a, b) => String((b.items || {}).published_at || '').localeCompare(String((a.items || {}).published_at || '')) || (b.llm_score - a.llm_score));
-  return `<section class="stage-panel list">
-    <div class="stage-kicker">Vue optionnelle</div>
-    <h2 class="stage-title">Vue liste</h2>
-    <p class="stage-copy">Lecture d'ensemble des informations de la période active, avec date, score, statut et actions rapides.</p>
-    <div class="stage-actions">
-      ${renderPeriodPicker()}
-      <button class="tab ${includeIncubated ? 'on' : ''}" type="button" onclick="toggleIncubated()">${includeIncubated ? 'En attente incluses' : 'Inclure En attente'}</button>
-      <button class="tab" type="button" onclick="setStage('todo')">Retour au mode pile</button>
-    </div>
-    <div class="watch-list">${all.length ? all.map(renderListRow).join('') : '<div class="empty">Aucune information dans cette vue.</div>'}</div>
   </section>`;
 }
 function statusInfo(row) {
-  if (row.status === 'approved' && isIncubated(row.id)) return ['wait', 'En attente'];
+  if (isIncubated(row)) return ['wait', 'En attente'];
   if (row.status === 'approved') return ['selected', 'À arbitrer'];
   if (row.status === 'edited') return ['ready', 'Prochain bulletin'];
   if (row.status === 'rejected') return ['ignored', 'Ignoré'];
@@ -929,45 +1075,6 @@ function renderListRow(r) {
     </div>
     <div class="list-actions">${actionsFor(r)}</div>
   </article>`;
-}
-function renderStatsPanel(list, grouped) {
-  return `<details class="control-panel">
-    <summary>Statistiques de revue</summary>
-    <div class="panel-body">${renderMission(list, grouped)}${renderStatsLegend()}</div>
-  </details>`;
-}
-function renderStatsLegend() {
-  return `<div class="stats-legend">
-    <div class="lg-row"><span class="badge stat-todo">À traiter</span><span>cartes dans la pile de décision : garder ou ignorer.</span></div>
-    <div class="lg-row"><span class="badge stat-selected">À arbitrer</span><span>cartes gardées, mais pas encore envoyées vers le prochain bulletin ni mises En attente.</span></div>
-    <div class="lg-row"><span class="badge stat-ready">Prochain bulletin</span><span>cartes validées pour alimenter la génération du bulletin.</span></div>
-    <div class="lg-row"><span class="badge stat-wait">En attente</span><span>cartes intéressantes mais reportées : à reprendre plus tard, hors prochain bulletin.</span></div>
-    <div class="lg-row"><span class="badge stat-grey">Zones grises</span><span>scores 40-59, chargés uniquement via l'étape dédiée.</span></div>
-  </div>`;
-}
-function renderMission(list, grouped) {
-  const total = list.length;
-  const todo = grouped.todo.length;
-  const selected = grouped.selected.length;
-  const incubation = grouped.incubation.length;
-  const rejected = grouped.rejected.length;
-  const ready = grouped.ready.length;
-  const manualCount = manualItems().length;
-  const done = selected + incubation + rejected + ready;
-  const pct = total ? Math.round((done / total) * 100) : 0;
-  const level = levelInfo(done, ready, manualCount);
-  return `<section class="mission">
-    <div class="mission-main">
-      <div class="mission-kicker">Progression de revue</div>
-      <div class="mission-title"><span class="level-icon">${level.icon}</span>${level.label}</div>
-      <div class="mission-track"><div class="mission-fill" style="width:${pct}%"></div></div>
-      <div class="mission-meta"><span>${pct}% revu</span></div>
-    </div>
-    <div class="mission-stat todo"><span class="mission-label">À traiter</span><strong>${todo}</strong></div>
-    <div class="mission-stat"><span class="mission-label">À arbitrer</span><strong>${selected}</strong></div>
-    <div class="mission-stat ready"><span class="mission-label">Prochain bulletin</span><strong>${ready}</strong></div>
-    <div class="mission-stat"><span class="mission-label">En attente</span><strong>${incubation}</strong></div>
-  </section>`;
 }
 function renderCard(r) {
     const it = r.items || {};
@@ -1035,6 +1142,7 @@ async function dropOnLane(event, laneKey) {
 
 function setStage(stage) {
   activeStage = stage;
+  listMode = false;
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1042,11 +1150,12 @@ async function enableGrey() {
   showGrey = true;
   activeStage = 'todo';
   await load();
-  toast('Zones grises ajoutées à la pile');
+  toast('Signaux faibles ajoutés à la pile');
 }
 function activeKeyboardCard() {
   const grouped = groupRows(filteredRows());
   if (activeStage === 'todo') return grouped.todo[0] || null;
+  if (activeStage === 'grey') return grouped.grey[0] || null;
   if (activeStage === 'selected') return grouped.selected[0] || null;
   return null;
 }
@@ -1063,6 +1172,8 @@ async function handleKeyboard(event) {
   if (!row) return;
   if (activeStage === 'todo' && event.key === 'ArrowLeft') { event.preventDefault(); await decide(row.id, 'rejected'); }
   if (activeStage === 'todo' && event.key === 'ArrowRight') { event.preventDefault(); await decide(row.id, 'approved'); }
+  if (activeStage === 'grey' && event.key === 'ArrowLeft') { event.preventDefault(); await decide(row.id, 'rejected'); }
+  if (activeStage === 'grey' && event.key === 'ArrowRight') { event.preventDefault(); await decide(row.id, 'approved'); }
   if (activeStage === 'selected' && event.key === 'ArrowLeft') { event.preventDefault(); incubate(row.id); }
   if (activeStage === 'selected' && event.key === 'ArrowRight') { event.preventDefault(); await decide(row.id, 'edited'); }
 }
@@ -1080,7 +1191,7 @@ async function decide(id, statut) {
   rows = rows.map(r => r.id === id ? { ...r, status: statut, client_summary: summary } : r);
   advanceStageIfDone();
   renderThemes(); render(); renderTabs(); refreshBulletinBtn();
-  const labels = { proposed: 'Replacé à traiter', grey: 'Replacé en zone grise', approved: 'À arbitrer', edited: 'Prêt pour le prochain bulletin', rejected: 'Ignoré' };
+  const labels = { proposed: 'Remis dans la pile de tri', grey: 'Remis en signal faible', approved: 'À orienter', edited: 'Retenu pour le bulletin', rejected: 'Ignoré' };
   toast(labels[statut] || 'Mis à jour');
 }
 
@@ -1108,7 +1219,7 @@ async function approvedRows() {
   const c = clients.find(x => x.id === current); if (!c) return [];
   const pid = c.client_profiles[0].id;
   const { data } = await sb.from('matches')
-    .select('id,rationale,client_summary,items(title,url,published_at,act_type,urgency,key_dates)')
+    .select('id,rationale,client_summary,items(title,url,url_canonical,source_id,raw_content,published_at,act_type,urgency,key_dates)')
     .eq('profile_id', pid).eq('status', 'edited').is('bulletin_id', null);
   return data || [];
 }
@@ -1203,11 +1314,25 @@ async function generateBulletin() {
   const a = await approvedRows();
   const manual = manualItems();
   if (!a.length && !manual.length) return;
+  const missing = missingPrimarySources(a);
+  if (missing.length) {
+    const examples = missing.slice(0, 5).map(r => '- ' + ((r.items || {}).title || 'Information sans titre')).join('\n');
+    alert(`Génération bloquée : ${missing.length} carte(s) n'ont pas de source primaire publiable.\n\nCorrigez ou retirez ces cartes avant de générer le bulletin.\n\n${examples}`);
+    setStage('generate');
+    return;
+  }
   const brief = c.client_profiles[0].brief || '';
   const prompt = buildPrompt(c.name, brief, a, manual);
   const { data: bul, error } = await sb.from('bulletins').insert({ tenant_id: c.tenant_id, profile_id: c.client_profiles[0].id, prompt_text: prompt, status: 'draft' }).select('id').single();
   if (error) { toast('Erreur bulletin : ' + error.message); return; }
-  if (a.length) await sb.from('matches').update({ bulletin_id: bul.id }).in('id', a.map(r => r.id));
+  if (a.length) {
+    const linkResult = await sb.from('matches').update({ bulletin_id: bul.id }).in('id', a.map(r => r.id));
+    if (linkResult.error) {
+      await sb.from('bulletins').delete().eq('id', bul.id);
+      toast('Erreur rattachement : ' + linkResult.error.message);
+      return;
+    }
+  }
   saveManualItems([]);
   renderManualList();
   await load();
@@ -1243,7 +1368,7 @@ async function openLastBulletin() {
 
 async function resetReview() {
   const c = clients.find(x => x.id === current); if (!c) return;
-  if (!confirm('Remettre toutes les propositions de ' + c.name + ' à l\'état initial ?\nLes décisions Garder/Ignorer et les bulletins générés seront annulés.')) return;
+  if (!confirm('Remettre toutes les propositions de ' + c.name + ' à l\'état initial ?\nLes décisions de tri et les bulletins générés seront annulés.')) return;
   const pid = c.client_profiles[0].id;
   const r1 = await sb.from('matches').update({ status: 'proposed', reviewed_at: null, bulletin_id: null }).eq('profile_id', pid).gte('llm_score', 60);
   const r2 = await sb.from('matches').update({ status: 'grey', reviewed_at: null, bulletin_id: null }).eq('profile_id', pid).lt('llm_score', 60);
@@ -1253,11 +1378,64 @@ async function resetReview() {
   toast('Réinitialisé : toutes les propositions sont de retour');
   renderTabs(); load();
 }
+async function resetCurrentStep() {
+  const list = filteredRows();
+  const grouped = groupRows(list);
+  if (activeStage === 'manual') {
+    if (!manualItems().length) { toast('Aucune info manuelle à retirer.'); return; }
+    if (!confirm('Retirer les informations supplémentaires du client actif ?')) return;
+    saveManualItems([]);
+    renderManualList();
+    render(); refreshBulletinBtn();
+    toast('Étape infos supplémentaires réinitialisée');
+    return;
+  }
+  let candidates = [];
+  let label = '';
+  if (activeStage === 'grey') {
+    candidates = list.filter(r => r.llm_score < 60 && ['approved', 'rejected', 'edited', 'incubated'].includes(r.status));
+    label = 'Remettre les décisions sur les signaux faibles dans la pile ?';
+  } else if (activeStage === 'todo') {
+    candidates = list.filter(r => r.llm_score >= 60 && ['approved', 'rejected'].includes(r.status));
+    label = 'Remettre les décisions de tri de la période active dans la pile ?';
+  } else if (activeStage === 'selected') {
+    candidates = [...grouped.ready, ...grouped.incubation, ...grouped.selected.filter(r => isIncubated(r))];
+    label = 'Remettre les arbitrages de cette étape à l’état À arbitrer ?';
+  } else if (activeStage === 'generate') {
+    candidates = grouped.ready;
+    label = 'Retirer les cartes du prochain bulletin et les remettre À arbitrer ?';
+  } else {
+    candidates = [];
+  }
+  if (!candidates.length) { toast('Rien à réinitialiser dans cette étape.'); return; }
+  if (!confirm(label)) return;
+  const ids = [...new Set(candidates.map(r => r.id))];
+  if (activeStage === 'todo' || activeStage === 'grey') {
+    const results = await Promise.all(ids.map(id => {
+      const row = rows.find(r => r.id === id);
+      return sb.from('matches').update({ status: fallbackStatus(row), reviewed_at: null }).eq('id', id);
+    }));
+    const failed = results.find(x => x.error);
+    if (failed) { toast('Erreur : ' + failed.error.message); return; }
+    const incubated = incubatedIds();
+    ids.forEach(id => incubated.delete(id));
+    saveIncubatedIds(incubated);
+  } else {
+    const { error } = await sb.from('matches').update({ status: 'approved', reviewed_at: null }).in('id', ids);
+    if (error) { toast('Erreur : ' + error.message); return; }
+    const incubated = incubatedIds();
+    if (activeStage === 'selected') ids.forEach(id => incubated.delete(id));
+    saveIncubatedIds(incubated);
+  }
+  listMode = false;
+  await load();
+  toast('Étape réinitialisée');
+}
 
 document.addEventListener('keydown', handleKeyboard);
 
-window.switchTo = switchTo; window.decide = decide; window.incubate = incubate; window.resumeIncubation = resumeIncubation; window.toggleTheme = toggleTheme; window.setStage = setStage; window.enableGrey = enableGrey; window.bulkSelected = bulkSelected; window.generateBulletin = generateBulletin; window.openManualModal = openManualModal; window.deleteManualInfo = deleteManualInfo;
-window.setPeriod = setPeriod; window.toggleIncubated = toggleIncubated; window.openLastBulletin = openLastBulletin; window.resetReview = resetReview;
+window.switchTo = switchTo; window.decide = decide; window.incubate = incubate; window.resumeIncubation = resumeIncubation; window.recallIncubationToTodo = recallIncubationToTodo; window.recallReadyToTodo = recallReadyToTodo; window.toggleTheme = toggleTheme; window.setStage = setStage; window.enableGrey = enableGrey; window.bulkSelected = bulkSelected; window.generateBulletin = generateBulletin; window.openManualModal = openManualModal; window.deleteManualInfo = deleteManualInfo;
+window.setPeriod = setPeriod; window.toggleIncubated = toggleIncubated; window.toggleListMode = toggleListMode; window.openLastBulletin = openLastBulletin; window.resetReview = resetReview; window.resetCurrentStep = resetCurrentStep;
 window.dragCard = dragCard; window.endDrag = endDrag; window.allowDrop = allowDrop; window.leaveDrop = leaveDrop; window.dropOnLane = dropOnLane;
 (function start() {
   if (typeof supabase !== 'undefined') { init(); return; }
