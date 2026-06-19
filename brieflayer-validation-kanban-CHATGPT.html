@@ -14,7 +14,10 @@
   header { background: #fff; border-bottom: 1px solid var(--line); padding: 14px 32px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
   header img.logo { height: 46px; display: block; }
   header .sub { font-size: 13px; color: var(--ink-mute); letter-spacing: .02em; }
-  header .hdr-info { margin-left: auto; font-size: 12px; color: var(--ink-mute); }
+  header .navlinks { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  header .navlink { border: 1px solid var(--line); border-radius: 8px; padding: 8px 11px; color: var(--ink); text-decoration: none; font-family: 'Inter Tight', sans-serif; font-size: 13px; font-weight: 650; background: #fff; }
+  header .navlink:hover { border-color: var(--step-bulletin); color: var(--step-bulletin); }
+  header .hdr-info { margin-left: 0; font-size: 12px; color: var(--ink-mute); }
   main { max-width: 1480px; margin: 0 auto; padding: 24px 18px 90px; }
   .legend { background: #fff; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 18px; }
   .legend summary { cursor: pointer; padding: 13px 18px; font-size: 13.5px; font-weight: 500; color: var(--ink); list-style: none; display: flex; align-items: center; gap: 8px; }
@@ -51,46 +54,17 @@
   .chip { padding: 4px 12px; border: 1px solid var(--line); border-radius: 14px; background: #fff; cursor: pointer; font-size: 12px; font-family: 'Inter', sans-serif; color: var(--ink); }
   .chip:hover { border-color: var(--accent); }
   .chip.on { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .mission { display: grid; grid-template-columns: minmax(260px, 1.3fr) repeat(4, minmax(120px, .6fr)); gap: 10px; margin: 0 0 14px; }
-  .mission-main, .mission-stat { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
-  .mission-main { display: grid; gap: 8px; }
-  .mission-kicker, .mission-label { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-mute); font-weight: 600; }
-  .mission-title { font-family: 'Inter Tight', sans-serif; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-  .level-icon { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; background: var(--cream); border: 1px solid var(--line); font-size: 17px; }
-  .mission-track { height: 8px; border-radius: 999px; background: var(--cream); border: 1px solid var(--line); overflow: hidden; }
-  .mission-fill { height: 100%; background: var(--accent); border-radius: inherit; }
-  .mission-meta { font-size: 12px; color: var(--ink-mute); display: flex; gap: 10px; flex-wrap: wrap; }
-  .mission-stat strong { display: block; margin-top: 4px; font-family: 'Inter Tight', sans-serif; font-size: 22px; line-height: 1; }
-  .mission-stat.ready strong { color: var(--gold); }
-  .mission-stat.todo strong { color: var(--accent); }
-  .kanban { display: grid; grid-template-columns: repeat(4, minmax(260px, 1fr)); gap: 12px; align-items: start; }
-  .lane { min-width: 0; background: rgba(255,255,255,.52); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
-  .lane-head { position: sticky; top: 0; z-index: 2; background: #fff; border-bottom: 1px solid var(--line); padding: 14px 12px 11px; display: flex; align-items: center; gap: 8px; }
-  .lane-step { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; background: var(--ink); color: #fff; font-family: 'Inter Tight', sans-serif; font-size: 17px; font-weight: 600; }
-  .lane-icon { font-size: 17px; line-height: 1; }
-  .lane-title { font-family: 'Inter Tight', sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0; }
-  .lane-count { margin-left: auto; min-width: 26px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--cream); border: 1px solid var(--line); color: var(--ink-mute); font-size: 12px; font-weight: 600; }
-  .lane-note { padding: 0 12px 10px; margin-top: -4px; font-size: 11.5px; color: var(--ink-mute); background: #fff; border-bottom: 1px solid var(--line); }
-  .lane-body { min-height: 220px; padding: 10px; }
-  .lane-body.drop-target { outline: 2px dashed var(--accent); outline-offset: -6px; background: rgba(178,34,52,.04); }
-  .lane.ready { border-color: #d5c08a; background: #fffaf0; }
-  .lane.ready .lane-head, .lane.ready .lane-note { background: #fffaf0; }
-  .lane.selected { border-color: #cfd8e6; background: #f8fbff; }
-  .lane.selected .lane-head, .lane.selected .lane-note { background: #f8fbff; }
-  .lane.rejected { background: #fbfaf8; }
   .journey { display: grid; gap: 18px; }
-  .journey-hero, .stage-panel { min-height: calc(100vh - 245px); background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: clamp(18px, 2.4vw, 32px); display: grid; align-content: center; gap: 14px; }
-  .journey-hero { grid-template-columns: minmax(260px, 1.1fr) minmax(260px, .9fr); align-items: center; }
-  .stage-panel { align-content: start; }
-  .journey-kicker, .stage-kicker { font-size: 12px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: .12em; font-weight: 700; }
-  .journey-title, .stage-title { font-family: 'Inter Tight', sans-serif; font-size: clamp(42px, 7vw, 88px); line-height: .95; letter-spacing: 0; margin: 0; }
-  .journey-copy, .stage-copy { color: #4a4d55; font-size: clamp(16px, 2vw, 21px); line-height: 1.45; max-width: 760px; }
+  .stage-panel { min-height: calc(100vh - 245px); background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: clamp(18px, 2.4vw, 32px); display: grid; align-content: start; gap: 14px; }
+  .stage-kicker { font-size: 12px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: .12em; font-weight: 700; }
+  .stage-title { font-family: 'Inter Tight', sans-serif; font-size: clamp(42px, 7vw, 88px); line-height: .95; letter-spacing: 0; margin: 0; }
+  .stage-copy { color: #4a4d55; font-size: clamp(16px, 2vw, 21px); line-height: 1.45; max-width: 760px; }
   .stage-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-family: 'Inter Tight', sans-serif; font-size: clamp(24px, 3vw, 34px); line-height: 1.05; }
   .stage-head .stage-kicker { font-size: inherit; color: var(--ink-mute); text-transform: none; letter-spacing: 0; font-weight: 600; }
   .stage-head .stage-kicker::after { content: ' ·'; }
   .stage-head .stage-title { font-size: inherit; line-height: inherit; font-weight: 600; }
   .stage-copy.compact { margin: -6px 0 0; font-size: 13px; line-height: 1.35; max-width: 820px; color: var(--ink-mute); }
-  .journey-actions, .stage-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .stage-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
   .stage-toolbar { position: sticky; top: 0; z-index: 5; margin: -2px 0 2px; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.94); box-shadow: 0 10px 26px rgba(28,29,34,.06); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; }
   .stage-actions { min-width: 0; }
   .stage-actions .tab { border-radius: 8px; padding: 9px 14px; }
@@ -102,9 +76,6 @@
   .reset-step { background: #fafafa; color: #52525b; }
   .suggestion-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
   .suggestion-actions .tab { border-radius: 8px; }
-  .quest-card { border: 1px solid var(--line); border-radius: 8px; padding: 18px; background: var(--cream); display: grid; gap: 10px; }
-  .quest-card strong { font-family: 'Inter Tight', sans-serif; font-size: clamp(30px, 4vw, 54px); line-height: .95; }
-  .quest-card span { color: var(--ink-mute); font-size: 13px; }
   .stage-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
   .stage-tab { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px; cursor: pointer; text-align: left; color: var(--ink); display: grid; gap: 6px; border-left: 7px solid var(--line); }
   .stage-tab:hover { border-color: var(--accent); }
@@ -118,28 +89,50 @@
   .stage-tab.list { background: #e8f7ff; border-left-color: var(--step-list); }
   .stage-tab strong { font-family: 'Inter Tight', sans-serif; font-size: 19px; }
   .stage-tab span { color: var(--ink-mute); font-size: 12px; }
-  .stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; align-items: start; }
   .stage-panel.todo { border-left: 12px solid var(--step-keep); }
   .stage-panel.grey { border-left: 12px solid var(--step-grey); background: #f7f7f8; }
   .stage-panel.selected { border-left: 12px solid var(--step-bulletin); }
   .stage-panel.manual { border-left: 12px solid var(--step-manual); background: #fbf8ff; }
   .stage-panel.generate { border-left: 12px solid var(--step-generate); background: #fffaf2; }
-  .stage-panel.list { border-left: 10px solid var(--step-list); background: #fbfcfe; }
   .stage-summary { border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.72); padding: 10px 12px; display: grid; gap: 8px; }
   .stage-summary strong { font-family: 'Inter Tight', sans-serif; font-size: 16px; }
   .stage-summary span { color: var(--ink-mute); font-size: 12.5px; line-height: 1.35; }
-  .split-list { display: grid; grid-template-columns: repeat(2, minmax(260px, 1fr)); gap: 12px; align-items: start; }
+  .manual-summary-list { display: grid; gap: 7px; margin-top: 2px; }
+  .manual-summary-item { border: 1px solid #d8c6ef; border-radius: 8px; background: #fbf8ff; overflow: hidden; }
+  .manual-summary-item summary { cursor: pointer; list-style: none; padding: 9px 10px; display: flex; align-items: center; gap: 8px; color: #70456b; font-family: 'Inter Tight', sans-serif; font-size: 13.5px; font-weight: 650; }
+  .manual-summary-item summary::-webkit-details-marker { display: none; }
+  .manual-summary-item summary::before { content: '+'; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 6px; border: 1px solid currentColor; background: #fff; font-size: 12px; flex: none; }
+  .manual-summary-item[open] summary::before { content: '-'; }
+  .manual-summary-body { padding: 0 10px 10px 36px; display: grid; gap: 5px; color: #4a4d55; font-size: 12.5px; line-height: 1.45; }
+  .manual-summary-body span { color: var(--ink-mute); word-break: break-word; }
+  .split-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; align-items: start; }
   .generate-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; align-items: start; }
   .split-col { border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 12px; display: grid; gap: 10px; }
   .split-col.keep { border-top: 5px solid var(--step-keep); }
   .split-col.reject { border-top: 5px solid #c62828; }
   .split-col.wait { border-top: 5px solid var(--step-manual); }
   .split-col.ready { border-top: 5px solid var(--step-generate); }
+  .generate-columns .split-col.primary { grid-column: 1 / -1; border-top-width: 8px; background: #fff8ec; border-color: #ead09e; }
+  .generate-columns .split-col.primary h3 { font-size: 24px; color: #735613; }
+  .generate-columns .split-col.reminder { grid-column: 1 / -1; }
+  .split-col.reminder { border-top: 5px solid #db2777; background: #fff7fb; border-color: #f9a8d4; }
+  .split-col.reminder h3 { color: #9d174d; }
+  .split-col.drop-target { outline: 2px dashed var(--accent); outline-offset: -6px; background: rgba(178,34,52,.04); }
+  details.split-col { padding: 0; overflow: hidden; }
+  details.split-col summary { cursor: pointer; list-style: none; padding: 12px; display: flex; gap: 8px; align-items: start; }
+  details.split-col summary::-webkit-details-marker { display: none; }
+  details.split-col summary::before { content: '+'; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 6px; background: #fff; border: 1px solid currentColor; font-size: 12px; color: #9d174d; }
+  details.split-col[open] summary::before { content: '-'; }
+  details.split-col .compact-list { padding: 0 12px 12px; }
+  .split-col-summary { display: grid; gap: 6px; min-width: 0; }
   .split-col h3 { margin: 0; font-family: 'Inter Tight', sans-serif; font-size: 20px; }
+  .split-col-note { margin: -4px 0 0; color: var(--ink-mute); font-size: 12px; line-height: 1.35; }
   .compact-list { display: grid; gap: 8px; }
   .split-col .list-row { grid-template-columns: 1fr; }
   .split-col .list-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .mini-row { border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: #fffefb; display: grid; gap: 5px; }
+  .mini-row[draggable="true"] { cursor: grab; }
+  .mini-row.dragging { opacity: .48; cursor: grabbing; }
   .mini-row strong { font-family: 'Inter Tight', sans-serif; font-size: 14px; line-height: 1.25; }
   .mini-row span { color: var(--ink-mute); font-size: 12px; }
   .generate-layout { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(280px, 420px); gap: 18px; align-items: start; }
@@ -155,6 +148,19 @@
   .manual-mini { display: grid; gap: 8px; margin-top: 8px; }
   .manual-mini .manual-item { background: #fff; }
   .recall-box { border: 1px solid #dbe3ee; border-radius: 8px; background: #f8fbff; padding: 12px; display: grid; gap: 10px; }
+  .recall-box.wait { background: #f7f2ff; border-color: #d8c6ef; }
+  .recall-box.wait .recall-head strong { color: #70456b; }
+  .recall-box.reminder { background: #fff7fb; border-color: #f9a8d4; }
+  .recall-box.reminder .recall-head strong { color: #9d174d; }
+  details.recall-box { padding: 0; overflow: hidden; }
+  details.recall-box summary { cursor: pointer; list-style: none; padding: 12px; }
+  details.recall-box summary::-webkit-details-marker { display: none; }
+  details.recall-box summary::before { content: '+'; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-right: 8px; border-radius: 6px; background: #fff; border: 1px solid currentColor; font-size: 12px; color: #9d174d; }
+  details.recall-box[open] summary::before { content: '-'; }
+  details.recall-box .compact-list { padding: 0 12px 12px; }
+  .manual-inline { border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 14px; display: grid; gap: 10px; }
+  .manual-inline .field-label { margin: 0 0 6px; }
+  .manual-inline-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
   .recall-head { display: flex; gap: 10px; justify-content: space-between; align-items: baseline; flex-wrap: wrap; }
   .recall-head strong { font-family: 'Inter Tight', sans-serif; font-size: 16px; }
   .recall-head span { color: var(--ink-mute); font-size: 12px; }
@@ -186,6 +192,8 @@
   .source-row.internal .source-link { color: #9a3412; border-color: #fdba74; pointer-events: none; }
   .watch-list { display: grid; gap: 10px; }
   .list-row { display: grid; grid-template-columns: minmax(98px, .55fr) minmax(118px, .65fr) minmax(120px, .7fr) minmax(260px, 2.4fr) minmax(170px, 1fr); gap: 10px; align-items: start; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+  .list-row[draggable="true"] { cursor: grab; }
+  .list-row.dragging { opacity: .48; cursor: grabbing; }
   .list-row:hover { border-color: #cbd5e1; }
   .list-cell { min-width: 0; font-size: 12.5px; color: var(--ink-mute); }
   .list-cell strong { display: block; font-family: 'Inter Tight', sans-serif; color: var(--ink); font-size: 15px; line-height: 1.25; margin-bottom: 4px; }
@@ -246,12 +254,10 @@
   .manual-field { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 10px 11px; font-family: 'Inter', sans-serif; color: var(--ink); background: #fffefb; }
   .manual-field:focus { outline: none; border-color: var(--accent); }
   .manual-text { min-height: 110px; resize: vertical; line-height: 1.5; }
-  .manual-list { margin-top: 18px; display: grid; gap: 10px; }
   .manual-item { border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--cream); display: grid; gap: 6px; }
   .manual-item strong { font-family: 'Inter Tight', sans-serif; font-size: 14px; }
   .manual-item p { margin: 0; font-size: 13px; line-height: 1.45; color: #4a4d55; }
   .manual-item a, .manual-item span { font-size: 12px; color: var(--ink-mute); word-break: break-word; }
-  .manual-actions { display: flex; justify-content: flex-end; margin-top: 2px; }
   pre.prompt { white-space: pre-wrap; font-size: 12px; background: var(--cream); border: 1px solid var(--line); padding: 14px; border-radius: 10px; max-height: 45vh; overflow: auto; font-family: 'JetBrains Mono', ui-monospace, monospace; }
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 11px 22px; border-radius: 8px; font-size: 14px; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 99; }
   .toast.show { opacity: 1; }
@@ -265,15 +271,19 @@
   .faq-section .legend-body li { margin: 0 0 6px; }
   footer { text-align: center; font-size: 11.5px; color: var(--ink-mute); padding: 26px; border-top: 1px solid var(--line); background: #fff; }
   footer .gold { color: var(--gold); }
-  @media (max-width: 1180px) { .mission { grid-template-columns: repeat(2, minmax(220px, 1fr)); } .kanban { grid-template-columns: repeat(2, minmax(260px, 1fr)); } .journey-hero, .generate-layout { grid-template-columns: 1fr; } }
+  @media (max-width: 1180px) { .generate-layout { grid-template-columns: 1fr; } }
   @media (max-width: 980px) { .list-row { grid-template-columns: 1fr; } .list-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 680px) { header { padding: 12px 16px; } header .hdr-info { margin-left: 0; } .mission, .kanban, .stage-nav, .split-list, .stats-legend .lg-row, .card-radar, .stage-toolbar { grid-template-columns: 1fr; } .journey-title, .stage-title { font-size: 42px; } .stage-head { font-size: 28px; } .bar { align-items: stretch; } .bar select, .bar button, .bigbtn { width: 100%; } .stage-viewbar { justify-content: stretch; padding-left: 0; border-left: 0; border-top: 1px solid var(--line); padding-top: 10px; } .stage-viewbar .view-toggle { width: 100%; } .list-actions { grid-template-columns: 1fr; } }
+  @media (max-width: 680px) { header { padding: 12px 16px; } header .hdr-info { margin-left: 0; } .stage-nav, .split-list, .stats-legend .lg-row, .card-radar, .stage-toolbar { grid-template-columns: 1fr; } .stage-title { font-size: 42px; } .stage-head { font-size: 28px; } .bar { align-items: stretch; } .bar select, .bar button, .bigbtn { width: 100%; } .stage-viewbar { justify-content: stretch; padding-left: 0; border-left: 0; border-top: 1px solid var(--line); padding-top: 10px; } .stage-viewbar .view-toggle { width: 100%; } .list-actions { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 <header>
   <img class="logo" src="data:image/png;base64,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" alt="AleVia">
   <span class="sub">Veille &amp; intelligence sociétale — espace de validation</span>
+  <nav class="navlinks" aria-label="Navigation secondaire">
+    <a class="navlink" href="brieflayer-monitoring-n8n-CHATGPT.html" target="_blank" rel="noopener">Dashboard</a>
+    <a class="navlink" href="#faq">FAQ</a>
+  </nav>
   <span class="hdr-info" id="hdr-info">connexion…</span>
 </header>
 <main>
@@ -300,96 +310,83 @@
     <span id="f-themes"></span>
   </div>
   <div id="list"></div>
-  <details class="control-panel faq-section" aria-label="Questions fréquentes">
+  <details class="control-panel faq-section" id="faq" aria-label="Questions fréquentes">
     <summary>FAQ - Questions fréquentes</summary>
     <div class="panel-body faq-body">
     <details class="legend">
       <summary>À quoi sert cet écran ?</summary>
       <div class="legend-body">
-        <p>Il sert à relire les informations trouvées par la veille, décider ce qui mérite d'être gardé, mettre certains signaux En attente, ajouter du contexte manuel, puis préparer le prompt du prochain bulletin.</p>
+        <p>Il sert à préparer un bulletin de veille client : trier les informations, retenir celles qui doivent entrer dans le bulletin, ajouter du contexte si besoin, puis générer une base de rédaction.</p>
       </div>
     </details>
     <details class="legend">
-      <summary>D'où viennent les informations ?</summary>
+      <summary>Dans quel ordre traiter la veille ?</summary>
       <div class="legend-body">
-        <p>Les informations viennent des sources configurées dans BriefLayer. Les workflows collectent les flux, normalisent les contenus, les scorent par rapport au client, puis les stockent dans Supabase. Cette page sert d'interface de validation.</p>
+        <p>Commencez par l'étape 1 pour garder ou ignorer les informations principales. Passez ensuite aux signaux faibles si vous voulez examiner les informations moins évidentes. À l'étape 3, choisissez ce qui entre dans le bulletin. À l'étape 4, ajoutez seulement les compléments utiles. L'étape 5 sert au dernier contrôle avant génération.</p>
       </div>
     </details>
     <details class="legend">
       <summary>Comment lire les scores ?</summary>
       <div class="legend-body">
-        <p>Chaque information reçoit un score de 0 à 100 qui mesure la solidité du lien avec le périmètre de veille du client, accompagné d'un « Pourquoi » : la justification en une phrase.</p>
-        <div class="lg-row"><span class="badge s-hi">80+ · Prioritaire</span><span>le lien avec le périmètre est explicite et direct.</span></div>
-        <div class="lg-row"><span class="badge s-mid">60-79 · Pertinent</span><span>lien réel mais indirect : c'est là que le regard de consultant fait la différence.</span></div>
-        <div class="lg-row"><span class="badge s-grey">40-59 · Signal faible</span><span>le lien n'a pas pu être établi clairement, sans pouvoir être exclu. Ces cartes se traitent via l'étape « Trier les signaux faibles ».</span></div>
-        <div class="lg-row"><span class="badge u">URGENT</span><span>signal temporel ou sensible détecté en amont. Il attire l'œil, mais ne remplace pas le tri par score.</span></div>
-        <p style="margin-top:10px">En dessous de 40, l'information est ignorée automatiquement et n'apparaît pas dans la pile de revue.</p>
+        <p>Le score est une aide au tri, pas une décision automatique. Plus il est élevé, plus l'information semble proche du périmètre du client.</p>
+        <div class="lg-row"><span class="badge s-hi">80+ · Prioritaire</span><span>à regarder en premier : le lien client est fort.</span></div>
+        <div class="lg-row"><span class="badge s-mid">60-79 · Pertinent</span><span>souvent utile, mais demande une lecture éditoriale.</span></div>
+        <div class="lg-row"><span class="badge s-grey">40-59 · Signal faible</span><span>à examiner si vous cherchez des signaux moins évidents ou émergents.</span></div>
+        <div class="lg-row"><span class="badge u">URGENT</span><span>attire l'attention sur un sujet potentiellement sensible ou daté.</span></div>
       </div>
     </details>
     <details class="legend">
-      <summary>Pourquoi une information du jour peut ne pas apparaître ?</summary>
+      <summary>Quelle différence entre Garder et Ignorer ?</summary>
       <div class="legend-body">
-        <ul>
-          <li>Elle est sous le seuil de 40 et a été écartée automatiquement.</li>
-          <li>Elle est en Zone grise et n'a pas encore été chargée via l'étape dédiée.</li>
-          <li>Elle est hors période dans le filtre actif : aujourd'hui, 3 derniers jours ou tout.</li>
-          <li>Elle a déjà été ignorée, mise En attente, ou rattachée à un bulletin généré.</li>
-          <li>Le workflow de collecte ou de scoring du jour n'a pas encore fini de tourner.</li>
-        </ul>
+        <p>Garder signifie que l'information mérite d'être relue à l'étape suivante. Ignorer signifie qu'elle ne semble pas utile pour la veille en cours. Une information ignorée n'est pas un jugement définitif sur la source : c'est seulement une décision pour ce traitement.</p>
       </div>
     </details>
     <details class="legend">
-      <summary>Que veut dire Garder / Ignorer ?</summary>
+      <summary>Que faire des signaux faibles ?</summary>
       <div class="legend-body">
-        <p>Garder signifie que l'information mérite une décision éditoriale. Ignorer signifie qu'elle ne sera pas utilisée pour ce bulletin. Ignorer n'efface pas la source : cela change son statut dans la base.</p>
+        <p>Les signaux faibles sont des informations moins directement reliées au client. Ils peuvent être ignorés rapidement, mais ils sont utiles quand un sujet émergent, une tendance faible ou un angle indirect mérite d'être surveillé.</p>
       </div>
     </details>
     <details class="legend">
-      <summary>Que veut dire À arbitrer ?</summary>
+      <summary>Quelle différence entre Retenir pour le bulletin et Reporter ?</summary>
       <div class="legend-body">
-        <p>À arbitrer regroupe les cartes gardées lors de la première étape, mais pas encore envoyées vers le Prochain bulletin ni mises En attente. C'est la zone de second choix.</p>
+        <p>Retenir pour le bulletin signifie que l'information doit alimenter la génération du bulletin courant. Reporter signifie qu'elle reste intéressante, mais qu'elle ne doit pas entrer dans ce bulletin sans nouvelle décision.</p>
       </div>
     </details>
     <details class="legend">
-      <summary>Quelle différence entre Prochain bulletin et En attente ?</summary>
+      <summary>Quand ajouter une info supplémentaire ?</summary>
       <div class="legend-body">
-        <p>Prochain bulletin signifie que la carte sera utilisée dans le prompt de génération. En attente signifie que l'information reste intéressante, mais qu'elle est reportée pour plus tard et ne part pas dans le bulletin en cours.</p>
+        <p>Ajoutez une info supplémentaire uniquement si elle apporte un contexte que les informations retenues ne contiennent pas : retour terrain, échange récent, précision client, point de vigilance, source hors veille ou consigne éditoriale.</p>
       </div>
     </details>
     <details class="legend">
-      <summary>À quoi servent les informations supplémentaires ?</summary>
+      <summary>Que vérifier avant de générer ?</summary>
       <div class="legend-body">
-        <p>Elles permettent d'ajouter une note interne, un retour terrain, une source hors flux ou un point de contexte. Elles sont incluses dans le prompt du prochain bulletin du client actif.</p>
+        <p>Vérifiez que les informations retenues sont bien celles du bulletin courant, que les dates sont compréhensibles, que les sources primaires sont utilisables, et que les infos reportées ne contiennent rien d'indispensable pour ce bulletin.</p>
       </div>
     </details>
     <details class="legend">
       <summary>Que fait Générer le bulletin ?</summary>
       <div class="legend-body">
-        <p>Le bouton crée un prompt complet à partir des cartes en Prochain bulletin et des informations supplémentaires. Il copie le prompt dans le presse-papier et le garde dans l'historique des bulletins.</p>
+        <p>Le bouton prépare le texte de travail à donner à l'outil de rédaction. Il rassemble les informations retenues, les compléments saisis à la main et les consignes utiles pour produire un bulletin cohérent.</p>
       </div>
     </details>
     <details class="legend">
-      <summary>Les décisions sont-elles partagées entre utilisateurs ?</summary>
+      <summary>Que faire si une source est marquée à vérifier ?</summary>
       <div class="legend-body">
-        <p>Les décisions principales, comme Garder, Ignorer et Prochain bulletin, sont enregistrées dans Supabase : elles sont donc partagées entre les personnes qui consultent la même base. Les éléments locaux du navigateur, comme certaines infos manuelles ou la file En attente selon le paramétrage actuel, peuvent rester propres au poste utilisé.</p>
-      </div>
-    </details>
-    <details class="legend">
-      <summary>Pourquoi une source peut être marquée comme référence interne ?</summary>
-      <div class="legend-body">
-        <p>Quand une carte pointe vers retrotest.local, BriefLayer, un domaine .local ou une référence interne, ce n'est pas une source primaire publiable. La carte doit alors être vérifiée et reliée à la vraie source avant d'entrer dans un bulletin client.</p>
+        <p>Ne l'utilisez pas telle quelle dans un bulletin client. Ouvrez ou recherchez la source primaire, vérifiez le contenu, puis reformulez avec prudence si l'information est conservée.</p>
       </div>
     </details>
     <details class="legend">
       <summary>Que faire si je me trompe ?</summary>
       <div class="legend-body">
-        <p>Une carte peut être reprise depuis les boutons d'action quand elle est encore visible. Le bouton « Réinitialiser » remet la revue du client à l'état initial : à utiliser avec prudence, surtout si plusieurs personnes travaillent sur le même client.</p>
+        <p>Utilisez les boutons de l'information ou la vue liste pour la déplacer dans la bonne colonne. Le bouton de réinitialisation de l'étape sert à revenir en arrière sur l'étape en cours.</p>
       </div>
     </details>
     <details class="legend">
       <summary>Que fait Dernier bulletin ?</summary>
       <div class="legend-body">
-        <p>Il rouvre le dernier prompt généré pour le client actif. C'est utile pour retrouver ce qui a été envoyé à l'IA, vérifier les cartes utilisées, ou rouvrir la pile si le bulletin doit être repris.</p>
+        <p>Il permet de rouvrir la dernière base de bulletin préparée pour le client actif, par exemple pour relire ce qui avait été retenu ou reprendre une génération récente.</p>
       </div>
     </details>
     </div>
@@ -398,32 +395,14 @@
 
 <div class="modal-bg" id="modal" style="display:none">
   <div class="panel">
-    <h2>Prompt du bulletin — <span id="m-client"></span></h2>
-    <p class="hint">Le prompt est copié : collez-le dans Claude (ou votre IA habituelle), répondez à ses questions, ajoutez votre édito. Les cartes « prochain bulletin » et les infos supplémentaires du client actif sont utilisées.</p>
+    <h2>Base de bulletin — <span id="m-client"></span></h2>
+    <p class="hint">Le texte de travail est copié : collez-le dans Claude (ou votre IA habituelle), répondez à ses questions, ajoutez votre édito. Les infos retenues pour ce bulletin et les infos supplémentaires du client actif sont utilisées.</p>
     <pre class="prompt" id="m-prompt"></pre>
     <div style="margin-top:12px; display:flex; gap:10px">
       <button class="bigbtn" id="m-copy" type="button">Copier à nouveau</button>
-      <button class="tab" id="m-reopen" type="button" style="display:none">Rouvrir la pile générée</button>
+      <button class="tab" id="m-reopen" type="button" style="display:none">Rouvrir les infos générées</button>
       <button class="tab" id="m-close" type="button">Fermer</button>
     </div>
-  </div>
-</div>
-
-<div class="modal-bg" id="manual-modal" style="display:none">
-  <div class="panel wide">
-    <h2>Ajouter une information supplémentaire — <span id="manual-client"></span></h2>
-    <p class="hint">Ajoutez ici une note, un échange, une alerte terrain ou une information repérée hors flux. Elle sera intégrée au prochain prompt du client actif.</p>
-    <label class="field-label" for="manual-title">Titre</label>
-    <input class="manual-field" id="manual-title" type="text" placeholder="Ex. Retour rendez-vous cabinet ministériel">
-    <label class="field-label" for="manual-body">Information et angle à intégrer</label>
-    <textarea class="manual-field manual-text" id="manual-body" placeholder="Décrivez les faits, le contexte, l'angle client, les réserves éventuelles..."></textarea>
-    <label class="field-label" for="manual-source">Source ou lien, si disponible</label>
-    <input class="manual-field" id="manual-source" type="text" placeholder="URL, source interne, contact, document...">
-    <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap">
-      <button class="bigbtn" id="manual-save" type="button">✚ Ajouter au prompt</button>
-      <button class="tab" id="manual-close" type="button">Fermer</button>
-    </div>
-    <div class="manual-list" id="manual-list"></div>
   </div>
 </div>
 
@@ -436,7 +415,7 @@ const EMBED = {
   url: 'https://xkqeqajeccsacocnfqca.supabase.co',
   key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhrcWVxYWplY2NzYWNvY25mcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNjc4OTIsImV4cCI6MjA5Njc0Mzg5Mn0.7NmmzyrXt-kVMBl-_WFqPuBP_9r-BAuIbavRO_sIryk'
 };
-let sb = null, clients = [], current = null, rows = [], themes = new Set(), activeStage = 'todo', showGrey = true, includeIncubated = false, listMode = false;
+let sb = null, clients = [], current = null, rows = [], themes = new Set(), activeStage = 'todo', listMode = false;
 const TAGLABELS = { energie: 'Énergie', environnement: 'Environnement', sante: 'Santé', numerique: 'Numérique', donnees_personnelles: 'Données personnelles', fiscalite: 'Fiscalité', travail_emploi: 'Travail & emploi', transports: 'Transports', agriculture_alimentation: 'Agriculture', industrie: 'Industrie', finance: 'Finance', logement_urbanisme: 'Logement & urbanisme', education_recherche: 'Éducation & recherche', culture_medias: 'Culture & médias', defense_securite: 'Défense & sécurité', justice: 'Justice', collectivites_territoriales: 'Collectivités', europe_ue: 'Europe / UE', international: 'International', concurrence: 'Concurrence', marches_publics: 'Marchés publics', aides_etat: "Aides d'État", consommation: 'Consommation', institutions: 'Institutions' };
 
 const $ = id => document.getElementById(id);
@@ -464,7 +443,7 @@ async function renderTabs() {
     `<button type="button" class="tab ${c.id === current ? 'on' : ''}" onclick="switchTo('${c.id}')">${c.name}</button>`
   ).join('');
 }
-function switchTo(id) { current = id; activeStage = 'todo'; showGrey = true; includeIncubated = false; listMode = false; renderTabs(); load(); }
+function switchTo(id) { current = id; activeStage = 'todo'; listMode = false; renderTabs(); load(); }
 
 async function load() {
   const c = clients.find(x => x.id === current);
@@ -478,7 +457,7 @@ async function load() {
   if (error) { $('list').innerHTML = '<div class="empty">Erreur : ' + error.message + '</div>'; return; }
   rows = data || [];
   rows.sort(sortByScore);
-  renderThemes(); render(); refreshBulletinBtn();
+  renderThemes(); render();
 }
 
 function sortByScore(a, b) {
@@ -505,10 +484,6 @@ function periodLabel() {
 }
 function setPeriod(value) {
   $('f-jours').value = value;
-  render();
-}
-function toggleIncubated() {
-  includeIncubated = !includeIncubated;
   render();
 }
 function toggleListMode() {
@@ -602,10 +577,10 @@ function missingPrimarySources(items) {
 function scoreInfo(s) {
   if (s >= 80) return ['s-hi', 'Prioritaire', 'prioritaire', '80+'];
   if (s >= 60) return ['s-mid', 'Pertinent', 'pertinent', '60-79'];
-  return ['s-grey', 'Zone grise', 'zone-grise', '40-59'];
+  return ['s-grey', 'Signal faible', 'zone-grise', '40-59'];
 }
 function formatDateTile(value) {
-  if (!value) return { main: 'n.c.', sub: 'date absente' };
+  if (!value) return { main: 'Date à vérifier', sub: 'absente' };
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return { main: String(value).slice(0, 10), sub: 'date brute' };
   const now = new Date();
@@ -664,8 +639,8 @@ async function resumeIncubation(id) {
   }
   removeIncubation(id);
   rows = rows.map(r => r.id === id ? { ...r, status: 'approved' } : r);
-  toast('Remis à arbitrer');
-  render(); refreshBulletinBtn();
+  toast('Remis à trier');
+  render();
 }
 async function recallIncubationToTodo(id) {
   const row = rows.find(r => r.id === id);
@@ -676,8 +651,8 @@ async function recallIncubationToTodo(id) {
   removeIncubation(id);
   rows = rows.map(r => r.id === id ? { ...r, status: next, reviewed_at: null } : r);
   activeStage = 'todo';
-  toast('Remis dans la pile');
-  render(); refreshBulletinBtn();
+  toast('Remis au tri');
+  render();
 }
 async function recallReadyToTodo(id) {
   const row = rows.find(r => r.id === id);
@@ -687,8 +662,8 @@ async function recallReadyToTodo(id) {
   if (error) { toast('Erreur : ' + error.message); return; }
   rows = rows.map(r => r.id === id ? { ...r, status: next, reviewed_at: null, bulletin_id: null } : r);
   activeStage = next === 'grey' ? 'grey' : 'todo';
-  toast('Remis dans la pile');
-  render(); refreshBulletinBtn();
+  toast('Remis au tri');
+  render();
 }
 async function incubate(id) {
   const row = rows.find(r => r.id === id);
@@ -701,83 +676,44 @@ async function incubate(id) {
     saveIncubatedIds(ids);
     rows = rows.map(r => r.id === id ? { ...r, client_summary: summary } : r);
     advanceStageIfDone();
-    render(); refreshBulletinBtn();
-    toast('Mis en attente localement : ' + error.message);
+    render();
+    toast('Reporté localement : ' + error.message);
     return;
   }
   removeIncubation(id);
   rows = rows.map(r => r.id === id ? { ...r, status: 'incubated', client_summary: summary } : r);
   advanceStageIfDone();
   render();
-  refreshBulletinBtn();
-  toast('Mis en attente');
+  toast('Reporté hors bulletin courant');
 }
 function manualId() {
   return 'manual-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
 }
-function renderManualList() {
-  if (!$('manual-list')) return;
-  const list = manualItems();
-  $('manual-list').innerHTML = list.length ? list.map(item => `
-    <div class="manual-item">
-      <strong>${esc(item.title || 'Information sans titre')}</strong>
-      <p>${esc(item.body || '')}</p>
-      ${item.source ? `<span>Source : ${esc(item.source)}</span>` : '<span>Source à compléter</span>'}
-      <div class="manual-actions"><button class="tab" type="button" onclick="deleteManualInfo('${item.id}')">Retirer</button></div>
-    </div>`).join('') : '<div class="empty">Aucune information manuelle en attente.</div>';
-}
-function openManualModal() {
-  const c = clients.find(x => x.id === current);
-  $('manual-client').textContent = c ? c.name : '';
-  $('manual-title').value = '';
-  $('manual-body').value = '';
-  $('manual-source').value = '';
-  renderManualList();
-  $('manual-modal').style.display = 'flex';
-}
-function closeManualModal() {
-  $('manual-modal').style.display = 'none';
-}
 function saveManualInfo() {
-  const title = $('manual-title').value.trim();
-  const body = $('manual-body').value.trim();
-  const source = $('manual-source').value.trim();
+  const titleEl = $('manual-title');
+  const bodyEl = $('manual-body');
+  const sourceEl = $('manual-source');
+  const title = titleEl ? titleEl.value.trim() : '';
+  const body = bodyEl ? bodyEl.value.trim() : '';
+  const source = sourceEl ? sourceEl.value.trim() : '';
   if (!title && !body) { toast('Ajoutez au moins un titre ou un contenu.'); return; }
   const list = manualItems();
   list.push({ id: manualId(), title, body, source, created_at: new Date().toISOString() });
   saveManualItems(list);
-  $('manual-title').value = '';
-  $('manual-body').value = '';
-  $('manual-source').value = '';
-  renderManualList();
+  if (titleEl) titleEl.value = '';
+  if (bodyEl) bodyEl.value = '';
+  if (sourceEl) sourceEl.value = '';
   render();
-  refreshBulletinBtn();
-  toast('Info manuelle ajoutée au prochain prompt');
+  toast('Info supplémentaire ajoutée');
 }
-function deleteManualInfo(id) {
-  saveManualItems(manualItems().filter(item => item.id !== id));
-  renderManualList();
-  render();
-  refreshBulletinBtn();
-  toast('Info manuelle retirée');
-}
-function levelInfo(done, ready, manualCount) {
-  const boosted = done + manualCount;
-  if (ready >= 12 || boosted >= 30) return { icon: '🏁', label: 'Directeur de publication' };
-  if (ready >= 8 || boosted >= 20) return { icon: '⚡', label: 'Architecte du bulletin' };
-  if (ready >= 4 || boosted >= 12) return { icon: '🎯', label: 'Stratège de veille' };
-  if (ready >= 1 || boosted >= 5) return { icon: '🧭', label: 'Curateur confirmé' };
-  return { icon: '✦', label: 'Éclaireur' };
-}
-
-const LANES = [
-  { key: 'todo', cls: 'todo', step: '1', icon: '🧭', title: 'Trier les infos', note: 'Garder ou ignorer, score décroissant', statuses: ['proposed'] },
-  { key: 'selected', cls: 'selected', step: '2', icon: '🎯', title: 'À arbitrer', note: 'Parmi les gardés : prochain bulletin ou En attente', statuses: ['approved'] },
-  { key: 'rejected', cls: 'rejected', step: '3', icon: '×', title: 'Ignoré', note: 'Ignoré mais récupérable en un clic', statuses: ['rejected'] },
-  { key: 'ready', cls: 'ready', step: '4', icon: '⚡', title: 'Prêt pour le prochain bulletin', note: 'Ces informations alimentent le prompt du bulletin', statuses: ['edited'] }
+const STATUS_GROUPS = [
+  { key: 'todo', statuses: ['proposed'] },
+  { key: 'selected', statuses: ['approved'] },
+  { key: 'rejected', statuses: ['rejected'] },
+  { key: 'ready', statuses: ['edited'] }
 ];
 function laneFor(row) {
-  return LANES.find(l => l.statuses.includes(row.status)) || LANES[0];
+  return STATUS_GROUPS.find(l => l.statuses.includes(row.status)) || STATUS_GROUPS[0];
 }
 function fallbackStatus(row) {
   return row.llm_score >= 60 ? 'proposed' : 'grey';
@@ -791,10 +727,17 @@ function isPreviousReady(row) {
   today.setHours(0, 0, 0, 0);
   return reviewed.getTime() < today.getTime();
 }
+function currentReadyRows(list) {
+  return (list || []).filter(r => !isPreviousReady(r));
+}
+function previousReadyRows(list) {
+  return (list || []).filter(isPreviousReady);
+}
 function statusForLane(row, laneKey) {
   if (laneKey === 'todo') return fallbackStatus(row);
   if (laneKey === 'selected') return 'approved';
   if (laneKey === 'rejected') return 'rejected';
+  if (laneKey === 'incubation') return 'incubated';
   if (laneKey === 'ready') return 'edited';
   return row.status;
 }
@@ -802,13 +745,13 @@ function actionsFor(row) {
   const back = fallbackStatus(row);
   if (isIncubated(row)) return `
         <button type="button" class="b-soft" onclick="resumeIncubation('${row.id}')">Reprendre</button>
-        <button type="button" class="b-ready" onclick="decide('${row.id}', 'edited')">Intégrer au prochain bulletin</button>`;
+        <button type="button" class="b-ready" onclick="decide('${row.id}', 'edited')">Retenir pour ce bulletin</button>`;
   if (row.status === 'approved') return `
-        <button type="button" class="b-wait" onclick="incubate('${row.id}')">Mettre En attente</button>
-        <button type="button" class="b-ready" onclick="decide('${row.id}', 'edited')">Intégrer au prochain bulletin</button>`;
+        <button type="button" class="b-wait" onclick="incubate('${row.id}')">Reporter hors bulletin</button>
+        <button type="button" class="b-ready" onclick="decide('${row.id}', 'edited')">Retenir pour ce bulletin</button>`;
   if (row.status === 'edited') return `
         <button type="button" class="b-no" onclick="decide('${row.id}', 'rejected')">Ignorer</button>
-        <button type="button" class="b-soft" onclick="decide('${row.id}', 'approved')">Remettre à arbitrer</button>`;
+        <button type="button" class="b-soft" onclick="decide('${row.id}', 'approved')">Remettre à trier</button>`;
   if (row.status === 'rejected') return `
         <button type="button" class="b-ok" onclick="decide('${row.id}', 'approved')">Garder</button>
         <button type="button" class="b-soft" onclick="decide('${row.id}', '${back}')">Restaurer</button>`;
@@ -817,14 +760,14 @@ function actionsFor(row) {
         <button type="button" class="b-ok" onclick="decide('${row.id}', 'approved')">Garder</button>`;
 }
 function groupRows(list) {
-  const grouped = Object.fromEntries(LANES.map(l => [l.key, []]));
+  const grouped = Object.fromEntries(STATUS_GROUPS.map(l => [l.key, []]));
   grouped.grey = [];
   grouped.incubation = [];
   const incubated = incubatedIds();
   list.forEach(r => {
     if (r.status === 'grey') grouped.grey.push(r);
-    else if (r.status === 'incubated') (includeIncubated ? grouped.selected : grouped.incubation).push(r);
-    else if (!includeIncubated && r.status === 'approved' && incubated.has(r.id)) grouped.incubation.push(r);
+    else if (r.status === 'incubated') grouped.incubation.push(r);
+    else if (r.status === 'approved' && incubated.has(r.id)) grouped.incubation.push(r);
     else grouped[laneFor(r).key].push(r);
   });
   Object.values(grouped).forEach(g => g.sort(sortByScore));
@@ -846,24 +789,25 @@ function stageTools(actions = '', options = {}) {
   </div>`;
 }
 function stageCounts(grouped) {
+  const currentReady = currentReadyRows(grouped.ready).length;
   return {
     todo: grouped.todo.length,
     selected: grouped.selected.length,
     grey: grouped.grey.length,
     incubation: grouped.incubation.length,
     rejected: grouped.rejected.length,
-    ready: grouped.ready.length,
+    ready: currentReady,
     manual: manualItems().length
   };
 }
 function renderStageNav(grouped) {
   const c = stageCounts(grouped);
   const tabs = [
-    { key: 'todo', cls: 'todo', label: '1. Trier les infos', hint: `${c.todo} info(s) à trier`, icon: '🧭' },
-    { key: 'grey', cls: 'grey', label: '1b. Trier les signaux faibles', hint: `${c.grey} info(s) sous 60/100`, icon: '◐' },
-    { key: 'selected', cls: 'selected', label: '2. Choisir le bulletin', hint: `${c.selected} carte${c.selected > 1 ? 's' : ''} à orienter`, icon: '🎯' },
-    { key: 'manual', cls: 'manual', label: '3. Ajouter des infos', hint: `${c.manual} ajout${c.manual > 1 ? 's' : ''} manuel${c.manual > 1 ? 's' : ''}`, icon: '✚' },
-    { key: 'generate', cls: 'generate', label: '4. Voir le bulletin', hint: `${c.ready + c.manual} élément${c.ready + c.manual > 1 ? 's' : ''} retenu${c.ready + c.manual > 1 ? 's' : ''}`, icon: '◎' }
+    { key: 'todo', cls: 'todo', label: '1. Trier les infos à garder', hint: `${c.todo} info(s) à trier`, icon: '🧭' },
+    { key: 'grey', cls: 'grey', label: '2. Trier les signaux faibles', hint: `${c.grey} info(s) sous 60/100`, icon: '◐' },
+    { key: 'selected', cls: 'selected', label: '3. Choisir les infos à intégrer au bulletin', hint: `${c.selected} info${c.selected > 1 ? 's' : ''} à trier`, icon: '🎯' },
+    { key: 'manual', cls: 'manual', label: '4. Ajouter des infos supplémentaires', hint: `${c.manual} ajout${c.manual > 1 ? 's' : ''} manuel${c.manual > 1 ? 's' : ''}`, icon: '✚' },
+    { key: 'generate', cls: 'generate', label: '5. Générer le bulletin', hint: `${c.ready + c.manual} élément${c.ready + c.manual > 1 ? 's' : ''} retenu${c.ready + c.manual > 1 ? 's' : ''}`, icon: '⚡' }
   ];
   return `<nav class="stage-nav">${tabs.map(t => `<button class="stage-tab ${t.cls} ${activeStage === t.key ? 'on' : ''}" type="button" onclick="setStage('${t.key}')"><strong>${t.icon} ${t.label}</strong><span>${t.hint}</span></button>`).join('')}</nav>`;
 }
@@ -878,11 +822,12 @@ function stageHeader(step, title, copy) {
   return `<div class="stage-head"><span class="stage-kicker">${esc(step)}</span><h2 class="stage-title">${esc(title)}</h2></div>
     <p class="stage-copy compact">${esc(copy)}</p>`;
 }
-function stageSummary(main, detail, showPeriod = true) {
+function stageSummary(main, detail, showPeriod = true, extra = '') {
   return `<div class="stage-summary">
     <strong>${esc(showPeriod ? `${periodLabel()} : ${main}` : main)}</strong>
     <span>${esc(detail)}</span>
     ${showPeriod ? renderPeriodPicker() : ''}
+    ${extra}
   </div>`;
 }
 function emptyTodoSuggestion(count) {
@@ -900,16 +845,17 @@ function listToggleButton() {
   const icon = listMode
     ? '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="3"></rect><path d="M8 9h8M8 13h5"></path></svg>'
     : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
-  return `<button class="view-toggle ${listMode ? 'on' : ''}" type="button" onclick="toggleListMode()">${icon}<span>${listMode ? 'Cartes' : 'Vue liste'}</span></button>`;
+  return `<button class="view-toggle ${listMode ? 'on' : ''}" type="button" onclick="toggleListMode()">${icon}<span>${listMode ? 'Vue cartes' : 'Vue liste'}</span></button>`;
 }
 function miniRow(r) {
   const it = r.items || {};
   const dateInfo = formatDateTile(it.published_at);
   const [, slab] = scoreInfo(r.llm_score);
   const source = sourceInfo(it);
-  return `<div class="mini-row">
+  const dragAttrs = r.id ? ` draggable="true" data-id="${r.id}" ondragstart="dragCard(event, '${r.id}')" ondragend="endDrag(event)"` : '';
+  return `<div class="mini-row"${dragAttrs}>
     <strong>${esc(it.title || 'Information sans titre')}</strong>
-    <span>${esc(dateInfo.main)} · ${r.llm_score} · ${esc(slab)}</span>
+    <span>${esc(dateInfo.main)} · ${r.llm_score}/100 · ${esc(slab)}</span>
     <span>${source.valid ? 'Source : ' + esc(source.host) : 'Source à vérifier : ' + esc(source.host)}</span>
     <span>${esc(r.client_summary || r.rationale || '')}</span>
   </div>`;
@@ -917,81 +863,116 @@ function miniRow(r) {
 function manualMiniRow(item) {
   return `<div class="mini-row">
     <strong>${esc(item.title || 'Information manuelle')}</strong>
+    <span>Information supplémentaire</span>
     <span>${esc(item.source || 'Source à compléter')}</span>
     <span>${esc(item.body || '')}</span>
   </div>`;
 }
-function splitColumn(cls, title, items, renderItem = miniRow) {
-  return `<section class="split-col ${cls}">
-    <h3>${esc(title)}</h3>
+function retainedForBulletinRow(item) {
+  return item && item._manual ? manualMiniRow(item) : miniRow(item);
+}
+function retainedForBulletinListRow(item) {
+  return item && item._manual ? manualMiniRow(item) : renderListRow(item);
+}
+function renderManualSummaryItems(items) {
+  if (!items.length) return '';
+  return `<div class="manual-summary-list">${items.map((item, index) => `<details class="manual-summary-item">
+    <summary>${esc(item.title || `Information supplémentaire ${index + 1}`)}</summary>
+    <div class="manual-summary-body">
+      <p>${esc(item.body || 'Information à compléter.')}</p>
+      <span>${esc(item.source || 'Source à compléter')}</span>
+    </div>
+  </details>`).join('')}</div>`;
+}
+function renderManualInlineForm() {
+  return `<section class="manual-inline" aria-label="Ajouter une information supplémentaire">
+    <div>
+      <label class="field-label" for="manual-title">Titre</label>
+      <input class="manual-field" id="manual-title" type="text" placeholder="Ex. Retour terrain, échange institutionnel, précision client">
+    </div>
+    <div>
+      <label class="field-label" for="manual-body">Information et angle à intégrer</label>
+      <textarea class="manual-field manual-text" id="manual-body" placeholder="Ajoutez le contexte utile au bulletin : fait important, nuance, réserve, angle client, question à surveiller..."></textarea>
+    </div>
+    <div>
+      <label class="field-label" for="manual-source">Source ou lien, si disponible</label>
+      <input class="manual-field" id="manual-source" type="text" placeholder="URL, document, contact, note interne...">
+    </div>
+    <div class="manual-inline-actions">
+      <button class="bigbtn" type="button" onclick="saveManualInfo()">✚ Ajouter l'info</button>
+    </div>
+  </section>`;
+}
+function splitColumn(cls, title, items, renderItem = miniRow, note = '', laneKey = '', options = {}) {
+  const dropAttrs = laneKey ? ` ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="dropOnLane(event, '${laneKey}')"` : '';
+  const titleText = options.count ? `${title} (${items.length})` : title;
+  if (options.collapsible) {
+    return `<details class="split-col ${cls}"${dropAttrs}>
+      <summary><span aria-hidden="true"></span><span class="split-col-summary"><h3>${esc(titleText)}</h3>${note ? `<p class="split-col-note">${esc(note)}</p>` : ''}</span></summary>
+      <div class="compact-list">${items.length ? items.map(renderItem).join('') : '<div class="empty">Rien ici pour le moment.</div>'}</div>
+    </details>`;
+  }
+  return `<section class="split-col ${cls}"${dropAttrs}>
+    <h3>${esc(titleText)}</h3>
+    ${note ? `<p class="split-col-note">${esc(note)}</p>` : ''}
     <div class="compact-list">${items.length ? items.map(renderItem).join('') : '<div class="empty">Rien ici pour le moment.</div>'}</div>
   </section>`;
 }
-function renderStepSplit(left, right) {
-  return `<div class="split-list">${left}${right}</div>`;
+function renderStepSplit(...columns) {
+  return `<div class="split-list">${columns.join('')}</div>`;
 }
-function renderActionColumn(cls, title, items) {
-  return splitColumn(cls, title, items, renderListRow);
+function renderActionColumn(cls, title, items, laneKey = '', options = {}) {
+  return splitColumn(cls, title, items, renderListRow, '', laneKey, options);
 }
-function renderIncubationRecall(grouped) {
-  const items = grouped.incubation || [];
+function renderReportedRecall(grouped) {
+  const incubated = (grouped.incubation || []).map(r => ({ row: r, origin: 'Reportée hors bulletin', action: 'recallIncubationToTodo' }));
+  const previous = previousReadyRows(grouped.ready || []).map(r => ({ row: r, origin: 'Retenue avant cette revue', action: 'recallReadyToTodo' }));
+  const items = [...incubated, ...previous];
   if (!items.length) return '';
-  return `<section class="recall-box">
-    <div class="recall-head">
-      <strong>En attente à réinvoquer</strong>
-      <span>${items.length} carte${items.length > 1 ? 's' : ''} mise${items.length > 1 ? 's' : ''} de côté</span>
-    </div>
-    <div class="compact-list">${items.map(r => {
+  return `<details class="recall-box reminder">
+    <summary class="recall-head">
+      <strong>Infos reportées (${items.length})</strong>
+      <span>${items.length} information${items.length > 1 ? 's' : ''} à réexaminer avant validation</span>
+    </summary>
+    <div class="compact-list">${items.map(item => {
+      const r = item.row;
       const it = r.items || {};
+      const dateInfo = formatDateTile(it.published_at);
       return `<div class="mini-row">
-        <strong>${esc(it.title || 'Information en attente')}</strong>
+        <strong>${esc(it.title || 'Information reportée')}</strong>
+        <span>Date : ${esc(dateInfo.main)} · ${esc(dateInfo.sub)}</span>
+        <span>Origine : ${esc(item.origin)}</span>
         <span>${esc(r.client_summary || r.rationale || '')}</span>
-        <div class="list-actions"><button type="button" class="b-soft" onclick="recallIncubationToTodo('${r.id}')">Remettre dans la pile</button></div>
+        <div class="list-actions"><button type="button" class="b-soft" onclick="${item.action}('${r.id}')">Remettre au tri</button></div>
       </div>`;
     }).join('')}</div>
-  </section>`;
+  </details>`;
 }
-function renderPreviousReadyRecall(grouped) {
-  const items = (grouped.ready || []).filter(isPreviousReady);
-  if (!items.length) return '';
-  return `<section class="recall-box">
-    <div class="recall-head">
-      <strong>Retenues précédemment</strong>
-      <span>${items.length} info${items.length > 1 ? 's' : ''} pas encore intégrée${items.length > 1 ? 's' : ''}</span>
-    </div>
-    <div class="compact-list">${items.map(r => {
-      const it = r.items || {};
-      return `<div class="mini-row">
-        <strong>${esc(it.title || 'Information retenue')}</strong>
-        <span>${esc(r.client_summary || r.rationale || '')}</span>
-        <div class="list-actions"><button type="button" class="b-soft" onclick="recallReadyToTodo('${r.id}')">Remettre dans la pile</button></div>
-      </div>`;
-    }).join('')}</div>
-  </section>`;
-}
-function renderGenerateRecap(ready, manual) {
-  const previous = ready.filter(isPreviousReady);
-  const current = ready.filter(r => !isPreviousReady(r));
+function renderGenerateRecap(ready, manual, incubation) {
+  const previous = previousReadyRows(ready);
+  const current = currentReadyRows(ready);
+  const retained = [...current, ...manual.map(item => ({ ...item, _manual: true }))];
+  const reminders = [...incubation, ...previous];
   return `<div class="generate-columns">
-    ${splitColumn('wait', 'Contexte ajouté', manual, manualMiniRow)}
-    ${splitColumn('ready', 'Retenues précédemment', previous)}
-    ${splitColumn('ready', 'À intégrer au bulletin', current)}
+    ${splitColumn('ready primary', 'Infos retenues pour ce bulletin', retained, retainedForBulletinRow, 'Prioritaire : infos RSS validées et informations supplémentaires ajoutées à la main.', 'ready', { count: true })}
+    ${splitColumn('reminder', 'Infos reportées', reminders, miniRow, 'Infos gardées pour mémoire, mais non incluses automatiquement dans ce bulletin.', 'incubation', { collapsible: true, count: true })}
   </div>`;
 }
-function renderGenerateList(ready, manual) {
-  const previous = ready.filter(isPreviousReady);
-  const current = ready.filter(r => !isPreviousReady(r));
+function renderGenerateList(ready, manual, incubation) {
+  const previous = previousReadyRows(ready);
+  const current = currentReadyRows(ready);
+  const retained = [...current, ...manual.map(item => ({ ...item, _manual: true }))];
+  const reminders = [...incubation, ...previous];
   return `<div class="generate-columns">
-    ${splitColumn('wait', 'Contexte ajouté', manual, manualMiniRow)}
-    ${splitColumn('ready', 'Retenues précédemment', previous, renderListRow)}
-    ${splitColumn('ready', 'À intégrer au bulletin', current, renderListRow)}
+    ${splitColumn('ready primary', 'Infos retenues pour ce bulletin', retained, retainedForBulletinListRow, 'Prioritaire : infos RSS validées et informations supplémentaires ajoutées à la main.', 'ready', { count: true })}
+    ${splitColumn('reminder', 'Infos reportées', reminders, renderListRow, 'Infos gardées pour mémoire, mais non incluses automatiquement dans ce bulletin.', 'incubation', { collapsible: true, count: true })}
   </div>`;
 }
 function renderGreyStage(grouped) {
   const cards = grouped.grey;
   const card = cards[0];
   return `<section class="stage-panel grey">
-    ${stageHeader('Étape optionnelle', 'Trier les signaux faibles', 'Trier les informations dont le score est inférieur à 60/100.')}
+    ${stageHeader('Deuxième étape', '◐ Trier les signaux faibles', 'Trier les informations dont le score est inférieur à 60/100.')}
     ${stageSummary(`${cards.length} signal(aux) faible(s) à trier`, 'Ils sont affichés directement ici, sans chargement manuel.')}
     ${stageTools()}
     ${listMode ? renderStepSplit(renderActionColumn('reject', 'À ignorer ou déjà ignorés', [...cards, ...grouped.rejected.filter(r => r.llm_score < 60)]), renderActionColumn('keep', 'Repêchés pour la suite', [...grouped.selected, ...grouped.ready].filter(r => r.llm_score < 60))) : `<div class="keyboard-tip">Astuce clavier : ← ignorer · → garder</div><div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} signal${cards.length > 1 ? 'aux' : ''} faible${cards.length > 1 ? 's' : ''} à trier</div>${renderCard(card)}` : '<div class="empty">Aucun signal faible à trier sur cette période.</div>'}</div>`}
@@ -1000,50 +981,65 @@ function renderGreyStage(grouped) {
 function renderTodoStage(grouped) {
   const cards = grouped.todo;
   const card = cards[0];
+  const previousReady = previousReadyRows(grouped.ready);
+  const currentReady = currentReadyRows(grouped.ready);
   return `<section class="stage-panel todo">
-    ${stageHeader('Première étape', 'Trier les infos', 'Une carte à la fois : garder ce qui mérite arbitrage, ignorer le hors sujet.')}
-    ${stageSummary(`${cards.length} information(s) encore à traiter`, `${grouped.selected.length} gardée(s) pour arbitrage · ${grouped.rejected.length} ignorée(s).`)}
+    ${stageHeader('Première étape', '🧭 Trier les infos à garder', 'Une info à la fois : garder ce qui mérite une décision, ignorer le hors sujet.')}
+    ${stageSummary(`${cards.length} information(s) encore à trier`, `${grouped.selected.length} gardée(s) pour l'étape 3 · ${grouped.rejected.length} ignorée(s).`)}
     ${stageTools()}
     ${emptyTodoSuggestion(cards.length)}
-    ${renderIncubationRecall(grouped)}
-    ${renderPreviousReadyRecall(grouped)}
-    ${listMode ? renderStepSplit(renderActionColumn('reject', 'À trier ou ignorées', [...cards, ...grouped.rejected.filter(r => r.llm_score >= 60)]), renderActionColumn('keep', 'Gardées pour la suite', [...grouped.selected, ...grouped.ready].filter(r => r.llm_score >= 60))) : `<div class="keyboard-tip">Astuce clavier : ← ignorer · → garder</div><div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} carte${cards.length > 1 ? 's' : ''} dans la pile</div>${renderCard(card)}` : '<div class="empty">Pile terminée. Direction les infos à arbitrer.</div>'}</div>`}
+    ${listMode ? '' : renderReportedRecall(grouped)}
+    ${listMode ? renderStepSplit(
+      renderActionColumn('wait', 'À trier', cards, 'todo'),
+      renderActionColumn('reject', 'Infos ignorées', grouped.rejected.filter(r => r.llm_score >= 60), 'rejected'),
+      renderActionColumn('reminder', 'Infos reportées', [...grouped.incubation, ...previousReady], 'incubation'),
+      renderActionColumn('keep', 'Infos gardées pour la suite', [...grouped.selected, ...currentReady].filter(r => r.llm_score >= 60), 'selected')
+    ) : `<div class="keyboard-tip">Astuce clavier : ← ignorer · → garder</div><div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} info${cards.length > 1 ? 's' : ''} à trier</div>${renderCard(card)}` : '<div class="empty">Tri terminé. Direction les infos à intégrer au bulletin.</div>'}</div>`}
   </section>`;
 }
 function renderSelectedStage(grouped) {
   const cards = grouped.selected;
   const card = cards[0];
-  const incubation = grouped.incubation;
+  const previousReady = previousReadyRows(grouped.ready);
+  const currentReady = currentReadyRows(grouped.ready);
+  const incubation = [...grouped.incubation, ...previousReady];
   return `<section class="stage-panel selected">
-    ${stageHeader('Deuxième étape', 'Choisir le bulletin', 'Envoyer au prochain bulletin ou laisser en attente.')}
-    ${stageSummary(`${cards.length} information(s) à arbitrer`, `${grouped.ready.length} pour le prochain bulletin · ${incubation.length} en attente.`)}
+    ${stageHeader('Troisième étape', '🎯 Choisir les infos à intégrer au bulletin', 'Envoyer au bulletin courant ou reporter hors bulletin.')}
+    ${stageSummary(`${cards.length} information(s) à trier`, `${currentReady.length} retenue(s) pour ce bulletin · ${incubation.length} reportée(s).`)}
     ${stageTools()}
-    ${listMode ? renderStepSplit(renderActionColumn('wait', 'À orienter ou en attente', [...cards, ...incubation]), renderActionColumn('ready', 'Pour le prochain bulletin', grouped.ready)) : `<div class="keyboard-tip">Astuce clavier : ← mettre En attente · → intégrer au prochain bulletin</div><div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} carte${cards.length > 1 ? 's' : ''} à arbitrer</div>${renderCard(card)}` : '<div class="empty">Aucune carte à arbitrer.</div>'}</div><div class="manual-mini">${incubation.length ? incubation.map(item => `<div class="manual-item"><strong>${esc((item.items || {}).title || 'Information en attente')}</strong><p>${esc(item.client_summary || item.rationale || '')}</p><span>En attente</span></div>`).join('') : ''}</div>`}
+    ${listMode ? renderStepSplit(
+      renderActionColumn('wait', 'À trier', cards, 'selected'),
+      renderActionColumn('reminder', 'Infos reportées', incubation, 'incubation', { collapsible: true, count: true }),
+      renderActionColumn('ready', 'Retenues pour le bulletin', currentReady, 'ready')
+    ) : `<div class="keyboard-tip">Astuce clavier : ← reporter hors bulletin · → retenir pour ce bulletin</div><div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} info${cards.length > 1 ? 's' : ''} à trier</div>${renderCard(card)}` : '<div class="empty">Aucune info à trier dans cette étape.</div>'}</div>${splitColumn('reminder', 'Infos reportées', incubation, renderListRow, 'Infos gardées pour mémoire, mais non incluses automatiquement dans ce bulletin.', 'incubation', { collapsible: true, count: true })}`}
   </section>`;
 }
 function renderManualStage(grouped) {
   const manual = manualItems();
+  const currentReady = currentReadyRows(grouped.ready);
   return `<section class="stage-panel manual">
-    ${stageHeader('Troisième étape', 'Ajouter des infos', 'Ajouter uniquement le contexte hors flux utile au bulletin.')}
-    ${stageSummary(`${manual.length} information(s) supplémentaire(s)`, `${grouped.ready.length} carte(s) déjà prêtes pour le bulletin.`)}
+    ${stageHeader('Quatrième étape', '✚ Ajouter des infos supplémentaires', 'Ajouter uniquement le contexte hors flux utile au bulletin.')}
+    ${stageSummary(`${manual.length} information(s) supplémentaire(s)`, `${currentReady.length} info(s) déjà retenue(s) pour ce bulletin.`, false, renderManualSummaryItems(manual))}
     ${stageTools()}
-    <div class="manual-mini">
-      <button class="bigbtn" type="button" onclick="openManualModal()">✚ Ajouter une info supplémentaire</button>
-    </div>
-    ${listMode ? renderStepSplit(splitColumn('wait', 'Cartes déjà retenues', grouped.ready), splitColumn('ready', 'Infos ajoutées au prompt', manual, manualMiniRow)) : `<div class="manual-mini">${manual.length ? manual.map(item => `<div class="manual-item"><strong>${esc(item.title || 'Information manuelle')}</strong><p>${esc(item.body || '')}</p><span>${esc(item.source || 'Source à compléter')}</span></div>`).join('') : '<div class="empty">Aucune info manuelle en attente.</div>'}</div>`}
+    ${renderManualInlineForm()}
+    ${listMode ? renderStepSplit(splitColumn('wait', 'Infos retenues pour ce bulletin', currentReady)) : ''}
   </section>`;
 }
 function renderGenerateStage(grouped) {
   const ready = grouped.ready;
+  const incubation = grouped.incubation;
+  const currentReady = currentReadyRows(ready);
+  const previous = previousReadyRows(ready);
+  const remindersCount = incubation.length + previous.length;
   const manual = manualItems();
-  const total = ready.length + manual.length;
+  const total = currentReady.length + manual.length;
   return `<section class="stage-panel generate">
-    ${stageHeader('Quatrième étape', 'Voir le bulletin', total ? `${total} élément${total > 1 ? 's' : ''} prêt${total > 1 ? 's' : ''} pour le prochain bulletin.` : 'Ajoutez au moins une carte ou une info manuelle avant de générer.')}
-    ${stageSummary(`${ready.length} carte(s) + ${manual.length} info(s) manuelle(s)`, 'Récapitulatif des éléments qui partiront dans le prompt du bulletin.')}
+    ${stageHeader('Cinquième étape', '⚡ Générer le bulletin', total ? `${total} élément${total > 1 ? 's' : ''} retenu${total > 1 ? 's' : ''} pour ce bulletin.` : 'Ajoutez au moins une info retenue ou une info manuelle avant de générer.')}
+    ${stageSummary(`${currentReady.length} info(s) retenue(s) + ${manual.length} info(s) manuelle(s)`, `${remindersCount} information(s) reportée(s) à vérifier avant validation finale. Les infos ajoutées à la main seront signalées comme compléments sourcés dans la base de rédaction.`, false)}
     <div class="generate-layout">
-      <div>${listMode ? renderGenerateList(ready, manual) : renderGenerateRecap(ready, manual)}</div>
+      <div>${listMode ? renderGenerateList(ready, manual, incubation) : renderGenerateRecap(ready, manual, incubation)}</div>
       <aside class="generate-side" aria-label="Options de génération">
-        <button class="bigbtn" type="button" onclick="generateBulletin()" ${total ? '' : 'disabled'}>⚡ Générer par prompt<span class="arrow">→</span></button>
+        <button class="bigbtn" type="button" onclick="generateBulletin()" ${total ? '' : 'disabled'}>⚡ Générer la base de rédaction<span class="arrow">→</span></button>
         <button class="doc-future" type="button" disabled>Générer directement le document</button>
         <button class="tab" type="button" onclick="openLastBulletin()">◉ Voir le dernier bulletin</button>
       </aside>
@@ -1051,11 +1047,11 @@ function renderGenerateStage(grouped) {
   </section>`;
 }
 function statusInfo(row) {
-  if (isIncubated(row)) return ['wait', 'En attente'];
-  if (row.status === 'approved') return ['selected', 'À arbitrer'];
-  if (row.status === 'edited') return ['ready', 'Prochain bulletin'];
+  if (isIncubated(row)) return ['wait', 'Info reportée'];
+  if (row.status === 'approved') return ['selected', 'À trier'];
+  if (row.status === 'edited') return ['ready', 'Retenue pour ce bulletin'];
   if (row.status === 'rejected') return ['ignored', 'Ignoré'];
-  return ['todo', row.status === 'grey' ? 'Zone grise' : 'À traiter'];
+  return ['todo', row.status === 'grey' ? 'Signal faible' : 'À trier'];
 }
 function renderListRow(r) {
   const it = r.items || {};
@@ -1064,9 +1060,9 @@ function renderListRow(r) {
   const [statusClass, statusLabel] = statusInfo(r);
   const source = sourceInfo(it);
   const title = source.valid ? `<a href="${esc(source.url)}" target="_blank" rel="noopener">${esc(it.title)}</a>` : esc(it.title);
-  return `<article class="list-row">
+  return `<article class="list-row" draggable="true" data-id="${r.id}" ondragstart="dragCard(event, '${r.id}')" ondragend="endDrag(event)">
     <div class="list-cell"><span class="tile-kicker">Date</span><strong>${esc(dateInfo.main)}</strong><span>${esc(dateInfo.sub)}</span></div>
-    <div class="list-cell"><span class="tile-kicker">Score</span><span class="badge ${scls}">${r.llm_score} · ${esc(slab)}</span><span class="date-sub">seuil ${scoreRange}</span></div>
+    <div class="list-cell"><span class="tile-kicker">Score</span><span class="badge ${scls}">${r.llm_score}/100 · ${esc(slab)}</span><span class="date-sub">seuil ${scoreRange}</span></div>
     <div class="list-cell"><span class="tile-kicker">Statut</span><span class="status-chip ${statusClass}">${esc(statusLabel)}</span></div>
     <div class="list-cell list-title">
       <strong>${title}</strong>
@@ -1092,7 +1088,7 @@ function renderCard(r) {
         </div>
         <div class="score-tile ${scoreClass}">
           <span class="tile-kicker">Pertinence</span>
-          <span class="score-main">${r.llm_score}</span>
+          <span class="score-main">${r.llm_score}/100</span>
           <span class="score-sub">${esc(slab)} · seuil ${scoreRange}</span>
         </div>
       </div>
@@ -1119,7 +1115,7 @@ function dragCard(event, id) {
 }
 function endDrag(event) {
   event.currentTarget.classList.remove('dragging');
-  document.querySelectorAll('.lane-body.drop-target').forEach(x => x.classList.remove('drop-target'));
+  document.querySelectorAll('.split-col.drop-target').forEach(x => x.classList.remove('drop-target'));
 }
 function allowDrop(event) {
   event.preventDefault();
@@ -1135,7 +1131,16 @@ async function dropOnLane(event, laneKey) {
   const id = event.dataTransfer.getData('text/plain');
   const row = rows.find(r => r.id === id);
   if (!row) return;
+  if (laneKey === 'incubation') {
+    if (isIncubated(row)) return;
+    await incubate(id);
+    return;
+  }
   const next = statusForLane(row, laneKey);
+  if (laneKey === 'ready' && next === row.status && isPreviousReady(row)) {
+    await decide(id, 'edited');
+    return;
+  }
   if (next === row.status) return;
   await decide(id, next);
 }
@@ -1145,12 +1150,6 @@ function setStage(stage) {
   listMode = false;
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-async function enableGrey() {
-  showGrey = true;
-  activeStage = 'todo';
-  await load();
-  toast('Signaux faibles ajoutés à la pile');
 }
 function activeKeyboardCard() {
   const grouped = groupRows(filteredRows());
@@ -1162,7 +1161,6 @@ function activeKeyboardCard() {
 function shouldIgnoreShortcut(event) {
   const el = event.target;
   if (!el) return false;
-  if ($('manual-modal') && $('manual-modal').style.display !== 'none') return true;
   if ($('modal') && $('modal').style.display !== 'none') return true;
   return ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(el.tagName) || el.isContentEditable;
 }
@@ -1190,48 +1188,25 @@ async function decide(id, statut) {
   removeIncubation(id);
   rows = rows.map(r => r.id === id ? { ...r, status: statut, client_summary: summary } : r);
   advanceStageIfDone();
-  renderThemes(); render(); renderTabs(); refreshBulletinBtn();
-  const labels = { proposed: 'Remis dans la pile de tri', grey: 'Remis en signal faible', approved: 'À orienter', edited: 'Retenu pour le bulletin', rejected: 'Ignoré' };
+  renderThemes(); render(); renderTabs();
+  const labels = { proposed: 'Remis au tri', grey: 'Remis en signal faible', approved: 'À trier', edited: 'Retenu pour ce bulletin', rejected: 'Ignoré' };
   toast(labels[statut] || 'Mis à jour');
-}
-
-async function bulkSelected(statut) {
-  const incubated = incubatedIds();
-  const selected = rows.filter(r => r.status === 'approved' && !incubated.has(r.id));
-  if (!selected.length) { toast('Aucun élément mis de côté.'); return; }
-  const reviewDate = new Date().toISOString();
-  const updates = selected.map(r => {
-    const el = $('sum-' + r.id);
-    const summary = el ? el.value : r.client_summary;
-    return sb.from('matches').update({ status: statut, client_summary: summary, reviewed_at: reviewDate }).eq('id', r.id);
-  });
-  const results = await Promise.all(updates);
-  const failed = results.find(x => x.error);
-  if (failed) { toast('Erreur : ' + failed.error.message); return; }
-  const ids = new Set(selected.map(r => r.id));
-  rows = rows.map(r => ids.has(r.id) ? { ...r, status: statut } : r);
-  activeStage = statut === 'edited' ? 'manual' : 'todo';
-  renderThemes(); render(); renderTabs(); refreshBulletinBtn();
-  toast(statut === 'edited' ? 'Pile prête à générer' : 'Pile archivée');
 }
 
 async function approvedRows() {
   const c = clients.find(x => x.id === current); if (!c) return [];
   const pid = c.client_profiles[0].id;
   const { data } = await sb.from('matches')
-    .select('id,rationale,client_summary,items(title,url,url_canonical,source_id,raw_content,published_at,act_type,urgency,key_dates)')
+    .select('id,status,reviewed_at,rationale,client_summary,items(title,url,url_canonical,source_id,raw_content,published_at,act_type,urgency,key_dates)')
     .eq('profile_id', pid).eq('status', 'edited').is('bulletin_id', null);
-  return data || [];
+  return currentReadyRows(data || []);
 }
 
-async function refreshBulletinBtn() {
-  const a = await approvedRows();
-  const manual = manualItems();
-  const total = a.length + manual.length;
-  const btn = $('btn-bulletin');
-  if (!btn) return;
-  btn.disabled = !total;
-  btn.innerHTML = (total ? `⚡ Générer le bulletin (${total})` : '⚡ Générer le bulletin') + '<span class="arrow">→</span>';
+function promptExcerpt(text, max = 6500) {
+  const cleaned = String(text || '').replace(/\s+/g, ' ').trim();
+  if (!cleaned) return 'Contenu source non disponible dans BriefLayer.';
+  if (cleaned.length <= max) return cleaned;
+  return cleaned.slice(0, max).replace(/\s+\S*$/, '') + ' [...]';
 }
 
 function buildPrompt(client, brief, items, manual) {
@@ -1242,7 +1217,8 @@ function buildPrompt(client, brief, items, manual) {
    Date : ${(it.published_at || '').slice(0, 10)} — Type : ${it.act_type || 'n.c.'}${it.urgency === 'urgent' ? ' — URGENT' : ''}${dates ? '\n   Échéances : ' + dates : ''}
    Angle client : ${r.client_summary || ''}
    Pourquoi ça le concerne : ${r.rationale || ''}
-   Source primaire : ${sourceLine(it)}`;
+   Source primaire : ${sourceLine(it)}
+   Contenu source extrait : ${promptExcerpt(it.raw_content)}`;
   }).join('\n\n');
   const complements = (manual || []).map((item, i) => `${i + 1}. ${item.title || 'Information manuelle'}
    Ajout manuel : ${item.body || ''}
@@ -1253,6 +1229,14 @@ function buildPrompt(client, brief, items, manual) {
 
 OBJECTIF
 Produire un bulletin prêt à envoyer, dans une forme proche des bulletins ASPI/ASPIE 2026 déjà parus, tout en adaptant les rubriques, le niveau de détail et les angles au client ${client}.
+
+MODE PAR DEFAUT : BULLETIN EXHAUSTIF
+- Traiter explicitement chaque information retenue, sauf doublon évident à signaler.
+- Ne pas réduire le bulletin à une note de synthèse : chaque item retenu doit être exploité.
+- Pour chaque item, restituer les faits utiles disponibles : acteurs, institutions, dates, texte concerné, procédure, décisions, échéances, chiffres, portée et limites.
+- Utiliser le contenu source extrait pour enrichir la rédaction. Si le contenu source est court ou absent, le signaler implicitement par une rédaction prudente plutôt que d'inventer.
+- Fusionner deux informations seulement si elles parlent du même sujet ou si un regroupement améliore vraiment la lecture. Dans ce cas, conserver les sources de chaque information fusionnée.
+- Le niveau de détail attendu est celui d'un bulletin professionnel complet : mieux vaut rédiger un peu long et structuré que trop court.
 
 VARIABLES A ME DEMANDER AVANT REDACTION
 - Numéro du bulletin.
@@ -1277,10 +1261,10 @@ FORME DE REFERENCE OBSERVEE DANS LES BULLETINS ASPI 2026
     International
     puis rubriques thématiques utiles.
 - Chaque item doit commencer par un titre analytique en gras ou clairement détaché : "Sujet - enseignement principal."
-- Après le titre, rédiger 1 à 4 paragraphes factuels selon l'importance :
-  - 1 paragraphe court pour une simple nomination, un événement ou un signal faible ;
-  - 2 à 3 paragraphes pour un texte parlementaire, une initiative gouvernementale, un rapport ou un sujet européen important ;
-  - jusqu'à 4 paragraphes si le sujet structure une tendance majeure pour le client.
+- Après le titre, rédiger au minimum 2 paragraphes factuels pour toute information substantielle :
+  - 1 paragraphe seulement si l'information est réellement mineure, brève ou essentiellement signalétique ;
+  - 2 à 4 paragraphes pour un texte parlementaire, une initiative gouvernementale, un rapport, une consultation, une décision ou un sujet européen important ;
+  - jusqu'à 5 paragraphes si le sujet structure une tendance majeure, un risque, une opportunité ou une position publique pour le client.
 - Mettre le lien source en clair immédiatement après chaque item.
 - Ajouter un "Focus - ..." lorsqu'un regroupement permet une lecture stratégique. Le focus doit synthétiser la tendance en 1 ou 2 paragraphes, sans répéter les items.
 - Terminer par un agenda uniquement si des dates clés sont présentes.
@@ -1290,6 +1274,8 @@ STYLE REDACTIONNEL A RESPECTER
 - Les phrases doivent expliquer pourquoi le sujet compte, sans écrire "pour le client" à chaque ligne.
 - Ne pas copier mécaniquement "Angle client" : l'utiliser pour orienter la rédaction.
 - Ne pas inventer de faits, dates, citations, auteurs, votes ou liens.
+- Ne pas supprimer une information retenue parce qu'elle paraît secondaire : la traiter brièvement si nécessaire, mais la traiter.
+- Ne pas remplacer plusieurs items par un unique résumé transversal. Le focus vient en complément, jamais à la place des items.
 - Les informations ajoutées manuellement peuvent être utilisées comme compléments, signaux faibles, éléments de contexte ou points d'attention. Si la source manque, les signaler comme à vérifier plutôt que les présenter comme établies.
 - Conserver les noms propres, institutions, numéros de textes, commissions, rapporteurs et échéances quand ils sont disponibles.
 - Pour les questions écrites parlementaires : mentionner le numéro, l'auteur, le groupe et la circonscription si fournis.
@@ -1317,7 +1303,7 @@ async function generateBulletin() {
   const missing = missingPrimarySources(a);
   if (missing.length) {
     const examples = missing.slice(0, 5).map(r => '- ' + ((r.items || {}).title || 'Information sans titre')).join('\n');
-    alert(`Génération bloquée : ${missing.length} carte(s) n'ont pas de source primaire publiable.\n\nCorrigez ou retirez ces cartes avant de générer le bulletin.\n\n${examples}`);
+    alert(`Génération bloquée : ${missing.length} information(s) n'ont pas de source primaire publiable.\n\nCorrigez ou retirez ces informations avant de générer le bulletin.\n\n${examples}`);
     setStage('generate');
     return;
   }
@@ -1334,18 +1320,14 @@ async function generateBulletin() {
     }
   }
   saveManualItems([]);
-  renderManualList();
   await load();
-  try { await navigator.clipboard.writeText(prompt); toast('Prompt copié dans le presse-papier'); } catch (e) { toast('Copie manuelle nécessaire'); }
+  try { await navigator.clipboard.writeText(prompt); toast('Texte de travail copié'); } catch (e) { toast('Copie manuelle nécessaire'); }
   $('m-client').textContent = c.name;
   $('m-prompt').textContent = prompt;
   $('m-copy').onclick = async () => { try { await navigator.clipboard.writeText(prompt); toast('Copié'); } catch (e) {} };
   $('m-reopen').style.display = 'none';
   $('modal').style.display = 'flex';
 }
-
-$('manual-save').onclick = saveManualInfo;
-$('manual-close').onclick = closeManualModal;
 
 async function openLastBulletin() {
   const c = clients.find(x => x.id === current); if (!c) return;
@@ -1354,13 +1336,13 @@ async function openLastBulletin() {
   const b = data[0];
   $('m-client').textContent = c.name + ' — généré le ' + new Date(b.created_at).toLocaleDateString('fr-FR');
   $('m-prompt').textContent = b.prompt_text || '';
-  try { await navigator.clipboard.writeText(b.prompt_text || ''); toast('Prompt copié'); } catch (e) {}
+  try { await navigator.clipboard.writeText(b.prompt_text || ''); toast('Texte de travail copié'); } catch (e) {}
   $('m-copy').onclick = async () => { try { await navigator.clipboard.writeText(b.prompt_text || ''); toast('Copié'); } catch (e) {} };
   $('m-reopen').style.display = 'inline-block';
   $('m-reopen').onclick = async () => {
     await sb.from('matches').update({ bulletin_id: null }).eq('bulletin_id', b.id);
     $('modal').style.display = 'none'; $('m-reopen').style.display = 'none';
-    toast('Pile rouverte : ces informations comptent à nouveau pour la génération');
+    toast('Infos rouvertes : elles comptent à nouveau pour la génération');
     load();
   };
   $('modal').style.display = 'flex';
@@ -1374,7 +1356,6 @@ async function resetReview() {
   const r2 = await sb.from('matches').update({ status: 'grey', reviewed_at: null, bulletin_id: null }).eq('profile_id', pid).lt('llm_score', 60);
   if (r1.error || r2.error) { toast('Erreur : ' + (r1.error || r2.error).message); return; }
   saveIncubatedIds(new Set());
-  includeIncubated = false;
   toast('Réinitialisé : toutes les propositions sont de retour');
   renderTabs(); load();
 }
@@ -1385,8 +1366,7 @@ async function resetCurrentStep() {
     if (!manualItems().length) { toast('Aucune info manuelle à retirer.'); return; }
     if (!confirm('Retirer les informations supplémentaires du client actif ?')) return;
     saveManualItems([]);
-    renderManualList();
-    render(); refreshBulletinBtn();
+    render();
     toast('Étape infos supplémentaires réinitialisée');
     return;
   }
@@ -1394,16 +1374,16 @@ async function resetCurrentStep() {
   let label = '';
   if (activeStage === 'grey') {
     candidates = list.filter(r => r.llm_score < 60 && ['approved', 'rejected', 'edited', 'incubated'].includes(r.status));
-    label = 'Remettre les décisions sur les signaux faibles dans la pile ?';
+    label = 'Remettre les décisions sur les signaux faibles au tri ?';
   } else if (activeStage === 'todo') {
     candidates = list.filter(r => r.llm_score >= 60 && ['approved', 'rejected'].includes(r.status));
-    label = 'Remettre les décisions de tri de la période active dans la pile ?';
+    label = 'Remettre les décisions de tri de la période active au tri ?';
   } else if (activeStage === 'selected') {
     candidates = [...grouped.ready, ...grouped.incubation, ...grouped.selected.filter(r => isIncubated(r))];
-    label = 'Remettre les arbitrages de cette étape à l’état À arbitrer ?';
+    label = 'Remettre les décisions de cette étape à l’état À trier ?';
   } else if (activeStage === 'generate') {
     candidates = grouped.ready;
-    label = 'Retirer les cartes du prochain bulletin et les remettre À arbitrer ?';
+    label = 'Retirer les infos retenues pour ce bulletin et les remettre à trier ?';
   } else {
     candidates = [];
   }
@@ -1434,8 +1414,8 @@ async function resetCurrentStep() {
 
 document.addEventListener('keydown', handleKeyboard);
 
-window.switchTo = switchTo; window.decide = decide; window.incubate = incubate; window.resumeIncubation = resumeIncubation; window.recallIncubationToTodo = recallIncubationToTodo; window.recallReadyToTodo = recallReadyToTodo; window.toggleTheme = toggleTheme; window.setStage = setStage; window.enableGrey = enableGrey; window.bulkSelected = bulkSelected; window.generateBulletin = generateBulletin; window.openManualModal = openManualModal; window.deleteManualInfo = deleteManualInfo;
-window.setPeriod = setPeriod; window.toggleIncubated = toggleIncubated; window.toggleListMode = toggleListMode; window.openLastBulletin = openLastBulletin; window.resetReview = resetReview; window.resetCurrentStep = resetCurrentStep;
+window.switchTo = switchTo; window.decide = decide; window.incubate = incubate; window.resumeIncubation = resumeIncubation; window.recallIncubationToTodo = recallIncubationToTodo; window.recallReadyToTodo = recallReadyToTodo; window.toggleTheme = toggleTheme; window.setStage = setStage; window.generateBulletin = generateBulletin;
+window.setPeriod = setPeriod; window.toggleListMode = toggleListMode; window.openLastBulletin = openLastBulletin; window.resetReview = resetReview; window.resetCurrentStep = resetCurrentStep;
 window.dragCard = dragCard; window.endDrag = endDrag; window.allowDrop = allowDrop; window.leaveDrop = leaveDrop; window.dropOnLane = dropOnLane;
 (function start() {
   if (typeof supabase !== 'undefined') { init(); return; }

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BriefLayer - Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #202126; --muted: #696d75; --line: #e6e2d9; --bg: #faf8f4; --card: #fff;
+    --ok: #0f9f6e; --warn: #d58a00; --bad: #c0392b; --info: #2478ff; --violet: #8b5cf6;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+  header { position: sticky; top: 0; z-index: 4; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; padding: 16px 24px; background: rgba(255,255,255,.94); border-bottom: 1px solid var(--line); box-shadow: 0 8px 24px rgba(32,33,38,.05); }
+  h1, h2, h3 { font-family: "Inter Tight", Inter, sans-serif; margin: 0; letter-spacing: 0; }
+  h1 { font-size: 24px; }
+  h2 { font-size: 18px; }
+  h3 { font-size: 15px; }
+  main { max-width: 1500px; margin: 0 auto; padding: 22px 18px 80px; display: grid; gap: 16px; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .spacer { flex: 1; }
+  .btn, select { border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 9px 12px; font: 600 13px "Inter Tight", sans-serif; cursor: pointer; }
+  .btn:hover { border-color: var(--info); }
+  .btn.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .btn.warn { background: #fff8ea; border-color: #f3c66f; color: #7a5300; }
+  .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 14px; display: grid; gap: 12px; }
+  .panel-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+  .kpi { border-left: 7px solid var(--line); min-height: 112px; align-content: center; }
+  .kpi.ok { border-left-color: var(--ok); } .kpi.warn { border-left-color: var(--warn); } .kpi.bad { border-left-color: var(--bad); } .kpi.info { border-left-color: var(--info); }
+  .kpi strong { font: 700 34px/1 "Inter Tight", sans-serif; }
+  .kpi span { color: var(--muted); font-size: 12.5px; line-height: 1.35; }
+  .workflow-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .workflow { border-top: 6px solid var(--info); }
+  .workflow.w1 { border-top-color: var(--ok); } .workflow.w2 { border-top-color: var(--warn); } .workflow.w3 { border-top-color: var(--violet); } .workflow.w4 { border-top-color: var(--info); }
+  .metric-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 13px; }
+  .metric-row:first-of-type { border-top: 0; }
+  .metric-row span { color: var(--muted); }
+  .metric-row strong { font-family: "Inter Tight", sans-serif; }
+  .status { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 4px 9px; font-size: 12px; font-weight: 700; border: 1px solid var(--line); background: #fff; }
+  .status.ok { background: #eaf8f1; border-color: #bfe8d3; color: #0b6b4a; }
+  .status.warn { background: #fff7e8; border-color: #f0c66f; color: #845800; }
+  .status.bad { background: #fff0ee; border-color: #efb1a9; color: #9f2f25; }
+  .status.info { background: #eef5ff; border-color: #bfd8ff; color: #1f5fb7; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th, td { padding: 10px 8px; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; background: #fffdf9; position: sticky; top: 74px; z-index: 1; }
+  td strong { display: block; font-family: "Inter Tight", sans-serif; font-size: 13.5px; margin-bottom: 3px; }
+  a { color: #1f5fb7; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .muted { color: var(--muted); }
+  .mono { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; }
+  .two { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr); gap: 12px; align-items: start; }
+  .scroll { overflow: auto; max-height: 540px; border: 1px solid var(--line); border-radius: 8px; }
+  .empty { border: 1px dashed var(--line); border-radius: 8px; padding: 18px; color: var(--muted); background: #fffdf9; text-align: center; }
+  .error { border-color: #efb1a9; background: #fff0ee; color: #8f2c24; }
+  .pillbar { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pill { border-radius: 999px; border: 1px solid var(--line); background: #fff; padding: 4px 8px; font-size: 12px; color: var(--muted); }
+  .danger-row { background: #fff8f7; }
+  .warn-row { background: #fffaf0; }
+  details.panel summary { cursor: pointer; font-family: "Inter Tight", sans-serif; font-weight: 700; list-style: none; }
+  details.panel summary::before { content: "+"; display: inline-flex; width: 18px; height: 18px; align-items: center; justify-content: center; margin-right: 8px; border: 1px solid var(--line); border-radius: 5px; color: var(--muted); }
+  details.panel[open] summary::before { content: "-"; }
+  pre { margin: 0; white-space: pre-wrap; font-size: 12px; background: #fffdf9; border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow: auto; }
+  @media (max-width: 900px) { .two { grid-template-columns: 1fr; } th { position: static; } header { position: static; } }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Dashboard</h1>
+    <div class="sub">Santé des flux, activité W1-W4, items bloqués et sources à réparer</div>
+  </div>
+  <div class="spacer"></div>
+  <div class="toolbar">
+    <select id="source-filter" onchange="render()">
+      <option value="all">Toutes sources</option>
+      <option value="aspie">ASPIE seulement</option>
+      <option value="active">Sources actives</option>
+      <option value="risk">Sources à risque</option>
+    </select>
+    <select id="period-filter" onchange="loadData()">
+      <option value="1">24 h</option>
+      <option value="3" selected>3 jours</option>
+      <option value="7">7 jours</option>
+      <option value="30">30 jours</option>
+    </select>
+    <button class="btn" type="button" onclick="loadData()">↻ Actualiser</button>
+    <a class="btn primary" href="brieflayer-validation-kanban-CHATGPT.html">Revue</a>
+  </div>
+  <div class="sub" id="last-refresh">connexion...</div>
+</header>
+
+<main>
+  <section class="grid" id="kpis"></section>
+  <section class="workflow-grid" id="workflows"></section>
+
+  <section class="two">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Sources et liens à risque</h2>
+        <span class="sub" id="sources-count"></span>
+      </div>
+      <div class="scroll"><table id="sources-table"></table></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Items bloqués / erreurs</h2>
+        <span class="sub" id="blocked-count"></span>
+      </div>
+      <div class="scroll"><table id="blocked-table"></table></div>
+    </div>
+  </section>
+
+  <section class="two">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Dernière activité collectée</h2>
+        <span class="sub" id="recent-count"></span>
+      </div>
+      <div class="scroll"><table id="recent-table"></table></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Journal n8n</h2>
+        <span class="sub" id="runs-count"></span>
+      </div>
+      <div id="runs-panel"></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Historique santé des sources</h2>
+      <span class="sub" id="health-count"></span>
+    </div>
+    <div id="health-panel"></div>
+  </section>
+
+  <details class="panel">
+    <summary>Instrumentation n8n</summary>
+    <p class="muted">Le journal n8n lit <span class="mono">pipeline_runs</span> pour les runs W1-W4 et <span class="mono">source_health_events</span> pour les incidents par source.</p>
+    <pre>running = workflow lancé mais pas encore clôturé
+success = workflow terminé normalement
+failed / warning = incident ou traitement incomplet à vérifier
+source_health_events = erreurs, avertissements ou signaux de flux silencieux par source</pre>
+  </details>
+</main>
+
+<script>
+const EMBED = {
+  url: 'https://xkqeqajeccsacocnfqca.supabase.co',
+  key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhrcWVxYWplY2NzYWNvY25mcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNjc4OTIsImV4cCI6MjA5Njc0Mzg5Mn0.7NmmzyrXt-kVMBl-_WFqPuBP_9r-BAuIbavRO_sIryk'
+};
+const TENANT = '00000000-0000-0000-0000-000000000001';
+let sb = null;
+let state = {
+  sources: [],
+  items: [],
+  matches: [],
+  runs: [],
+  healthEvents: [],
+  runsAvailable: false,
+  healthAvailable: false,
+  sourceItems: new Map(),
+  sourceEvents: new Map()
+};
+
+function $(id) { return document.getElementById(id); }
+function esc(value) { const d = document.createElement('div'); d.textContent = value == null ? '' : String(value); return d.innerHTML; }
+function dt(value) {
+  if (!value) return 'jamais';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return String(value);
+  return d.toLocaleString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+}
+function daysAgo(value) {
+  if (!value) return Infinity;
+  const t = new Date(value).getTime();
+  if (Number.isNaN(t)) return Infinity;
+  return (Date.now() - t) / 86400000;
+}
+function cutoffDate() {
+  const days = Number($('period-filter').value || 3);
+  return new Date(Date.now() - days * 86400000).toISOString();
+}
+function statusBadge(kind, label) {
+  return `<span class="status ${kind}">${esc(label)}</span>`;
+}
+function runBadge(r) {
+  if (r.status === 'running' && daysAgo(r.started_at) > (30 / 1440)) {
+    return { kind: 'warn', label: 'en cours long' };
+  }
+  if (r.status === 'success') return { kind: 'ok', label: 'success' };
+  if (r.status === 'failed') return { kind: 'bad', label: 'failed' };
+  if (r.status === 'warning') return { kind: 'warn', label: 'warning' };
+  return { kind: 'info', label: r.status || 'inconnu' };
+}
+function sourceUrl(s) {
+  const cfg = s.config || {};
+  return cfg.url || cfg.feed_url || cfg.href || cfg.algolia_url || '';
+}
+function sourceRisk(s) {
+  const failures = Number(s.consecutive_failures || 0);
+  const staleDays = daysAgo(s.last_fetched_at);
+  const lastItem = state.sourceItems.get(s.id)?.lastItem || null;
+  const silentDays = daysAgo(lastItem);
+  const latestEvent = state.sourceEvents.get(s.id)?.[0] || null;
+  if (!s.active) return { kind: 'info', label: 'inactive', reason: 'Source désactivée' };
+  if (latestEvent && latestEvent.severity === 'error' && daysAgo(latestEvent.created_at) <= 7) {
+    return { kind: 'bad', label: 'incident source', reason: latestEvent.message || latestEvent.event_type || 'Erreur source récente' };
+  }
+  if (failures >= 3) return { kind: 'bad', label: 'cassé probable', reason: `${failures} échecs consécutifs` };
+  if (latestEvent && latestEvent.severity === 'warning' && daysAgo(latestEvent.created_at) <= 7) {
+    return { kind: 'warn', label: 'à vérifier', reason: latestEvent.message || latestEvent.event_type || 'Avertissement source récent' };
+  }
+  if (failures > 0) return { kind: 'warn', label: 'instable', reason: `${failures} échec(s) récent(s)` };
+  if (staleDays > 2) return { kind: 'warn', label: 'non lu', reason: 'Pas de collecte récente' };
+  if (silentDays > 7) return { kind: 'warn', label: 'muet', reason: 'Collecté sans item récent visible' };
+  return { kind: 'ok', label: 'ok', reason: 'Collecte récente' };
+}
+function isAspie(s) { return String(s.name || '').startsWith('ASPIE - '); }
+function itemIsBlocked(i) {
+  const st = String(i.status || '');
+  if (st.startsWith('error_')) return true;
+  if ((i.error_count || 0) > 0 && st !== 'enriched' && st !== 'matched' && st !== 'no_match') return true;
+  if (st.startsWith('processing_') && daysAgo(i.updated_at) > (2 / 24)) return true;
+  return false;
+}
+function statusCounts(rows, field = 'status') {
+  return rows.reduce((acc, r) => {
+    const k = r[field] || 'sans_statut';
+    acc[k] = (acc[k] || 0) + 1;
+    return acc;
+  }, {});
+}
+async function queryOptionalRuns() {
+  try {
+    const { data, error } = await sb.from('pipeline_runs')
+      .select('id,workflow_key,workflow_name,execution_id,status,items_in,items_out,errors,started_at,finished_at,detail')
+      .eq('tenant_id', TENANT)
+      .order('started_at', { ascending: false })
+      .limit(30);
+    if (error) throw error;
+    state.runsAvailable = true;
+    state.runs = data || [];
+  } catch (e) {
+    state.runsAvailable = false;
+    state.runs = [];
+  }
+}
+async function queryOptionalHealthEvents(since) {
+  try {
+    const { data, error } = await sb.from('source_health_events')
+      .select('id,source_id,workflow_key,severity,event_type,message,http_status,detail,created_at,sources(name)')
+      .eq('tenant_id', TENANT)
+      .gte('created_at', since)
+      .order('created_at', { ascending: false })
+      .limit(300);
+    if (error) throw error;
+    state.healthAvailable = true;
+    state.healthEvents = data || [];
+  } catch (e) {
+    state.healthAvailable = false;
+    state.healthEvents = [];
+  }
+}
+async function loadData() {
+  $('last-refresh').textContent = 'chargement...';
+  try {
+    if (!sb) sb = supabase.createClient(EMBED.url, EMBED.key);
+    const since = cutoffDate();
+    const [sourcesRes, itemsRes, matchesRes] = await Promise.all([
+      sb.from('sources').select('id,tenant_id,type,name,config,active,last_fetched_at,consecutive_failures,created_at').eq('tenant_id', TENANT).order('name'),
+      sb.from('items').select('id,source_id,url,url_canonical,title,status,error_count,published_at,created_at,updated_at,sources(name)').eq('tenant_id', TENANT).gte('created_at', since).order('updated_at', { ascending: false }).limit(5000),
+      sb.from('matches').select('id,status,llm_score,created_at,reviewed_at,client_profiles(clients(name))').eq('tenant_id', TENANT).gte('created_at', since).order('created_at', { ascending: false }).limit(5000)
+    ]);
+    if (sourcesRes.error) throw sourcesRes.error;
+    if (itemsRes.error) throw itemsRes.error;
+    if (matchesRes.error) throw matchesRes.error;
+    state.sources = sourcesRes.data || [];
+    state.items = itemsRes.data || [];
+    state.matches = matchesRes.data || [];
+    buildSourceAgg();
+    await Promise.all([queryOptionalRuns(), queryOptionalHealthEvents(since)]);
+    buildSourceEventAgg();
+    render();
+    $('last-refresh').textContent = 'actualisé ' + dt(new Date().toISOString());
+  } catch (e) {
+    $('last-refresh').textContent = 'erreur';
+    $('kpis').innerHTML = `<div class="panel error">Connexion impossible : ${esc(e.message || e)}</div>`;
+  }
+}
+function buildSourceAgg() {
+  const map = new Map();
+  state.items.forEach(i => {
+    if (!i.source_id) return;
+    const cur = map.get(i.source_id) || { count: 0, lastItem: null, statuses: {} };
+    cur.count += 1;
+    cur.statuses[i.status || 'sans_statut'] = (cur.statuses[i.status || 'sans_statut'] || 0) + 1;
+    const ref = i.created_at || i.published_at;
+    if (ref && (!cur.lastItem || new Date(ref) > new Date(cur.lastItem))) cur.lastItem = ref;
+    map.set(i.source_id, cur);
+  });
+  state.sourceItems = map;
+}
+function buildSourceEventAgg() {
+  const map = new Map();
+  state.healthEvents.forEach(e => {
+    if (!e.source_id) return;
+    const list = map.get(e.source_id) || [];
+    list.push(e);
+    map.set(e.source_id, list);
+  });
+  state.sourceEvents = map;
+}
+function filteredSources() {
+  const mode = $('source-filter').value;
+  return state.sources.filter(s => {
+    const risk = sourceRisk(s);
+    if (mode === 'aspie') return isAspie(s);
+    if (mode === 'active') return s.active;
+    if (mode === 'risk') return risk.kind === 'bad' || risk.kind === 'warn';
+    return true;
+  });
+}
+function render() {
+  renderKpis();
+  renderWorkflows();
+  renderSources();
+  renderBlocked();
+  renderRecent();
+  renderRuns();
+  renderHealthEvents();
+}
+function renderKpis() {
+  const sources = state.sources;
+  const risks = sources.map(sourceRisk);
+  const broken = risks.filter(r => r.kind === 'bad').length;
+  const warn = risks.filter(r => r.kind === 'warn').length;
+  const blocked = state.items.filter(itemIsBlocked).length;
+  const counts = statusCounts(state.items);
+  const proposed = state.matches.filter(m => ['proposed', 'grey'].includes(m.status)).length;
+  $('kpis').innerHTML = [
+    kpi('info', sources.filter(s => s.active).length, 'sources actives', `${sources.length} sources au total`),
+    kpi(broken ? 'bad' : 'ok', broken, 'sources cassées probables', 'incident source ou échecs répétés'),
+    kpi(warn ? 'warn' : 'ok', warn, 'sources instables ou muettes', 'avertissement, non lu ou sans item'),
+    kpi(blocked ? 'bad' : 'ok', blocked, 'items bloqués', 'erreur ou processing trop ancien'),
+    kpi('info', counts.new || 0, 'nouveaux W2', 'items collectés à normaliser'),
+    kpi('info', proposed, 'infos à revoir', 'matches proposed + grey')
+  ].join('');
+}
+function kpi(kind, value, label, detail) {
+  return `<article class="panel kpi ${kind}"><strong>${esc(value)}</strong><h3>${esc(label)}</h3><span>${esc(detail)}</span></article>`;
+}
+function renderWorkflows() {
+  const c = statusCounts(state.items);
+  const m = statusCounts(state.matches);
+  const activeSources = state.sources.filter(s => s.active);
+  const healthySources = activeSources.filter(s => sourceRisk(s).kind === 'ok');
+  $('workflows').innerHTML = [
+    workflow('w1', 'W1 Collecte sources', sourceHealthLabel(), [
+      ['Sources lues récemment', `${healthySources.length} / ${activeSources.length}`],
+      ['Échecs consécutifs', state.sources.reduce((a, s) => a + Number(s.consecutive_failures || 0), 0)],
+      ['Items collectés période', state.items.length]
+    ]),
+    workflow('w2', 'W2 Texte complet', (c.new || c.processing_w2) ? 'À surveiller' : 'OK', [
+      ['À normaliser', c.new || 0],
+      ['En cours W2', c.processing_w2 || 0],
+      ['Normalisés', c.normalized || 0]
+    ]),
+    workflow('w3', 'W3 Enrichissement', (c.error_enrich || c.processing_w3) ? 'À surveiller' : 'OK', [
+      ['À enrichir', c.normalized || 0],
+      ['En cours W3', c.processing_w3 || 0],
+      ['Erreurs enrichissement', c.error_enrich || 0],
+      ['Enrichis', c.enriched || 0]
+    ]),
+    workflow('w4', 'W4 Matching', (Object.keys(c).some(k => k.startsWith('processing_w4')) ? 'À surveiller' : 'OK'), [
+      ['À matcher', c.enriched || 0],
+      ['Matchés', c.matched || 0],
+      ['Sans match', c.no_match || 0],
+      ['Proposed', m.proposed || 0],
+      ['Signaux faibles', m.grey || 0]
+    ])
+  ].join('');
+}
+function sourceHealthLabel() {
+  const r = state.sources.map(sourceRisk);
+  if (r.some(x => x.kind === 'bad')) return 'Incident';
+  if (r.some(x => x.kind === 'warn')) return 'À surveiller';
+  return 'OK';
+}
+function workflow(cls, title, status, rows) {
+  const kind = status === 'OK' ? 'ok' : (status === 'Incident' ? 'bad' : 'warn');
+  return `<article class="panel workflow ${cls}">
+    <div class="panel-head"><h2>${esc(title)}</h2>${statusBadge(kind, status)}</div>
+    ${rows.map(([label, value]) => `<div class="metric-row"><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join('')}
+  </article>`;
+}
+function renderSources() {
+  const rows = filteredSources().sort((a, b) => {
+    const order = { bad: 0, warn: 1, info: 2, ok: 3 };
+    return order[sourceRisk(a).kind] - order[sourceRisk(b).kind] || String(a.name).localeCompare(String(b.name));
+  });
+  $('sources-count').textContent = `${rows.length} source(s) affichée(s)`;
+  if (!rows.length) { $('sources-table').innerHTML = '<tr><td class="empty">Aucune source dans ce filtre.</td></tr>'; return; }
+  $('sources-table').innerHTML = `<thead><tr><th>État</th><th>Source</th><th>Dernière collecte</th><th>Items période</th><th>Action</th></tr></thead><tbody>${rows.map(s => {
+    const risk = sourceRisk(s);
+    const agg = state.sourceItems.get(s.id) || { count: 0, lastItem: null, statuses: {} };
+    const lastEvent = state.sourceEvents.get(s.id)?.[0] || null;
+    const url = sourceUrl(s);
+    const rowClass = risk.kind === 'bad' ? 'danger-row' : (risk.kind === 'warn' ? 'warn-row' : '');
+    return `<tr class="${rowClass}">
+      <td>${statusBadge(risk.kind, risk.label)}<div class="muted">${esc(risk.reason)}</div>${lastEvent ? `<div class="muted">Dernier événement : ${esc(lastEvent.event_type)} · ${dt(lastEvent.created_at)}</div>` : ''}</td>
+      <td><strong>${esc(s.name)}</strong><div class="muted mono">${esc(url)}</div><div class="pillbar">${s.active ? '<span class="pill">active</span>' : '<span class="pill">inactive</span>'}<span class="pill">${esc(s.type)}</span></div></td>
+      <td>${dt(s.last_fetched_at)}<div class="muted">${Number(s.consecutive_failures || 0)} échec(s)</div></td>
+      <td><strong>${agg.count}</strong><div class="muted">dernier item : ${dt(agg.lastItem)}</div><div class="pillbar">${Object.entries(agg.statuses).slice(0, 4).map(([k,v]) => `<span class="pill">${esc(k)} ${v}</span>`).join('')}</div></td>
+      <td>${url ? `<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Ouvrir</a>` : '<span class="muted">URL absente</span>'}</td>
+    </tr>`;
+  }).join('')}</tbody>`;
+}
+function renderBlocked() {
+  const rows = state.items.filter(itemIsBlocked).slice(0, 120);
+  $('blocked-count').textContent = `${rows.length} item(s)`;
+  if (!rows.length) { $('blocked-table').innerHTML = '<tr><td class="empty">Aucun item bloqué sur la période.</td></tr>'; return; }
+  $('blocked-table').innerHTML = `<thead><tr><th>Statut</th><th>Item</th><th>Source</th><th>Mis à jour</th></tr></thead><tbody>${rows.map(i => {
+    const kind = String(i.status || '').startsWith('error_') ? 'bad' : 'warn';
+    return `<tr class="${kind === 'bad' ? 'danger-row' : 'warn-row'}">
+      <td>${statusBadge(kind, i.status || 'sans statut')}<div class="muted">${i.error_count || 0} erreur(s)</div></td>
+      <td><strong>${esc(i.title)}</strong><div class="muted mono">${esc(i.url_canonical || i.url || '')}</div></td>
+      <td>${esc(i.sources?.name || '')}</td>
+      <td>${dt(i.updated_at || i.created_at)}</td>
+    </tr>`;
+  }).join('')}</tbody>`;
+}
+function renderRecent() {
+  const rows = [...state.items].sort((a,b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at)).slice(0, 80);
+  $('recent-count').textContent = `${rows.length} item(s)`;
+  if (!rows.length) { $('recent-table').innerHTML = '<tr><td class="empty">Aucune activité sur la période.</td></tr>'; return; }
+  $('recent-table').innerHTML = `<thead><tr><th>Statut</th><th>Information</th><th>Source</th><th>Date</th></tr></thead><tbody>${rows.map(i => `
+    <tr>
+      <td>${statusBadge(i.status && i.status.startsWith('error') ? 'bad' : 'info', i.status || 'sans statut')}</td>
+      <td><strong>${esc(i.title)}</strong><div class="muted mono">${esc(i.url_canonical || i.url || '')}</div></td>
+      <td>${esc(i.sources?.name || '')}</td>
+      <td>${dt(i.updated_at || i.created_at)}</td>
+    </tr>`).join('')}</tbody>`;
+}
+function renderRuns() {
+  if (!state.runsAvailable) {
+    $('runs-count').textContent = 'non instrumenté';
+    $('runs-panel').innerHTML = `<div class="empty">Le journal n8n n'est pas accessible depuis cette page. Vérifie la table <span class="mono">pipeline_runs</span> et les droits de lecture Supabase.</div>`;
+    return;
+  }
+  $('runs-count').textContent = `${state.runs.length} run(s)`;
+  if (!state.runs.length) { $('runs-panel').innerHTML = '<div class="empty">Aucun run enregistré.</div>'; return; }
+  $('runs-panel').innerHTML = `<div class="scroll"><table><thead><tr><th>Run</th><th>État</th><th>Volume</th><th>Horaire</th></tr></thead><tbody>${state.runs.map(r => {
+    const badge = runBadge(r);
+    return `<tr>
+      <td><strong>${esc(r.workflow_key)} ${esc(r.workflow_name || '')}</strong><div class="muted mono">${esc(r.execution_id || '')}</div></td>
+      <td>${statusBadge(badge.kind, badge.label)}</td>
+      <td>${r.items_in || 0} → ${r.items_out || 0}<div class="muted">${r.errors || 0} erreur(s)</div></td>
+      <td>${dt(r.started_at)}<div class="muted">${r.finished_at ? 'fini ' + dt(r.finished_at) : 'en cours'}</div></td>
+    </tr>`;
+  }).join('')}</tbody></table></div>`;
+}
+function renderHealthEvents() {
+  if (!state.healthAvailable) {
+    $('health-count').textContent = 'non instrumenté';
+    $('health-panel').innerHTML = `<div class="empty">La table <span class="mono">source_health_events</span> n'est pas accessible depuis cette page, ou ses droits de lecture ne sont pas ouverts.</div>`;
+    return;
+  }
+  $('health-count').textContent = `${state.healthEvents.length} événement(s)`;
+  if (!state.healthEvents.length) {
+    $('health-panel').innerHTML = `<div class="empty">Aucun événement source enregistré sur la période. Si un flux est muet mais qu'il n'apparaît jamais ici, W1 doit encore écrire ses erreurs et avertissements dans <span class="mono">source_health_events</span>.</div>`;
+    return;
+  }
+  const rows = state.healthEvents.slice(0, 120);
+  $('health-panel').innerHTML = `<div class="scroll"><table><thead><tr><th>État</th><th>Source</th><th>Message</th><th>Date</th></tr></thead><tbody>${rows.map(e => {
+    const kind = e.severity === 'error' ? 'bad' : (e.severity === 'warning' ? 'warn' : 'info');
+    return `<tr class="${kind === 'bad' ? 'danger-row' : (kind === 'warn' ? 'warn-row' : '')}">
+      <td>${statusBadge(kind, e.severity || 'info')}<div class="muted">${esc(e.workflow_key || '')}</div></td>
+      <td><strong>${esc(e.sources?.name || e.source_id || 'Source inconnue')}</strong><div class="muted mono">${esc(e.event_type || '')}${e.http_status ? ' · HTTP ' + esc(e.http_status) : ''}</div></td>
+      <td>${esc(e.message || '')}</td>
+      <td>${dt(e.created_at)}</td>
+    </tr>`;
+  }).join('')}</tbody></table></div>`;
+}
+function start() {
+  const s = document.createElement('script');
+  s.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+  s.onload = loadData;
+  s.onerror = () => { $('last-refresh').textContent = 'librairie Supabase indisponible'; };
+  document.head.appendChild(s);
+}
+start();
+setInterval(() => {
+  if (!document.hidden && sb) loadData();
+}, 60000);
+</script>
+</body>
+</html>
