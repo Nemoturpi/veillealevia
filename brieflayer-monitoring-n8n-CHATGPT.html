@@ -216,8 +216,9 @@ function sourceRisk(s) {
   const failures = Number(s.consecutive_failures || 0);
   const staleDays = daysAgo(s.last_fetched_at);
   const latestEvent = state.sourceEvents.get(s.id)?.[0] || null;
+  const recoveredAfterEvent = latestEvent && s.last_fetched_at && new Date(s.last_fetched_at) > new Date(latestEvent.created_at) && failures === 0;
   if (!s.active) return { kind: 'info', label: 'inactive', reason: 'Source désactivée' };
-  if (latestEvent && latestEvent.severity === 'error' && daysAgo(latestEvent.created_at) <= 7) {
+  if (latestEvent && latestEvent.severity === 'error' && !recoveredAfterEvent && daysAgo(latestEvent.created_at) <= 7) {
     return { kind: 'bad', label: 'incident source', reason: latestEvent.message || latestEvent.event_type || 'Erreur source récente' };
   }
   if (failures >= 3) return { kind: 'bad', label: 'cassé probable', reason: `${failures} échecs consécutifs` };
@@ -501,21 +502,36 @@ function renderHealthEvents() {
     $('health-panel').innerHTML = `<div class="empty">La table <span class="mono">source_health_events</span> n'est pas accessible depuis cette page, ou ses droits de lecture ne sont pas ouverts.</div>`;
     return;
   }
-  $('health-count').textContent = `${state.healthEvents.length} événement(s)`;
-  if (!state.healthEvents.length) {
+  const sourceIds = new Set(filteredSources().map(s => s.id));
+  const events = state.healthEvents.filter(e => sourceIds.has(e.source_id));
+  $('health-count').textContent = `${events.length} événement(s) historisé(s)`;
+  if (!events.length) {
     $('health-panel').innerHTML = `<div class="empty">Aucun événement source enregistré sur la période. Si un flux est muet mais qu'il n'apparaît jamais ici, W1 doit encore écrire ses erreurs et avertissements dans <span class="mono">source_health_events</span>.</div>`;
     return;
   }
-  const rows = state.healthEvents.slice(0, 120);
-  $('health-panel').innerHTML = `<div class="scroll"><table><thead><tr><th>État</th><th>Source</th><th>Message</th><th>Date</th></tr></thead><tbody>${rows.map(e => {
-    const kind = e.severity === 'error' ? 'bad' : (e.severity === 'warning' ? 'warn' : 'info');
+  const latestBySource = new Map();
+  events.forEach(e => { if (!latestBySource.has(e.source_id)) latestBySource.set(e.source_id, e); });
+  const active = [...latestBySource.values()].filter(e => {
+    if (e.event_type === 'source_empty_or_silent') return false;
+    const source = state.sources.find(s => s.id === e.source_id);
+    const recovered = source?.last_fetched_at && new Date(source.last_fetched_at) > new Date(e.created_at) && Number(source.consecutive_failures || 0) === 0;
+    return !recovered && ['error', 'warning'].includes(e.severity);
+  });
+  const eventRows = (rows, historical = false) => `<div class="scroll"><table><thead><tr><th>État</th><th>Source</th><th>Message</th><th>Date</th></tr></thead><tbody>${rows.map(e => {
+    const informational = e.event_type === 'source_empty_or_silent';
+    const kind = historical || informational ? 'info' : (e.severity === 'error' ? 'bad' : (e.severity === 'warning' ? 'warn' : 'info'));
+    const label = informational ? 'lu sans nouveauté' : (historical ? 'historique' : (e.severity || 'info'));
     return `<tr class="${kind === 'bad' ? 'danger-row' : (kind === 'warn' ? 'warn-row' : '')}">
-      <td>${statusBadge(kind, e.severity || 'info')}<div class="muted">${esc(e.workflow_key || '')}</div></td>
+      <td>${statusBadge(kind, label)}<div class="muted">${esc(e.workflow_key || '')}</div></td>
       <td><strong>${esc(e.sources?.name || e.source_id || 'Source inconnue')}</strong><div class="muted mono">${esc(e.event_type || '')}${e.http_status ? ' · HTTP ' + esc(e.http_status) : ''}</div></td>
       <td>${esc(e.message || '')}</td>
       <td>${dt(e.created_at)}</td>
     </tr>`;
   }).join('')}</tbody></table></div>`;
+  $('health-count').textContent = `${active.length} incident(s) actif(s) · ${events.length} événement(s) historisé(s)`;
+  $('health-panel').innerHTML = active.length
+    ? `${eventRows(active)}<details class="panel"><summary>Voir l’historique complet (${events.length})</summary>${eventRows(events.slice(0, 120), true)}</details>`
+    : `<div class="empty">Aucun incident source actif.</div><details class="panel"><summary>Voir l’historique complet (${events.length})</summary>${eventRows(events.slice(0, 120), true)}</details>`;
 }
 function start() {
   if (globalThis.supabase?.createClient) { loadData(); return; }
