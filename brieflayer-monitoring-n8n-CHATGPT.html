@@ -285,7 +285,7 @@ async function loadData() {
     const since = cutoffDate();
     const [sourcesRes, itemsRes, matchesRes] = await Promise.all([
       sb.from('sources').select('id,tenant_id,type,name,config,active,last_fetched_at,consecutive_failures,created_at').eq('tenant_id', TENANT).order('name'),
-      sb.from('items').select('id,source_id,url,url_canonical,title,status,error_count,published_at,created_at,updated_at,sources(name)').eq('tenant_id', TENANT).gte('created_at', since).order('updated_at', { ascending: false }).limit(5000),
+      sb.from('items').select('id,source_id,url,url_canonical,title,status,error_count,published_at,created_at,updated_at,sources(name)').eq('tenant_id', TENANT).or(`created_at.gte.${since},updated_at.gte.${since}`).order('updated_at', { ascending: false }).limit(5000),
       sb.from('matches').select('id,status,llm_score,created_at,reviewed_at,client_profiles(clients(name))').eq('tenant_id', TENANT).gte('created_at', since).order('created_at', { ascending: false }).limit(5000)
     ]);
     if (sourcesRes.error) throw sourcesRes.error;
@@ -372,13 +372,16 @@ function renderKpis() {
   const collectedToday = items.filter(i => isToday(i.created_at)).length;
   const publishedToday = items.filter(i => isToday(i.published_at)).length;
   const activeSourceIdsToday = new Set(items.filter(i => isToday(i.created_at) && i.source_id).map(i => i.source_id));
-  const withoutNewsToday = supervisedSources.filter(s => s.active && !activeSourceIdsToday.has(s.id)).length;
+  const readToday = supervisedSources.filter(s => s.active && isToday(s.last_fetched_at));
+  const withoutNewsToday = readToday.filter(s => !activeSourceIdsToday.has(s.id)).length;
+  const notReadToday = supervisedSources.filter(s => s.active && !isToday(s.last_fetched_at)).length;
   const outsideScope = sources.filter(s => !isAspie(s)).length;
   $('kpis').innerHTML = [
     kpi('info', supervisedSources.filter(s => s.active).length, 'sources ASPIE supervisées', `${supervisedSources.length} sources ASPIE dans cette vue`),
     outsideScope ? kpi('info', outsideScope, 'sources hors périmètre ASPIE', 'inventoriées mais non suivies par ce pipeline') : '',
     kpi(collectedToday ? 'ok' : 'warn', collectedToday, 'items collectés aujourd’hui', `${publishedToday} information(s) publiée(s) aujourd’hui`),
     kpi('info', withoutNewsToday, 'sources lues sans nouveauté aujourd’hui', 'ce nombre n’est pas un incident'),
+    kpi(notReadToday ? 'warn' : 'ok', notReadToday, 'sources non lues aujourd’hui', 'collecte quotidienne non exécutée ou interrompue'),
     kpi(broken ? 'bad' : 'ok', broken, 'sources cassées probables', 'incident source ou échecs répétés'),
     kpi(warn ? 'warn' : 'ok', warn, 'sources réellement instables', 'échec récent ou collecte non exécutée'),
     kpi(blocked ? 'bad' : 'ok', blocked, 'items bloqués', 'erreur ou processing trop ancien'),
@@ -398,7 +401,7 @@ function renderWorkflows() {
   $('workflows').innerHTML = [
     workflow('w1', 'W1 Collecte sources', sourceHealthLabel(), [
       ['Sources lues récemment', `${healthySources.length} / ${activeSources.length}`],
-      ['Échecs consécutifs', state.sources.reduce((a, s) => a + Number(s.consecutive_failures || 0), 0)],
+      ['Échecs consécutifs', activeSources.reduce((a, s) => a + Number(s.consecutive_failures || 0), 0)],
       ['Items collectés période', items.length]
     ]),
     workflow('w2', 'W2 Texte complet', (c.new || c.processing_w2) ? 'À surveiller' : 'OK', [
@@ -422,7 +425,7 @@ function renderWorkflows() {
   ].join('');
 }
 function sourceHealthLabel() {
-  const r = state.sources.map(sourceRisk);
+  const r = state.sources.filter(s => s.active && isAspie(s)).map(sourceRisk);
   if (r.some(x => x.kind === 'bad')) return 'Incident';
   if (r.some(x => x.kind === 'warn')) return 'À surveiller';
   return 'OK';

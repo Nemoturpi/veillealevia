@@ -400,6 +400,7 @@
     <pre class="prompt" id="m-prompt"></pre>
     <div style="margin-top:12px; display:flex; gap:10px">
       <button class="bigbtn" id="m-copy" type="button">Copier à nouveau</button>
+      <button class="bigbtn" id="m-finalize" type="button" style="display:none">Valider ce bulletin</button>
       <button class="tab" id="m-reopen" type="button" style="display:none">Rouvrir les infos générées</button>
       <button class="tab" id="m-close" type="button">Fermer</button>
     </div>
@@ -415,11 +416,23 @@ const EMBED = {
   url: 'https://xkqeqajeccsacocnfqca.supabase.co',
   key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhrcWVxYWplY2NzYWNvY25mcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNjc4OTIsImV4cCI6MjA5Njc0Mzg5Mn0.7NmmzyrXt-kVMBl-_WFqPuBP_9r-BAuIbavRO_sIryk'
 };
-let sb = null, clients = [], current = null, rows = [], themes = new Set(), activeStage = 'todo', listMode = false;
+let sb = null, clients = [], current = null, rows = [], manualRows = [], manualStorageError = '', themes = new Set(), activeStage = 'todo', listMode = false, pendingBulletin = null;
 const TAGLABELS = { energie: 'Énergie', environnement: 'Environnement', sante: 'Santé', numerique: 'Numérique', donnees_personnelles: 'Données personnelles', fiscalite: 'Fiscalité', travail_emploi: 'Travail & emploi', transports: 'Transports', agriculture_alimentation: 'Agriculture', industrie: 'Industrie', finance: 'Finance', logement_urbanisme: 'Logement & urbanisme', education_recherche: 'Éducation & recherche', culture_medias: 'Culture & médias', defense_securite: 'Défense & sécurité', justice: 'Justice', collectivites_territoriales: 'Collectivités', europe_ue: 'Europe / UE', international: 'International', concurrence: 'Concurrence', marches_publics: 'Marchés publics', aides_etat: "Aides d'État", consommation: 'Consommation', institutions: 'Institutions' };
+const LEGACY_TITLE_TRANSLATIONS = new Map([
+  ['Quality and AI in focus at the annual Main SACEPO meeting', "La qualité et l'IA au coeur de la réunion plénière annuelle du SACEPO"],
+  ['EUIPO streamlines online filing tools to simplify the user experience', "L'EUIPO simplifie ses outils de dépôt en ligne pour améliorer l'expérience utilisateur"],
+  ['EPO meets with Jio Platforms', "L'OEB rencontre Jio Platforms"]
+]);
 
 const $ = id => document.getElementById(id);
 const toast = m => { const t = $('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); };
+
+function withFrenchLegacyTitle(row) {
+  const item = row && row.items;
+  if (!item || !item.title) return row;
+  const translated = LEGACY_TITLE_TRANSLATIONS.get(String(item.title).trim());
+  return translated ? { ...row, items: { ...item, title: translated } } : row;
+}
 
 function init() {
   try { sb = supabase.createClient(EMBED.url, EMBED.key); }
@@ -455,8 +468,9 @@ async function load() {
     .eq('profile_id', pid).in('status', statuts).is('bulletin_id', null)
     .order('created_at', { ascending: false }).limit(1000);
   if (error) { $('list').innerHTML = '<div class="empty">Erreur : ' + error.message + '</div>'; return; }
-  rows = data || [];
+  rows = (data || []).map(withFrenchLegacyTitle);
   rows.sort(sortByScore);
+  await loadManualItems(pid, c.tenant_id);
   renderThemes(); render();
 }
 
@@ -508,7 +522,7 @@ function renderThemes() {
 }
 function toggleTheme(t) { themes.has(t) ? themes.delete(t) : themes.add(t); renderThemes(); render(); }
 function render() {
-  const list = filteredRows();
+  const list = ['manual', 'generate'].includes(activeStage) ? rows : filteredRows();
   renderBoard(list);
 }
 
@@ -606,40 +620,38 @@ function manualKey() {
   return 'brieflayer-manual-' + (current || 'global');
 }
 function manualItems() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(manualKey()) || '[]');
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (e) {
-    return [];
+  return manualRows;
+}
+async function loadManualItems(profileId, tenantId) {
+  const result = await sb.from('manual_items')
+    .select('id,title,body,source,status,created_at')
+    .eq('profile_id', profileId).eq('status', 'pending').is('bulletin_id', null)
+    .order('created_at', { ascending: true });
+  if (result.error) {
+    manualRows = [];
+    manualStorageError = 'Le stockage partagé des informations supplémentaires doit être activé dans Supabase.';
+    return;
   }
-}
-function saveManualItems(items) {
-  localStorage.setItem(manualKey(), JSON.stringify(items));
-}
-function incubationKey() {
-  return 'brieflayer-incubation-' + (current || 'global');
-}
-function incubatedIds() {
+  manualStorageError = '';
+  manualRows = result.data || [];
   try {
-    const parsed = JSON.parse(localStorage.getItem(incubationKey()) || '[]');
-    return new Set(Array.isArray(parsed) ? parsed : []);
-  } catch (e) {
-    return new Set();
-  }
+    const legacy = JSON.parse(localStorage.getItem(manualKey()) || '[]');
+    if (!manualRows.length && Array.isArray(legacy) && legacy.length) {
+      const payload = legacy.map(item => ({ tenant_id: tenantId, profile_id: profileId, title: item.title || '', body: item.body || '', source: item.source || null, status: 'pending', created_at: item.created_at || new Date().toISOString() }));
+      const migrated = await sb.from('manual_items').insert(payload).select('id,title,body,source,status,created_at');
+      if (!migrated.error) {
+        manualRows = migrated.data || [];
+        localStorage.removeItem(manualKey());
+      }
+    }
+  } catch (e) {}
 }
-function saveIncubatedIds(ids) {
-  localStorage.setItem(incubationKey(), JSON.stringify([...ids]));
-}
+function incubatedIds() { return new Set(); }
+function saveIncubatedIds() {}
 function isIncubated(rowOrId) {
-  if (rowOrId && typeof rowOrId === 'object') return rowOrId.status === 'incubated' || incubatedIds().has(rowOrId.id);
-  return incubatedIds().has(rowOrId);
+  return Boolean(rowOrId && typeof rowOrId === 'object' && rowOrId.status === 'incubated');
 }
-function removeIncubation(id) {
-  const ids = incubatedIds();
-  if (!ids.has(id)) return;
-  ids.delete(id);
-  saveIncubatedIds(ids);
-}
+function removeIncubation() {}
 async function resumeIncubation(id) {
   const row = rows.find(r => r.id === id);
   if (row && row.status === 'incubated') {
@@ -679,26 +691,14 @@ async function incubate(id) {
   if (!row) return;
   const summary = $('sum-' + id) ? $('sum-' + id).value : row.client_summary;
   const { error } = await sb.from('matches').update({ status: 'incubated', client_summary: summary, reviewed_at: new Date().toISOString() }).eq('id', id);
-  if (error) {
-    const ids = incubatedIds();
-    ids.add(id);
-    saveIncubatedIds(ids);
-    rows = rows.map(r => r.id === id ? { ...r, client_summary: summary } : r);
-    advanceStageIfDone();
-    render();
-    toast('Reporté localement : ' + error.message);
-    return;
-  }
+  if (error) { toast('Report impossible : ' + error.message); return; }
   removeIncubation(id);
   rows = rows.map(r => r.id === id ? { ...r, status: 'incubated', client_summary: summary } : r);
   advanceStageIfDone();
   render();
   toast('Reporté hors bulletin courant');
 }
-function manualId() {
-  return 'manual-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
-}
-function saveManualInfo() {
+async function saveManualInfo() {
   const titleEl = $('manual-title');
   const bodyEl = $('manual-body');
   const sourceEl = $('manual-source');
@@ -706,9 +706,12 @@ function saveManualInfo() {
   const body = bodyEl ? bodyEl.value.trim() : '';
   const source = sourceEl ? sourceEl.value.trim() : '';
   if (!title && !body) { toast('Ajoutez au moins un titre ou un contenu.'); return; }
-  const list = manualItems();
-  list.push({ id: manualId(), title, body, source, created_at: new Date().toISOString() });
-  saveManualItems(list);
+  if (manualStorageError) { toast(manualStorageError); return; }
+  const c = clients.find(x => x.id === current); if (!c) return;
+  const payload = { tenant_id: c.tenant_id, profile_id: c.client_profiles[0].id, title, body, source: source || null, status: 'pending' };
+  const saved = await sb.from('manual_items').insert(payload).select('id,title,body,source,status,created_at').single();
+  if (saved.error) { toast('Ajout impossible : ' + saved.error.message); return; }
+  manualRows = [...manualRows, saved.data];
   if (titleEl) titleEl.value = '';
   if (bodyEl) bodyEl.value = '';
   if (sourceEl) sourceEl.value = '';
@@ -728,19 +731,15 @@ function fallbackStatus(row) {
   return row.llm_score >= 60 ? 'proposed' : 'grey';
 }
 function isPreviousReady(row) {
-  if (!row || row.status !== 'edited') return false;
-  if (!row.reviewed_at) return true;
-  const reviewed = new Date(row.reviewed_at);
-  if (Number.isNaN(reviewed.getTime())) return true;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return reviewed.getTime() < today.getTime();
+  return false;
 }
 function currentReadyRows(list) {
-  return (list || []).filter(r => !isPreviousReady(r));
+  // La requête exclut déjà les informations rattachées à un bulletin.
+  // Une information validée reste donc retenue, quelle que soit sa date de revue.
+  return (list || []).filter(r => r && r.status === 'edited');
 }
 function previousReadyRows(list) {
-  return (list || []).filter(isPreviousReady);
+  return [];
 }
 function statusForLane(row, laneKey) {
   if (laneKey === 'todo') return fallbackStatus(row);
@@ -894,6 +893,7 @@ function renderManualSummaryItems(items) {
   </details>`).join('')}</div>`;
 }
 function renderManualInlineForm() {
+  if (manualStorageError) return `<div class="empty">${esc(manualStorageError)} Exécutez le fichier supabase-infos-manuelles-partagees-CHATGPT.sql.</div>`;
   return `<section class="manual-inline" aria-label="Ajouter une information supplémentaire">
     <div>
       <label class="field-label" for="manual-title">Titre</label>
@@ -1015,7 +1015,7 @@ function renderSelectedStage(grouped) {
   return `<section class="stage-panel selected">
     ${stageHeader('Troisième étape', '🎯 Choisir les infos à intégrer au bulletin', 'Envoyer au bulletin courant ou reporter hors bulletin.')}
     ${stageSummary(`${cards.length} information(s) à trier`, `${currentReady.length} retenue(s) pour ce bulletin · ${incubation.length} reportée(s).`)}
-    ${stageTools()}
+    ${stageTools(cards.length ? `<button class="b-ready" type="button" onclick="retainAllSelected()">✓ Retenir toutes les infos gardées (${cards.length})</button>` : '')}
     ${listMode ? renderStepSplit(
       renderActionColumn('wait', 'À trier', cards, 'selected'),
       renderActionColumn('reminder', 'Infos reportées', incubation, 'incubation', { collapsible: true, count: true }),
@@ -1195,11 +1195,25 @@ async function decide(id, statut) {
   const { error } = await sb.from('matches').update({ status: statut, client_summary: summary, reviewed_at: reviewDate }).eq('id', id);
   if (error) { toast('Erreur : ' + error.message); return; }
   removeIncubation(id);
-  rows = rows.map(r => r.id === id ? { ...r, status: statut, client_summary: summary } : r);
+  rows = rows.map(r => r.id === id ? { ...r, status: statut, client_summary: summary, reviewed_at: reviewDate } : r);
   advanceStageIfDone();
   renderThemes(); render(); renderTabs();
   const labels = { proposed: 'Remis au tri', grey: 'Remis en signal faible', approved: 'À trier', edited: 'Retenu pour ce bulletin', rejected: 'Ignoré' };
   toast(labels[statut] || 'Mis à jour');
+}
+
+async function retainAllSelected() {
+  const selected = groupRows(filteredRows()).selected;
+  if (!selected.length) { toast('Aucune information gardée à retenir.'); return; }
+  const ids = selected.map(r => r.id);
+  const reviewDate = new Date().toISOString();
+  const { error } = await sb.from('matches').update({ status: 'edited', reviewed_at: reviewDate }).in('id', ids);
+  if (error) { toast('Erreur : ' + error.message); return; }
+  ids.forEach(removeIncubation);
+  const selectedIds = new Set(ids);
+  rows = rows.map(r => selectedIds.has(r.id) ? { ...r, status: 'edited', reviewed_at: reviewDate } : r);
+  renderThemes(); render(); renderTabs();
+  toast(`${ids.length} information${ids.length > 1 ? 's retenues' : ' retenue'} pour ce bulletin`);
 }
 
 async function approvedRows() {
@@ -1208,7 +1222,7 @@ async function approvedRows() {
   const { data } = await sb.from('matches')
     .select('id,status,reviewed_at,rationale,client_summary,items(title,url,url_canonical,source_id,raw_content,published_at,act_type,urgency,key_dates)')
     .eq('profile_id', pid).eq('status', 'edited').is('bulletin_id', null);
-  return currentReadyRows(data || []);
+  return currentReadyRows((data || []).map(withFrenchLegacyTitle));
 }
 
 function promptExcerpt(text, max = 6500) {
@@ -1320,22 +1334,46 @@ async function generateBulletin() {
   const prompt = buildPrompt(c.name, brief, a, manual);
   const { data: bul, error } = await sb.from('bulletins').insert({ tenant_id: c.tenant_id, profile_id: c.client_profiles[0].id, prompt_text: prompt, status: 'draft' }).select('id').single();
   if (error) { toast('Erreur bulletin : ' + error.message); return; }
-  if (a.length) {
-    const linkResult = await sb.from('matches').update({ bulletin_id: bul.id }).in('id', a.map(r => r.id));
-    if (linkResult.error) {
-      await sb.from('bulletins').delete().eq('id', bul.id);
-      toast('Erreur rattachement : ' + linkResult.error.message);
-      return;
-    }
-  }
-  saveManualItems([]);
-  await load();
+  pendingBulletin = { id: bul.id, matchIds: a.map(r => r.id), manualIds: manual.map(item => item.id) };
   try { await navigator.clipboard.writeText(prompt); toast('Texte de travail copié'); } catch (e) { toast('Copie manuelle nécessaire'); }
   $('m-client').textContent = c.name;
   $('m-prompt').textContent = prompt;
   $('m-copy').onclick = async () => { try { await navigator.clipboard.writeText(prompt); toast('Copié'); } catch (e) {} };
+  $('m-finalize').style.display = 'inline-block';
+  $('m-finalize').onclick = finalizeBulletin;
   $('m-reopen').style.display = 'none';
   $('modal').style.display = 'flex';
+}
+
+async function finalizeBulletin() {
+  if (!pendingBulletin) { toast('Aucun brouillon à valider dans cette session.'); return; }
+  const draft = pendingBulletin;
+  if (draft.matchIds.length) {
+    const linked = await sb.from('matches').update({ bulletin_id: draft.id }).in('id', draft.matchIds).is('bulletin_id', null);
+    if (linked.error) { toast('Erreur rattachement : ' + linked.error.message); return; }
+  }
+  if (draft.manualIds.length) {
+    const linkedManual = await sb.from('manual_items').update({ bulletin_id: draft.id, status: 'included', updated_at: new Date().toISOString() }).in('id', draft.manualIds).eq('status', 'pending');
+    if (linkedManual.error) {
+      if (draft.matchIds.length) await sb.from('matches').update({ bulletin_id: null }).eq('bulletin_id', draft.id);
+      toast('Erreur infos supplémentaires : ' + linkedManual.error.message);
+      return;
+    }
+  }
+  const written = await sb.from('bulletins').update({ status: 'written' }).eq('id', draft.id);
+  if (written.error) {
+    if (draft.matchIds.length) await sb.from('matches').update({ bulletin_id: null }).eq('bulletin_id', draft.id);
+    if (draft.manualIds.length) await sb.from('manual_items').update({ bulletin_id: null, status: 'pending', updated_at: new Date().toISOString() }).in('id', draft.manualIds);
+    toast('Validation annulée : ' + written.error.message);
+    return;
+  }
+  const includedManual = new Set(draft.manualIds);
+  manualRows = manualRows.filter(item => !includedManual.has(item.id));
+  pendingBulletin = null;
+  $('m-finalize').style.display = 'none';
+  $('modal').style.display = 'none';
+  await load();
+  toast('Bulletin validé : les informations ont été archivées');
 }
 
 async function openLastBulletin() {
@@ -1347,6 +1385,7 @@ async function openLastBulletin() {
   $('m-prompt').textContent = b.prompt_text || '';
   try { await navigator.clipboard.writeText(b.prompt_text || ''); toast('Texte de travail copié'); } catch (e) {}
   $('m-copy').onclick = async () => { try { await navigator.clipboard.writeText(b.prompt_text || ''); toast('Copié'); } catch (e) {} };
+  $('m-finalize').style.display = 'none';
   $('m-reopen').style.display = 'inline-block';
   $('m-reopen').onclick = async () => {
     await sb.from('matches').update({ bulletin_id: null }).eq('bulletin_id', b.id);
@@ -1364,17 +1403,19 @@ async function resetReview() {
   const r1 = await sb.from('matches').update({ status: 'proposed', reviewed_at: null, bulletin_id: null }).eq('profile_id', pid).gte('llm_score', 60);
   const r2 = await sb.from('matches').update({ status: 'grey', reviewed_at: null, bulletin_id: null }).eq('profile_id', pid).lt('llm_score', 60);
   if (r1.error || r2.error) { toast('Erreur : ' + (r1.error || r2.error).message); return; }
-  saveIncubatedIds(new Set());
   toast('Réinitialisé : toutes les propositions sont de retour');
   renderTabs(); load();
 }
 async function resetCurrentStep() {
-  const list = filteredRows();
+  const list = ['manual', 'generate'].includes(activeStage) ? rows : filteredRows();
   const grouped = groupRows(list);
   if (activeStage === 'manual') {
     if (!manualItems().length) { toast('Aucune info manuelle à retirer.'); return; }
     if (!confirm('Retirer les informations supplémentaires du client actif ?')) return;
-    saveManualItems([]);
+    const c = clients.find(x => x.id === current); if (!c) return;
+    const removed = await sb.from('manual_items').delete().eq('profile_id', c.client_profiles[0].id).eq('status', 'pending').is('bulletin_id', null);
+    if (removed.error) { toast('Suppression impossible : ' + removed.error.message); return; }
+    manualRows = [];
     render();
     toast('Étape infos supplémentaires réinitialisée');
     return;
@@ -1406,15 +1447,9 @@ async function resetCurrentStep() {
     }));
     const failed = results.find(x => x.error);
     if (failed) { toast('Erreur : ' + failed.error.message); return; }
-    const incubated = incubatedIds();
-    ids.forEach(id => incubated.delete(id));
-    saveIncubatedIds(incubated);
   } else {
     const { error } = await sb.from('matches').update({ status: 'approved', reviewed_at: null }).in('id', ids);
     if (error) { toast('Erreur : ' + error.message); return; }
-    const incubated = incubatedIds();
-    if (activeStage === 'selected') ids.forEach(id => incubated.delete(id));
-    saveIncubatedIds(incubated);
   }
   listMode = false;
   await load();
@@ -1423,7 +1458,7 @@ async function resetCurrentStep() {
 
 document.addEventListener('keydown', handleKeyboard);
 
-window.switchTo = switchTo; window.decide = decide; window.incubate = incubate; window.resumeIncubation = resumeIncubation; window.recallIncubationToTodo = recallIncubationToTodo; window.recallReadyToTodo = recallReadyToTodo; window.toggleTheme = toggleTheme; window.setStage = setStage; window.generateBulletin = generateBulletin;
+window.switchTo = switchTo; window.decide = decide; window.retainAllSelected = retainAllSelected; window.incubate = incubate; window.resumeIncubation = resumeIncubation; window.recallIncubationToTodo = recallIncubationToTodo; window.recallReadyToTodo = recallReadyToTodo; window.toggleTheme = toggleTheme; window.setStage = setStage; window.generateBulletin = generateBulletin; window.finalizeBulletin = finalizeBulletin;
 window.setPeriod = setPeriod; window.toggleListMode = toggleListMode; window.openLastBulletin = openLastBulletin; window.resetReview = resetReview; window.resetCurrentStep = resetCurrentStep;
 window.dragCard = dragCard; window.endDrag = endDrag; window.allowDrop = allowDrop; window.leaveDrop = leaveDrop; window.dropOnLane = dropOnLane;
 (function start() {
