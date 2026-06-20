@@ -151,6 +151,7 @@ source_health_events = erreurs, avertissements ou signaux de flux silencieux par
   </details>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 const EMBED = {
   url: 'https://xkqeqajeccsacocnfqca.supabase.co',
@@ -183,6 +184,13 @@ function daysAgo(value) {
   const t = new Date(value).getTime();
   if (Number.isNaN(t)) return Infinity;
   return (Date.now() - t) / 86400000;
+}
+function isToday(value) {
+  if (!value) return false;
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return false;
+  const now = new Date();
+  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
 }
 function cutoffDate() {
   const days = Number($('period-filter').value || 3);
@@ -272,7 +280,8 @@ async function queryOptionalHealthEvents(since) {
 async function loadData() {
   $('last-refresh').textContent = 'chargement...';
   try {
-    if (!sb) sb = supabase.createClient(EMBED.url, EMBED.key);
+    if (!globalThis.supabase?.createClient) throw new Error('La librairie Supabase ne s’est pas chargée. Vérifiez le réseau ou le bloqueur de contenu, puis rechargez la page.');
+    if (!sb) sb = globalThis.supabase.createClient(EMBED.url, EMBED.key);
     const since = cutoffDate();
     const [sourcesRes, itemsRes, matchesRes] = await Promise.all([
       sb.from('sources').select('id,tenant_id,type,name,config,active,last_fetched_at,consecutive_failures,created_at').eq('tenant_id', TENANT).order('name'),
@@ -345,8 +354,14 @@ function renderKpis() {
   const blocked = state.items.filter(itemIsBlocked).length;
   const counts = statusCounts(state.items);
   const proposed = state.matches.filter(m => ['proposed', 'grey'].includes(m.status)).length;
+  const collectedToday = state.items.filter(i => isToday(i.created_at)).length;
+  const publishedToday = state.items.filter(i => isToday(i.published_at)).length;
+  const activeSourceIdsToday = new Set(state.items.filter(i => isToday(i.created_at) && i.source_id).map(i => i.source_id));
+  const silentToday = sources.filter(s => s.active && !activeSourceIdsToday.has(s.id)).length;
   $('kpis').innerHTML = [
     kpi('info', sources.filter(s => s.active).length, 'sources actives', `${sources.length} sources au total`),
+    kpi(collectedToday ? 'ok' : 'warn', collectedToday, 'items collectés aujourd’hui', `${publishedToday} information(s) publiée(s) aujourd’hui`),
+    kpi(silentToday ? 'warn' : 'ok', silentToday, 'sources sans nouvel item aujourd’hui', 'une source peut être lue correctement sans publier de nouveauté'),
     kpi(broken ? 'bad' : 'ok', broken, 'sources cassées probables', 'incident source ou échecs répétés'),
     kpi(warn ? 'warn' : 'ok', warn, 'sources instables ou muettes', 'avertissement, non lu ou sans item'),
     kpi(blocked ? 'bad' : 'ok', blocked, 'items bloqués', 'erreur ou processing trop ancien'),
@@ -408,17 +423,18 @@ function renderSources() {
   });
   $('sources-count').textContent = `${rows.length} source(s) affichée(s)`;
   if (!rows.length) { $('sources-table').innerHTML = '<tr><td class="empty">Aucune source dans ce filtre.</td></tr>'; return; }
-  $('sources-table').innerHTML = `<thead><tr><th>État</th><th>Source</th><th>Dernière collecte</th><th>Items période</th><th>Action</th></tr></thead><tbody>${rows.map(s => {
+  $('sources-table').innerHTML = `<thead><tr><th>État</th><th>Source</th><th>Dernière collecte</th><th>Items</th><th>Action</th></tr></thead><tbody>${rows.map(s => {
     const risk = sourceRisk(s);
     const agg = state.sourceItems.get(s.id) || { count: 0, lastItem: null, statuses: {} };
     const lastEvent = state.sourceEvents.get(s.id)?.[0] || null;
+    const todayCount = state.items.filter(i => i.source_id === s.id && isToday(i.created_at)).length;
     const url = sourceUrl(s);
     const rowClass = risk.kind === 'bad' ? 'danger-row' : (risk.kind === 'warn' ? 'warn-row' : '');
     return `<tr class="${rowClass}">
       <td>${statusBadge(risk.kind, risk.label)}<div class="muted">${esc(risk.reason)}</div>${lastEvent ? `<div class="muted">Dernier événement : ${esc(lastEvent.event_type)} · ${dt(lastEvent.created_at)}</div>` : ''}</td>
       <td><strong>${esc(s.name)}</strong><div class="muted mono">${esc(url)}</div><div class="pillbar">${s.active ? '<span class="pill">active</span>' : '<span class="pill">inactive</span>'}<span class="pill">${esc(s.type)}</span></div></td>
       <td>${dt(s.last_fetched_at)}<div class="muted">${Number(s.consecutive_failures || 0)} échec(s)</div></td>
-      <td><strong>${agg.count}</strong><div class="muted">dernier item : ${dt(agg.lastItem)}</div><div class="pillbar">${Object.entries(agg.statuses).slice(0, 4).map(([k,v]) => `<span class="pill">${esc(k)} ${v}</span>`).join('')}</div></td>
+      <td><strong>${todayCount} aujourd’hui</strong><div class="muted">${agg.count} sur la période · dernier : ${dt(agg.lastItem)}</div><div class="pillbar">${Object.entries(agg.statuses).slice(0, 4).map(([k,v]) => `<span class="pill">${esc(k)} ${v}</span>`).join('')}</div></td>
       <td>${url ? `<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Ouvrir</a>` : '<span class="muted">URL absente</span>'}</td>
     </tr>`;
   }).join('')}</tbody>`;
@@ -490,11 +506,25 @@ function renderHealthEvents() {
   }).join('')}</tbody></table></div>`;
 }
 function start() {
-  const s = document.createElement('script');
-  s.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js';
-  s.onload = loadData;
-  s.onerror = () => { $('last-refresh').textContent = 'librairie Supabase indisponible'; };
-  document.head.appendChild(s);
+  if (globalThis.supabase?.createClient) { loadData(); return; }
+  const fallbacks = [
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+    'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js'
+  ];
+  const tryNext = () => {
+    const src = fallbacks.shift();
+    if (!src) {
+      $('last-refresh').textContent = 'librairie Supabase indisponible';
+      $('kpis').innerHTML = '<div class="panel error">Connexion impossible : la librairie Supabase est bloquée par le réseau ou le navigateur.</div>';
+      return;
+    }
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = () => globalThis.supabase?.createClient ? loadData() : tryNext();
+    s.onerror = tryNext;
+    document.head.appendChild(s);
+  };
+  tryNext();
 }
 start();
 setInterval(() => {
