@@ -78,8 +78,8 @@
   <div class="spacer"></div>
   <div class="toolbar">
     <select id="source-filter" onchange="render()">
+      <option value="aspie" selected>ASPIE seulement</option>
       <option value="all">Toutes sources</option>
-      <option value="aspie">ASPIE seulement</option>
       <option value="active">Sources actives</option>
       <option value="risk">Sources à risque</option>
     </select>
@@ -215,20 +215,18 @@ function sourceUrl(s) {
 function sourceRisk(s) {
   const failures = Number(s.consecutive_failures || 0);
   const staleDays = daysAgo(s.last_fetched_at);
-  const lastItem = state.sourceItems.get(s.id)?.lastItem || null;
-  const silentDays = daysAgo(lastItem);
   const latestEvent = state.sourceEvents.get(s.id)?.[0] || null;
   if (!s.active) return { kind: 'info', label: 'inactive', reason: 'Source désactivée' };
   if (latestEvent && latestEvent.severity === 'error' && daysAgo(latestEvent.created_at) <= 7) {
     return { kind: 'bad', label: 'incident source', reason: latestEvent.message || latestEvent.event_type || 'Erreur source récente' };
   }
   if (failures >= 3) return { kind: 'bad', label: 'cassé probable', reason: `${failures} échecs consécutifs` };
-  if (latestEvent && latestEvent.severity === 'warning' && daysAgo(latestEvent.created_at) <= 7) {
+  if (latestEvent && latestEvent.severity === 'warning' && latestEvent.event_type !== 'source_empty_or_silent' && daysAgo(latestEvent.created_at) <= 7) {
     return { kind: 'warn', label: 'à vérifier', reason: latestEvent.message || latestEvent.event_type || 'Avertissement source récent' };
   }
   if (failures > 0) return { kind: 'warn', label: 'instable', reason: `${failures} échec(s) récent(s)` };
   if (staleDays > 2) return { kind: 'warn', label: 'non lu', reason: 'Pas de collecte récente' };
-  if (silentDays > 7) return { kind: 'warn', label: 'muet', reason: 'Collecté sans item récent visible' };
+  if (latestEvent?.event_type === 'source_empty_or_silent') return { kind: 'ok', label: 'lu, sans nouveauté', reason: 'Source collectée correctement, aucun nouvel item exploitable' };
   return { kind: 'ok', label: 'ok', reason: 'Collecte récente' };
 }
 function isAspie(s) { return String(s.name || '').startsWith('ASPIE - '); }
@@ -337,6 +335,17 @@ function filteredSources() {
     return true;
   });
 }
+function scopedItems() {
+  const ids = new Set(filteredSources().map(s => s.id));
+  return state.items.filter(i => ids.has(i.source_id));
+}
+function aspieItems() {
+  return state.items.filter(i => String(i.sources?.name || '').startsWith('ASPIE - '));
+}
+function scopedMatches() {
+  if ($('source-filter').value !== 'aspie') return state.matches;
+  return state.matches.filter(m => /aspie/i.test(String(m.client_profiles?.clients?.name || '')));
+}
 function render() {
   renderKpis();
   renderWorkflows();
@@ -347,23 +356,25 @@ function render() {
   renderHealthEvents();
 }
 function renderKpis() {
-  const sources = state.sources;
+  const sources = filteredSources();
+  const items = scopedItems();
+  const matches = scopedMatches();
   const risks = sources.map(sourceRisk);
   const broken = risks.filter(r => r.kind === 'bad').length;
   const warn = risks.filter(r => r.kind === 'warn').length;
-  const blocked = state.items.filter(itemIsBlocked).length;
-  const counts = statusCounts(state.items);
-  const proposed = state.matches.filter(m => ['proposed', 'grey'].includes(m.status)).length;
-  const collectedToday = state.items.filter(i => isToday(i.created_at)).length;
-  const publishedToday = state.items.filter(i => isToday(i.published_at)).length;
-  const activeSourceIdsToday = new Set(state.items.filter(i => isToday(i.created_at) && i.source_id).map(i => i.source_id));
-  const silentToday = sources.filter(s => s.active && !activeSourceIdsToday.has(s.id)).length;
+  const blocked = items.filter(itemIsBlocked).length;
+  const counts = statusCounts(items);
+  const proposed = matches.filter(m => ['proposed', 'grey'].includes(m.status)).length;
+  const collectedToday = items.filter(i => isToday(i.created_at)).length;
+  const publishedToday = items.filter(i => isToday(i.published_at)).length;
+  const activeSourceIdsToday = new Set(items.filter(i => isToday(i.created_at) && i.source_id).map(i => i.source_id));
+  const withoutNewsToday = sources.filter(s => s.active && !activeSourceIdsToday.has(s.id)).length;
   $('kpis').innerHTML = [
     kpi('info', sources.filter(s => s.active).length, 'sources actives', `${sources.length} sources au total`),
     kpi(collectedToday ? 'ok' : 'warn', collectedToday, 'items collectés aujourd’hui', `${publishedToday} information(s) publiée(s) aujourd’hui`),
-    kpi(silentToday ? 'warn' : 'ok', silentToday, 'sources sans nouvel item aujourd’hui', 'une source peut être lue correctement sans publier de nouveauté'),
+    kpi('info', withoutNewsToday, 'sources lues sans nouveauté aujourd’hui', 'ce nombre n’est pas un incident'),
     kpi(broken ? 'bad' : 'ok', broken, 'sources cassées probables', 'incident source ou échecs répétés'),
-    kpi(warn ? 'warn' : 'ok', warn, 'sources instables ou muettes', 'avertissement, non lu ou sans item'),
+    kpi(warn ? 'warn' : 'ok', warn, 'sources réellement instables', 'échec récent ou collecte non exécutée'),
     kpi(blocked ? 'bad' : 'ok', blocked, 'items bloqués', 'erreur ou processing trop ancien'),
     kpi('info', counts.new || 0, 'nouveaux W2', 'items collectés à normaliser'),
     kpi('info', proposed, 'infos à revoir', 'matches proposed + grey')
@@ -373,15 +384,16 @@ function kpi(kind, value, label, detail) {
   return `<article class="panel kpi ${kind}"><strong>${esc(value)}</strong><h3>${esc(label)}</h3><span>${esc(detail)}</span></article>`;
 }
 function renderWorkflows() {
-  const c = statusCounts(state.items);
-  const m = statusCounts(state.matches);
-  const activeSources = state.sources.filter(s => s.active);
+  const items = aspieItems();
+  const c = statusCounts(items);
+  const m = statusCounts(state.matches.filter(match => /aspie/i.test(String(match.client_profiles?.clients?.name || ''))));
+  const activeSources = state.sources.filter(s => s.active && isAspie(s));
   const healthySources = activeSources.filter(s => sourceRisk(s).kind === 'ok');
   $('workflows').innerHTML = [
     workflow('w1', 'W1 Collecte sources', sourceHealthLabel(), [
       ['Sources lues récemment', `${healthySources.length} / ${activeSources.length}`],
       ['Échecs consécutifs', state.sources.reduce((a, s) => a + Number(s.consecutive_failures || 0), 0)],
-      ['Items collectés période', state.items.length]
+      ['Items collectés période', items.length]
     ]),
     workflow('w2', 'W2 Texte complet', (c.new || c.processing_w2) ? 'À surveiller' : 'OK', [
       ['À normaliser', c.new || 0],
@@ -440,7 +452,7 @@ function renderSources() {
   }).join('')}</tbody>`;
 }
 function renderBlocked() {
-  const rows = state.items.filter(itemIsBlocked).slice(0, 120);
+  const rows = scopedItems().filter(itemIsBlocked).slice(0, 120);
   $('blocked-count').textContent = `${rows.length} item(s)`;
   if (!rows.length) { $('blocked-table').innerHTML = '<tr><td class="empty">Aucun item bloqué sur la période.</td></tr>'; return; }
   $('blocked-table').innerHTML = `<thead><tr><th>Statut</th><th>Item</th><th>Source</th><th>Mis à jour</th></tr></thead><tbody>${rows.map(i => {
@@ -454,7 +466,7 @@ function renderBlocked() {
   }).join('')}</tbody>`;
 }
 function renderRecent() {
-  const rows = [...state.items].sort((a,b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at)).slice(0, 80);
+  const rows = [...scopedItems()].sort((a,b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at)).slice(0, 80);
   $('recent-count').textContent = `${rows.length} item(s)`;
   if (!rows.length) { $('recent-table').innerHTML = '<tr><td class="empty">Aucune activité sur la période.</td></tr>'; return; }
   $('recent-table').innerHTML = `<thead><tr><th>Statut</th><th>Information</th><th>Source</th><th>Date</th></tr></thead><tbody>${rows.map(i => `
