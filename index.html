@@ -522,31 +522,40 @@ function isInternalSourceText(value) {
 }
 function sourceInfo(itemOrUrl) {
   const item = itemOrUrl && typeof itemOrUrl === 'object' ? itemOrUrl : null;
-  const candidates = item ? [item.url_canonical, item.url] : [itemOrUrl];
-  const clean = String(candidates.find(Boolean) || '').trim();
-  if (!clean) return { url: '', host: 'Source primaire absente', valid: false, internal: false };
-  if (!/^https?:\/\//i.test(clean)) {
-    const recovered = findPrimaryUrlInText(item ? item.raw_content : '');
-    if (recovered) return sourceInfo(recovered);
-    if (isInternalSourceText(clean)) return { url: clean, host: 'Référence interne BriefLayer', valid: false, internal: true };
-    return { url: clean, host: clean, valid: false, internal: false };
-  }
-  try {
-    const parsed = new URL(clean);
-    const host = parsed.hostname.replace(/^www\./, '');
-    const internal = isInternalSourceHost(host);
-    if (internal) {
-      const recovered = findPrimaryUrlInText(item ? item.raw_content : '');
-      if (recovered) return sourceInfo(recovered);
-      return { url: clean, host: 'Référence interne BriefLayer (' + host + ')', valid: false, internal: true };
+  const candidates = (item ? [item.url_canonical, item.url] : [itemOrUrl])
+    .map(value => String(value || '').trim().replace(/&amp;/gi, '&'))
+    .filter(Boolean);
+  let internalCandidate = '';
+  let invalidCandidate = '';
+  for (const clean of candidates) {
+    if (!/^https?:\/\//i.test(clean)) {
+      invalidCandidate ||= clean;
+      continue;
     }
-    return { url: clean, host, valid: true, internal: false };
-  } catch (e) {
-    return { url: clean, host: clean, valid: false, internal: false };
+    try {
+      const parsed = new URL(clean);
+      const host = parsed.hostname.replace(/^www\./, '');
+      if (isInternalSourceHost(host)) {
+        internalCandidate ||= clean;
+        continue;
+      }
+      return { url: clean, host, valid: true, internal: false };
+    } catch (e) {
+      invalidCandidate ||= clean;
+    }
   }
+  const recovered = findPrimaryUrlInText(item ? item.raw_content : '');
+  if (recovered) return sourceInfo(recovered);
+  if (internalCandidate || candidates.some(isInternalSourceText)) {
+    const source = internalCandidate || candidates.find(isInternalSourceText) || '';
+    return { url: source, host: 'Référence interne BriefLayer', valid: false, internal: true };
+  }
+  const invalid = invalidCandidate || candidates[0] || '';
+  return { url: invalid, host: invalid || 'Source primaire absente', valid: false, internal: false };
 }
 function findPrimaryUrlInText(text) {
-  const matches = String(text || '').match(/https?:\/\/[^\s<>"')]+/gi) || [];
+  const matches = (String(text || '').match(/https?:\/\/[^\s<>"')]+/gi) || [])
+    .map(url => url.replace(/&amp;/gi, '&').replace(/[.,;:!?]+$/, ''));
   return matches.find(u => {
     try {
       const host = new URL(u).hostname.replace(/^www\./, '');
