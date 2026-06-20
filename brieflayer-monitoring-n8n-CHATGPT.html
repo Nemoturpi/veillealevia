@@ -79,7 +79,7 @@
   <div class="toolbar">
     <select id="source-filter" onchange="render()">
       <option value="aspie" selected>ASPIE seulement</option>
-      <option value="all">Toutes sources</option>
+      <option value="all">Tout le catalogue</option>
       <option value="active">Sources actives</option>
       <option value="risk">Sources à risque</option>
     </select>
@@ -218,6 +218,7 @@ function sourceRisk(s) {
   const latestEvent = state.sourceEvents.get(s.id)?.[0] || null;
   const recoveredAfterEvent = latestEvent && s.last_fetched_at && new Date(s.last_fetched_at) > new Date(latestEvent.created_at) && failures === 0;
   if (!s.active) return { kind: 'info', label: 'inactive', reason: 'Source désactivée' };
+  if (!isAspie(s)) return { kind: 'info', label: 'hors périmètre', reason: 'Source du catalogue non supervisée par le pipeline ASPIE' };
   if (latestEvent && latestEvent.severity === 'error' && !recoveredAfterEvent && daysAgo(latestEvent.created_at) <= 7) {
     return { kind: 'bad', label: 'incident source', reason: latestEvent.message || latestEvent.event_type || 'Erreur source récente' };
   }
@@ -358,9 +359,11 @@ function render() {
 }
 function renderKpis() {
   const sources = filteredSources();
-  const items = scopedItems();
+  const supervisedSources = sources.filter(isAspie);
+  const supervisedIds = new Set(supervisedSources.map(s => s.id));
+  const items = state.items.filter(i => supervisedIds.has(i.source_id));
   const matches = scopedMatches();
-  const risks = sources.map(sourceRisk);
+  const risks = supervisedSources.map(sourceRisk);
   const broken = risks.filter(r => r.kind === 'bad').length;
   const warn = risks.filter(r => r.kind === 'warn').length;
   const blocked = items.filter(itemIsBlocked).length;
@@ -369,9 +372,11 @@ function renderKpis() {
   const collectedToday = items.filter(i => isToday(i.created_at)).length;
   const publishedToday = items.filter(i => isToday(i.published_at)).length;
   const activeSourceIdsToday = new Set(items.filter(i => isToday(i.created_at) && i.source_id).map(i => i.source_id));
-  const withoutNewsToday = sources.filter(s => s.active && !activeSourceIdsToday.has(s.id)).length;
+  const withoutNewsToday = supervisedSources.filter(s => s.active && !activeSourceIdsToday.has(s.id)).length;
+  const outsideScope = sources.filter(s => !isAspie(s)).length;
   $('kpis').innerHTML = [
-    kpi('info', sources.filter(s => s.active).length, 'sources actives', `${sources.length} sources au total`),
+    kpi('info', supervisedSources.filter(s => s.active).length, 'sources ASPIE supervisées', `${supervisedSources.length} sources ASPIE dans cette vue`),
+    outsideScope ? kpi('info', outsideScope, 'sources hors périmètre ASPIE', 'inventoriées mais non suivies par ce pipeline') : '',
     kpi(collectedToday ? 'ok' : 'warn', collectedToday, 'items collectés aujourd’hui', `${publishedToday} information(s) publiée(s) aujourd’hui`),
     kpi('info', withoutNewsToday, 'sources lues sans nouveauté aujourd’hui', 'ce nombre n’est pas un incident'),
     kpi(broken ? 'bad' : 'ok', broken, 'sources cassées probables', 'incident source ou échecs répétés'),
