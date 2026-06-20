@@ -24,6 +24,11 @@
   .spacer { flex: 1; }
   .btn, select { border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 9px 12px; font: 600 13px "Inter Tight", sans-serif; cursor: pointer; }
   .btn:hover { border-color: var(--info); }
+  .btn:disabled { cursor: wait; opacity: .65; }
+  .source-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .test-result { flex-basis: 100%; font-size: 11px; color: var(--muted); }
+  .test-result.ok { color: #0b6b4a; }
+  .test-result.bad { color: #9f2f25; }
   .btn.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
   .btn.warn { background: #fff8ea; border-color: #f3c66f; color: #7a5300; }
   .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
@@ -211,6 +216,28 @@ function runBadge(r) {
 function sourceUrl(s) {
   const cfg = s.config || {};
   return cfg.url || cfg.feed_url || cfg.href || cfg.algolia_url || '';
+}
+async function testSource(sourceId, button) {
+  const source = state.sources.find(s => s.id === sourceId);
+  const url = source && sourceUrl(source);
+  const result = document.querySelector(`[data-test-result="${sourceId}"]`);
+  if (!url || !result) return;
+  button.disabled = true;
+  result.className = 'test-result';
+  result.textContent = 'test en cours...';
+  const started = Date.now();
+  try {
+    const response = await fetch(`/api/fetch-source?url=${encodeURIComponent(url)}&probe=1`, { cache: 'no-store' });
+    const detail = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(detail.error || `HTTP ${response.status}`);
+    result.className = 'test-result ok';
+    result.textContent = `OK · HTTP ${detail.status} · ${detail.bytes} octets · ${Date.now() - started} ms`;
+  } catch (error) {
+    result.className = 'test-result bad';
+    result.textContent = `Échec · ${error.message || error}`;
+  } finally {
+    button.disabled = false;
+  }
 }
 function sourceRisk(s) {
   const failures = Number(s.consecutive_failures || 0);
@@ -456,7 +483,7 @@ function renderSources() {
       <td><strong>${esc(s.name)}</strong><div class="muted mono">${esc(url)}</div><div class="pillbar">${s.active ? '<span class="pill">active</span>' : '<span class="pill">inactive</span>'}<span class="pill">${esc(s.type)}</span></div></td>
       <td>${dt(s.last_fetched_at)}<div class="muted">${Number(s.consecutive_failures || 0)} échec(s)</div></td>
       <td><strong>${todayCount} aujourd’hui</strong><div class="muted">${agg.count} sur la période · dernier : ${dt(agg.lastItem)}</div><div class="pillbar">${Object.entries(agg.statuses).slice(0, 4).map(([k,v]) => `<span class="pill">${esc(k)} ${v}</span>`).join('')}</div></td>
-      <td>${url ? `<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Ouvrir</a>` : '<span class="muted">URL absente</span>'}</td>
+      <td>${url ? `<div class="source-actions"><button class="btn" type="button" onclick="testSource('${esc(s.id)}', this)">Tester</button><a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Ouvrir</a><span class="test-result" data-test-result="${esc(s.id)}"></span></div>` : '<span class="muted">URL absente</span>'}</td>
     </tr>`;
   }).join('')}</tbody>`;
 }
