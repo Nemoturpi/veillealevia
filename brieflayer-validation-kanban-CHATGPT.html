@@ -1335,7 +1335,6 @@ async function generateBulletin() {
   const { data: bul, error } = await sb.from('bulletins').insert({ tenant_id: c.tenant_id, profile_id: c.client_profiles[0].id, prompt_text: prompt, status: 'draft' }).select('id').single();
   if (error) { toast('Erreur bulletin : ' + error.message); return; }
   pendingBulletin = { id: bul.id, matchIds: a.map(r => r.id), manualIds: manual.map(item => item.id) };
-  try { await navigator.clipboard.writeText(prompt); toast('Texte de travail copié'); } catch (e) { toast('Copie manuelle nécessaire'); }
   $('m-client').textContent = c.name;
   $('m-prompt').textContent = prompt;
   $('m-copy').onclick = async () => { try { await navigator.clipboard.writeText(prompt); toast('Copié'); } catch (e) {} };
@@ -1343,6 +1342,12 @@ async function generateBulletin() {
   $('m-finalize').onclick = finalizeBulletin;
   $('m-reopen').style.display = 'none';
   $('modal').style.display = 'flex';
+  // La copie peut rester en attente si le navigateur bloque le presse-papiers.
+  // La fenêtre de validation doit donc être affichée avant de la tenter.
+  Promise.resolve()
+    .then(() => navigator.clipboard.writeText(prompt))
+    .then(() => toast('Texte de travail copié'))
+    .catch(() => toast('Copie manuelle nécessaire'));
 }
 
 async function finalizeBulletin() {
