@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AleVia — Validation de la veille</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
+<style>
+  :root { --accent: #b22234; --accent-2: #8e1b2a; --ink: #1c1d22; --ink-mute: #6c6f76; --cream: #faf8f4; --card: #ffffff; --line: #e8e4da; --gold: #a8853b; --grey-z: #71717a; --step-keep: #00a86b; --step-grey: #8b8f98; --step-bulletin: #2478ff; --step-manual: #9b5de5; --step-generate: #ff9f1c; --step-list: #06a6c9; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Inter', system-ui, sans-serif; background: var(--cream); color: var(--ink); }
+  header { background: #fff; border-bottom: 1px solid var(--line); padding: 14px 32px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  header img.logo { height: 46px; display: block; }
+  header .sub { font-size: 13px; color: var(--ink-mute); letter-spacing: .02em; }
+  header .navlinks { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  header .navlink { border: 1px solid var(--line); border-radius: 8px; padding: 8px 11px; color: var(--ink); text-decoration: none; font-family: 'Inter Tight', sans-serif; font-size: 13px; font-weight: 650; background: #fff; }
+  header .navlink:hover { border-color: var(--step-bulletin); color: var(--step-bulletin); }
+  header .hdr-info { margin-left: 0; font-size: 12px; color: var(--ink-mute); }
+  main { max-width: 1480px; margin: 0 auto; padding: 24px 18px 90px; }
+  .legend { background: #fff; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 18px; }
+  .legend summary { cursor: pointer; padding: 13px 18px; font-size: 13.5px; font-weight: 500; color: var(--ink); list-style: none; display: flex; align-items: center; gap: 8px; }
+  .legend summary::before { content: '?'; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 12px; font-weight: 600; }
+  .legend[open] summary { border-bottom: 1px solid var(--line); }
+  .legend .legend-body { padding: 14px 18px 18px; font-size: 13.5px; line-height: 1.65; color: var(--ink-mute); }
+  .legend .legend-body p { margin: 0 0 10px; }
+  .legend .lg-row { display: flex; gap: 10px; align-items: baseline; margin-bottom: 8px; }
+  .stats-legend { display: grid; gap: 8px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .stats-legend .lg-row { display: grid; grid-template-columns: minmax(150px, 190px) minmax(0, 1fr); gap: 12px; align-items: start; color: var(--ink-mute); font-size: 13px; line-height: 1.45; }
+  .stats-legend .badge { justify-self: start; white-space: nowrap; font-weight: 600; color: var(--ink); }
+  .control-panel { background: #fff; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 14px; }
+  .control-panel summary { cursor: pointer; padding: 12px 16px; font-family: 'Inter Tight', sans-serif; font-size: 14px; font-weight: 600; list-style: none; }
+  .control-panel summary::before { content: '+'; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-right: 8px; border-radius: 6px; background: var(--cream); border: 1px solid var(--line); color: var(--ink-mute); }
+  .control-panel[open] summary { border-bottom: 1px solid var(--line); }
+  .control-panel[open] summary::before { content: '-'; }
+  .control-panel .panel-body { padding: 14px 16px 16px; }
+  .period-picker { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+  .period-picker .tab { border-radius: 12px; padding: 8px 13px; }
+  .period-picker .tab.on { background: var(--step-keep); border-color: var(--step-keep); color: #fff; }
+  .tabs { display: flex; gap: 8px; margin: 4px 0 14px; flex-wrap: wrap; }
+  .tab { font-family: 'Inter Tight', sans-serif; padding: 8px 18px; border: 1px solid var(--line); background: #fff; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--ink); }
+  .tab:hover { border-color: var(--accent); }
+  .tab.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .tab .n { color: var(--accent); font-weight: 600; }
+  .tab.on .n { color: #f3b6be; }
+  .client-tabs { gap: 10px; margin: 0 0 18px; }
+  .client-tabs .tab { min-width: 150px; padding: 14px 22px; border-radius: 8px; border-left-width: 6px; font-size: 18px; font-weight: 650; text-align: center; text-transform: uppercase; }
+  .client-tabs .tab:hover { border-color: var(--step-bulletin); }
+  .client-tabs .tab.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .hidden-filters { display: none; }
+  .bar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; font-size: 13px; color: var(--ink-mute); flex-wrap: wrap; }
+  .bar select { padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font-size: 12.5px; font-family: 'Inter', sans-serif; color: var(--ink); }
+  .chip { padding: 4px 12px; border: 1px solid var(--line); border-radius: 14px; background: #fff; cursor: pointer; font-size: 12px; font-family: 'Inter', sans-serif; color: var(--ink); }
+  .chip:hover { border-color: var(--accent); }
+  .chip.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .journey { display: grid; gap: 18px; }
+  .stage-panel { min-height: calc(100vh - 245px); background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: clamp(18px, 2.4vw, 32px); display: grid; align-content: start; gap: 14px; }
+  .stage-kicker { font-size: 12px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: .12em; font-weight: 700; }
+  .stage-title { font-family: 'Inter Tight', sans-serif; font-size: clamp(42px, 7vw, 88px); line-height: .95; letter-spacing: 0; margin: 0; }
+  .stage-copy { color: #4a4d55; font-size: clamp(16px, 2vw, 21px); line-height: 1.45; max-width: 760px; }
+  .stage-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-family: 'Inter Tight', sans-serif; font-size: clamp(24px, 3vw, 34px); line-height: 1.05; }
+  .stage-head .stage-kicker { font-size: inherit; color: var(--ink-mute); text-transform: none; letter-spacing: 0; font-weight: 600; }
+  .stage-head .stage-kicker::after { content: ' ·'; }
+  .stage-head .stage-title { font-size: inherit; line-height: inherit; font-weight: 600; }
+  .stage-copy.compact { margin: -6px 0 0; font-size: 13px; line-height: 1.35; max-width: 820px; color: var(--ink-mute); }
+  .stage-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .stage-toolbar { position: sticky; top: 0; z-index: 5; margin: -2px 0 2px; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.94); box-shadow: 0 10px 26px rgba(28,29,34,.06); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; }
+  .stage-actions { min-width: 0; }
+  .stage-actions .tab { border-radius: 8px; padding: 9px 14px; }
+  .stage-actions .tab.on { background: #e8f7ff; border-color: #8ad8ef; color: #02708a; }
+  .stage-viewbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding-left: 12px; border-left: 1px solid var(--line); }
+  .view-toggle { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #8ad8ef !important; background: #e8f7ff; color: #02708a; font-family: 'Inter Tight', sans-serif; font-size: 14px; font-weight: 700; box-shadow: inset 0 0 0 1px rgba(6,166,201,.16); border-radius: 8px; padding: 9px 14px; cursor: pointer; }
+  .view-toggle svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .view-toggle.on { background: var(--step-list) !important; border-color: var(--step-list) !important; color: #fff !important; }
+  .reset-step { background: #fafafa; color: #52525b; }
+  .suggestion-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+  .suggestion-actions .tab { border-radius: 8px; }
+  .stage-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+  .stage-tab { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px; cursor: pointer; text-align: left; color: var(--ink); display: grid; gap: 6px; border-left: 7px solid var(--line); }
+  .stage-tab:hover { border-color: var(--accent); }
+  .stage-tab.on { color: var(--ink); box-shadow: inset 0 0 0 1px currentColor; }
+  .stage-tab.on span { color: #4a4d55; }
+  .stage-tab.todo { background: #e7fff5; border-left-color: var(--step-keep); }
+  .stage-tab.grey { background: #f1f2f4; border-left-color: var(--step-grey); }
+  .stage-tab.selected { background: #e8f0ff; border-left-color: var(--step-bulletin); }
+  .stage-tab.manual { background: #f4ebff; border-left-color: var(--step-manual); }
+  .stage-tab.generate { background: #fff3df; border-left-color: var(--step-generate); }
+  .stage-tab.list { background: #e8f7ff; border-left-color: var(--step-list); }
+  .stage-tab strong { font-family: 'Inter Tight', sans-serif; font-size: 19px; }
+  .stage-tab span { color: var(--ink-mute); font-size: 12px; }
+  .stage-panel.todo { border-left: 12px solid var(--step-keep); }
+  .stage-panel.grey { border-left: 12px solid var(--step-grey); background: #f7f7f8; }
+  .stage-panel.selected { border-left: 12px solid var(--step-bulletin); }
+  .stage-panel.manual { border-left: 12px solid var(--step-manual); background: #fbf8ff; }
+  .stage-panel.generate { border-left: 12px solid var(--step-generate); background: #fffaf2; }
+  .stage-summary { border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.72); padding: 10px 12px; display: grid; gap: 8px; }
+  .stage-summary strong { font-family: 'Inter Tight', sans-serif; font-size: 16px; }
+  .stage-summary span { color: var(--ink-mute); font-size: 12.5px; line-height: 1.35; }
+  .manual-summary-list { display: grid; gap: 7px; margin-top: 2px; }
+  .manual-summary-item { border: 1px solid #d8c6ef; border-radius: 8px; background: #fbf8ff; overflow: hidden; }
+  .manual-summary-item summary { cursor: pointer; list-style: none; padding: 9px 10px; display: flex; align-items: center; gap: 8px; color: #70456b; font-family: 'Inter Tight', sans-serif; font-size: 13.5px; font-weight: 650; }
+  .manual-summary-item summary::-webkit-details-marker { display: none; }
+  .manual-summary-item summary::before { content: '+'; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 6px; border: 1px solid currentColor; background: #fff; font-size: 12px; flex: none; }
+  .manual-summary-item[open] summary::before { content: '-'; }
+  .manual-summary-body { padding: 0 10px 10px 36px; display: grid; gap: 5px; color: #4a4d55; font-size: 12.5px; line-height: 1.45; }
+  .manual-summary-body span { color: var(--ink-mute); word-break: break-word; }
+  .split-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; align-items: start; }
+  .generate-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; align-items: start; }
+  .split-col { border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 12px; display: grid; gap: 10px; }
+  .split-col.keep { border-top: 5px solid var(--step-keep); }
+  .split-col.reject { border-top: 5px solid #c62828; }
+  .split-col.wait { border-top: 5px solid var(--step-manual); }
+  .split-col.ready { border-top: 5px solid var(--step-generate); }
+  .generate-columns .split-col.primary { grid-column: 1 / -1; border-top-width: 8px; background: #fff8ec; border-color: #ead09e; }
+  .generate-columns .split-col.primary h3 { font-size: 24px; color: #735613; }
+  .generate-columns .split-col.reminder { grid-column: 1 / -1; }
+  .split-col.reminder { border-top: 5px solid #db2777; background: #fff7fb; border-color: #f9a8d4; }
+  .split-col.reminder h3 { color: #9d174d; }
+  .split-col.drop-target { outline: 2px dashed var(--accent); outline-offset: -6px; background: rgba(178,34,52,.04); }
+  details.split-col { padding: 0; overflow: hidden; }
+  details.split-col summary { cursor: pointer; list-style: none; padding: 12px; display: flex; gap: 8px; align-items: start; }
+  details.split-col summary::-webkit-details-marker { display: none; }
+  details.split-col summary::before { content: '+'; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 6px; background: #fff; border: 1px solid currentColor; font-size: 12px; color: #9d174d; }
+  details.split-col[open] summary::before { content: '-'; }
+  details.split-col .compact-list { padding: 0 12px 12px; }
+  .split-col-summary { display: grid; gap: 6px; min-width: 0; }
+  .split-col h3 { margin: 0; font-family: 'Inter Tight', sans-serif; font-size: 20px; }
+  .split-col-note { margin: -4px 0 0; color: var(--ink-mute); font-size: 12px; line-height: 1.35; }
+  .compact-list { display: grid; gap: 8px; }
+  .split-col .list-row { grid-template-columns: 1fr; }
+  .split-col .list-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mini-row { border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: #fffefb; display: grid; gap: 5px; }
+  .mini-row[draggable="true"] { cursor: grab; }
+  .mini-row.dragging { opacity: .48; cursor: grabbing; }
+  .mini-row strong { font-family: 'Inter Tight', sans-serif; font-size: 14px; line-height: 1.25; }
+  .mini-row span { color: var(--ink-mute); font-size: 12px; }
+  .generate-layout { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(280px, 420px); gap: 18px; align-items: start; }
+  .generate-side { border: 1px solid #ead09e; background: #fff8ec; border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+  .generate-side .bigbtn { width: 100%; justify-content: center; }
+  .doc-future { width: 100%; background: #fff; color: #735613; border: 1px dashed #d6bd81; padding: 12px 16px; border-radius: 8px; font-family: 'Inter Tight', sans-serif; font-size: 15px; font-weight: 600; cursor: not-allowed; }
+  .swipe-frame { max-width: 760px; width: 100%; margin: 0 auto; display: grid; gap: 12px; }
+  .swipe-count { justify-self: center; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--cream); color: var(--ink-mute); font-size: 12px; font-weight: 600; }
+  .swipe-frame .card { margin: 0; box-shadow: 0 18px 45px rgba(28,29,34,.12); }
+  .swipe-frame .t { font-size: 22px; }
+  .swipe-frame textarea.resume { min-height: 120px; font-size: 15px; }
+  .keyboard-tip { max-width: 760px; margin: 0 auto; padding: 10px 12px; border: 1px dashed var(--line); border-radius: 8px; background: #fffefb; color: var(--ink-mute); font-size: 12.5px; text-align: center; }
+  .manual-mini { display: grid; gap: 8px; margin-top: 8px; }
+  .manual-mini .manual-item { background: #fff; }
+  .recall-box { border: 1px solid #dbe3ee; border-radius: 8px; background: #f8fbff; padding: 12px; display: grid; gap: 10px; }
+  .recall-box.wait { background: #f7f2ff; border-color: #d8c6ef; }
+  .recall-box.wait .recall-head strong { color: #70456b; }
+  .recall-box.reminder { background: #fff7fb; border-color: #f9a8d4; }
+  .recall-box.reminder .recall-head strong { color: #9d174d; }
+  details.recall-box { padding: 0; overflow: hidden; }
+  details.recall-box summary { cursor: pointer; list-style: none; padding: 12px; }
+  details.recall-box summary::-webkit-details-marker { display: none; }
+  details.recall-box summary::before { content: '+'; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-right: 8px; border-radius: 6px; background: #fff; border: 1px solid currentColor; font-size: 12px; color: #9d174d; }
+  details.recall-box[open] summary::before { content: '-'; }
+  details.recall-box .compact-list { padding: 0 12px 12px; }
+  .manual-inline { border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 14px; display: grid; gap: 10px; }
+  .manual-inline .field-label { margin: 0 0 6px; }
+  .manual-inline-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .recall-head { display: flex; gap: 10px; justify-content: space-between; align-items: baseline; flex-wrap: wrap; }
+  .recall-head strong { font-family: 'Inter Tight', sans-serif; font-size: 16px; }
+  .recall-head span { color: var(--ink-mute); font-size: 12px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 0 rgba(28,29,34,.03); }
+  .card[draggable="true"] { cursor: grab; }
+  .card.dragging { opacity: .48; cursor: grabbing; }
+  .card.urgent { border-left: 4px solid var(--accent); }
+  .card.rejected-card { opacity: .72; }
+  .card-radar { display: grid; grid-template-columns: minmax(130px, .9fr) minmax(160px, 1.1fr); gap: 8px; margin-bottom: 10px; }
+  .date-tile, .score-tile { border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; min-width: 0; }
+  .date-tile { background: #f7fbff; border-color: #cfe0ef; color: #2f5f88; }
+  .score-tile { background: #f7f7f4; }
+  .score-tile.prioritaire { background: #fdeef0; border-color: #f0c2c9; color: var(--accent); }
+  .score-tile.pertinent { background: #eaf6ee; border-color: #cce6d4; color: #315c45; }
+  .score-tile.zone-grise { background: #f1f2f4; border-color: #d4d4d8; color: var(--grey-z); }
+  .tile-kicker { display: block; font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-mute); font-weight: 700; margin-bottom: 4px; }
+  .date-main, .score-main { display: block; font-family: 'Inter Tight', sans-serif; font-size: 23px; line-height: 1; font-weight: 600; }
+  .date-sub, .score-sub { display: block; margin-top: 4px; font-size: 11.5px; color: currentColor; opacity: .78; }
+  .source-row { margin: 8px 0 10px; padding: 9px 10px; border: 1px solid #cfe0ef; border-radius: 8px; background: #f7fbff; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .source-main { display: grid; gap: 2px; min-width: 0; }
+  .source-host { color: #2f5f88; font-size: 12.5px; word-break: break-word; }
+  .source-link { display: inline-flex; align-items: center; justify-content: center; padding: 7px 10px; border-radius: 8px; background: #fff; border: 1px solid #b9d2e8; color: #2f5f88; font-family: 'Inter Tight', sans-serif; font-size: 12.5px; font-weight: 600; text-decoration: none; }
+  .source-link:hover { border-color: #2f5f88; }
+  .source-row.missing { background: #fff5f5; border-color: #f2caca; }
+  .source-row.missing .source-host { color: #9a1c1c; }
+  .source-row.missing .source-link { color: #9a1c1c; border-color: #f2caca; pointer-events: none; }
+  .source-row.internal { background: #fff7ed; border-color: #fdba74; }
+  .source-row.internal .tile-kicker, .source-row.internal .source-host { color: #9a3412; }
+  .source-row.internal .source-link { color: #9a3412; border-color: #fdba74; pointer-events: none; }
+  .watch-list { display: grid; gap: 10px; }
+  .list-row { display: grid; grid-template-columns: minmax(98px, .55fr) minmax(118px, .65fr) minmax(120px, .7fr) minmax(260px, 2.4fr) minmax(170px, 1fr); gap: 10px; align-items: start; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+  .list-row[draggable="true"] { cursor: grab; }
+  .list-row.dragging { opacity: .48; cursor: grabbing; }
+  .list-row:hover { border-color: #cbd5e1; }
+  .list-cell { min-width: 0; font-size: 12.5px; color: var(--ink-mute); }
+  .list-cell strong { display: block; font-family: 'Inter Tight', sans-serif; color: var(--ink); font-size: 15px; line-height: 1.25; margin-bottom: 4px; }
+  .list-title a { color: var(--ink); text-decoration: none; }
+  .list-title a:hover { color: var(--accent); }
+  .list-summary { font-size: 12.5px; color: #4a4d55; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .list-actions { display: grid; grid-template-columns: 1fr; gap: 6px; }
+  .list-actions button { font-size: 12px; padding: 7px 9px; border-radius: 8px; font-family: 'Inter Tight', sans-serif; border: 1px solid transparent; cursor: pointer; }
+  .status-chip { display: inline-flex; align-items: center; border-radius: 999px; border: 1px solid var(--line); background: var(--cream); padding: 4px 9px; color: var(--ink); font-weight: 600; }
+  .status-chip.todo { background: #eaf6ee; border-color: #cce6d4; color: #315c45; }
+  .status-chip.selected { background: #eaf2fb; border-color: #c9ddef; color: #2f5f88; }
+  .status-chip.ready { background: #fff1d9; border-color: #ead09e; color: #735613; }
+  .status-chip.wait { background: #f3eaf6; border-color: #dec8e3; color: #70456b; }
+  .status-chip.ignored { background: #f4f4f5; border-color: #d4d4d8; color: #52525b; }
+  .t { font-family: 'Inter Tight', sans-serif; font-size: 14.5px; font-weight: 600; margin: 0 0 6px; line-height: 1.32; }
+  .t a { color: var(--ink); text-decoration: none; }
+  .t a:hover { color: var(--accent); }
+  .meta { font-size: 12px; color: var(--ink-mute); margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .badge { padding: 2px 9px; border-radius: 10px; background: var(--cream); border: 1px solid var(--line); color: var(--ink-mute); }
+  .badge.s-hi { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  .badge.s-mid { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .badge.s-grey { background: #f1f2f4; border-color: #d4d4d8; color: var(--grey-z); }
+  .badge.u { background: #fdeef0; border-color: #f0c2c9; color: var(--accent); font-weight: 600; }
+  .badge.echeance { background: #eef2f8; border-color: #d4deed; color: #1f4d8a; }
+  .badge.stat-todo { background: #eaf6ee; border-color: #cce6d4; color: #315c45; }
+  .badge.stat-selected { background: #eaf2fb; border-color: #c9ddef; color: #2f5f88; }
+  .badge.stat-ready { background: #fff1d9; border-color: #ead09e; color: #735613; }
+  .badge.stat-wait { background: #f3eaf6; border-color: #dec8e3; color: #70456b; }
+  .badge.stat-grey { background: #f1f2f4; border-color: #d4d4d8; color: var(--grey-z); }
+  .why { font-size: 13.5px; color: #4a4d55; font-style: italic; margin: 8px 0; }
+  .why b { color: var(--accent); font-style: normal; font-weight: 600; }
+  textarea.resume { width: 100%; min-height: 70px; font-family: 'Source Serif 4', Georgia, serif; font-size: 13.5px; line-height: 1.45; padding: 9px; border: 1px solid var(--line); border-radius: 8px; background: #fffefb; resize: vertical; color: var(--ink); }
+  textarea.resume:focus { outline: none; border-color: var(--accent); }
+  .acts { margin-top: 10px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  .acts button { font-family: 'Inter Tight', sans-serif; padding: 7px 10px; border-radius: 8px; border: 1px solid transparent; cursor: pointer; font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .acts button:only-child { grid-column: 1 / -1; }
+  .b-ok { background: #168a4a; color: #fff; }
+  .b-ok:hover { background: #0f6e39; }
+  .b-no { background: #c62828; color: #fff; border-color: #c62828 !important; }
+  .b-no:hover { background: #a91f1f; }
+  .b-soft { background: #fff; color: var(--ink); border-color: var(--line) !important; }
+  .b-soft:hover { border-color: var(--ink) !important; }
+  .b-ready { background: #168a4a; color: #fff; border-color: #168a4a !important; }
+  .b-ready:hover { background: #0f6e39; }
+  .b-wait { background: #f5edd8; color: #735613; border-color: #dfcc96 !important; }
+  .b-wait:hover { background: #eddfb9; }
+  .empty { text-align: center; color: var(--ink-mute); padding: 56px 0; font-family: 'Source Serif 4', serif; font-style: italic; font-size: 15px; }
+  .bigbtn { font-family: 'Inter Tight', sans-serif; background: var(--accent); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; }
+  .bigbtn:hover { background: var(--accent-2); }
+  .bigbtn:disabled { opacity: .4; cursor: default; }
+  .bigbtn .arrow { margin-left: 8px; }
+  .modal-bg { position: fixed; inset: 0; background: rgba(28,29,34,.55); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
+  .panel { background: #fff; border-radius: 8px; padding: 28px; max-width: 580px; width: 100%; max-height: 88vh; overflow: auto; }
+  .panel.wide { max-width: 760px; }
+  .panel h2 { font-family: 'Inter Tight', sans-serif; margin-top: 0; font-size: 19px; }
+  .panel .hint { font-size: 12.5px; color: var(--ink-mute); margin-top: 10px; line-height: 1.6; }
+  .field-label { display: block; margin: 14px 0 6px; font-size: 12px; color: var(--ink-mute); font-weight: 600; text-transform: uppercase; letter-spacing: .07em; }
+  .manual-field { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 10px 11px; font-family: 'Inter', sans-serif; color: var(--ink); background: #fffefb; }
+  .manual-field:focus { outline: none; border-color: var(--accent); }
+  .manual-text { min-height: 110px; resize: vertical; line-height: 1.5; }
+  .manual-item { border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--cream); display: grid; gap: 6px; }
+  .manual-item strong { font-family: 'Inter Tight', sans-serif; font-size: 14px; }
+  .manual-item p { margin: 0; font-size: 13px; line-height: 1.45; color: #4a4d55; }
+  .manual-item a, .manual-item span { font-size: 12px; color: var(--ink-mute); word-break: break-word; }
+  pre.prompt { white-space: pre-wrap; font-size: 12px; background: var(--cream); border: 1px solid var(--line); padding: 14px; border-radius: 10px; max-height: 45vh; overflow: auto; font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 11px 22px; border-radius: 8px; font-size: 14px; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 99; }
+  .toast.show { opacity: 1; }
+  .faq-section { margin-top: 28px; }
+  .faq-head { margin-bottom: 4px; }
+  .faq-title { font-family: 'Inter Tight', sans-serif; font-size: clamp(30px, 4vw, 48px); line-height: 1; margin: 3px 0 0; letter-spacing: 0; }
+  .faq-section .legend { margin-bottom: 0; }
+  .faq-body { display: grid; gap: 10px; }
+  .faq-section .legend-body { max-width: 980px; }
+  .faq-section .legend-body ul { margin: 0; padding-left: 18px; }
+  .faq-section .legend-body li { margin: 0 0 6px; }
+.logo-text { font-family: 'Inter Tight', sans-serif; font-size: 24px; font-weight: 700; color: var(--ink); }
+  footer { text-align: center; font-size: 11.5px; color: var(--ink-mute); padding: 26px; border-top: 1px solid var(--line); background: #fff; }
+  footer .gold { color: var(--gold); }
+  @media (max-width: 1180px) { .generate-layout { grid-template-columns: 1fr; } }
+  @media (max-width: 980px) { .list-row { grid-template-columns: 1fr; } .list-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 680px) { header { padding: 12px 16px; } header .hdr-info { margin-left: 0; } .stage-nav, .split-list, .stats-legend .lg-row, .card-radar, .stage-toolbar { grid-template-columns: 1fr; } .stage-title { font-size: 42px; } .stage-head { font-size: 28px; } .bar { align-items: stretch; } .bar select, .bar button, .bigbtn { width: 100%; } .stage-viewbar { justify-content: stretch; padding-left: 0; border-left: 0; border-top: 1px solid var(--line); padding-top: 10px; } .stage-viewbar .view-toggle { width: 100%; } .list-actions { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+<div class="logo-text">Votre logo</div>
+  <span class="sub">Veille &amp; intelligence sociétale — espace de validation</span>
+  <nav class="navlinks" aria-label="Navigation secondaire">
+    <a class="navlink" href="brieflayer-monitoring-n8n-CHATGPT.html" target="_blank" rel="noopener">Dashboard</a>
+    <a class="navlink" href="#faq">FAQ</a>
+  </nav>
+  <span class="hdr-info" id="hdr-info">connexion…</span>
+</header>
+<main>
+  <div class="tabs client-tabs" id="tabs"></div>
+  <select id="f-jours" onchange="render()" style="display:none" aria-hidden="true">
+    <option value="today">Aujourd'hui</option>
+    <option value="3" selected>3 derniers jours</option>
+    <option value="0">Tout</option>
+  </select>
+  <div class="hidden-filters" aria-hidden="true">
+    <select id="f-type" onchange="render()">
+      <option value="">Toutes catégories</option>
+      <option value="projet_loi">Texte législatif - projet de loi</option>
+      <option value="proposition_loi">Texte législatif - proposition de loi</option>
+      <option value="decret">Texte réglementaire - décret</option>
+      <option value="arrete">Texte réglementaire - arrêté</option>
+      <option value="consultation">Consultation publique</option>
+      <option value="jurisprudence">Décision / jurisprudence</option>
+      <option value="rapport">Rapport / étude</option>
+      <option value="communication_institutionnelle">Communication institutionnelle</option>
+      <option value="actu_secteur">Actualité sectorielle</option>
+      <option value="autre">Autre signal</option>
+    </select>
+    <span id="f-themes"></span>
+  </div>
+  <div id="list"></div>
+  <details class="control-panel faq-section" id="faq" aria-label="Questions fréquentes">
+    <summary>FAQ - Questions fréquentes</summary>
+    <div class="panel-body faq-body">
+    <details class="legend">
+      <summary>À quoi sert cet écran ?</summary>
+      <div class="legend-body">
+        <p>Il sert à préparer un bulletin de veille client : trier les informations, retenir celles qui doivent entrer dans le bulletin, ajouter du contexte si besoin, puis générer une base de rédaction.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Dans quel ordre traiter la veille ?</summary>
+      <div class="legend-body">
+        <p>Commencez par l'étape 1 pour garder ou ignorer les informations principales. Passez ensuite aux signaux faibles si vous voulez examiner les informations moins évidentes. À l'étape 3, choisissez ce qui entre dans le bulletin. À l'étape 4, ajoutez seulement les compléments utiles. L'étape 5 sert au dernier contrôle avant génération.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Comment lire les scores ?</summary>
+      <div class="legend-body">
+        <p>Le score est une aide au tri, pas une décision automatique. Plus il est élevé, plus l'information semble proche du périmètre du client.</p>
+        <div class="lg-row"><span class="badge s-hi">80+ · Prioritaire</span><span>à regarder en premier : le lien client est fort.</span></div>
+        <div class="lg-row"><span class="badge s-mid">60-79 · Pertinent</span><span>souvent utile, mais demande une lecture éditoriale.</span></div>
+        <div class="lg-row"><span class="badge s-grey">40-59 · Signal faible</span><span>à examiner si vous cherchez des signaux moins évidents ou émergents.</span></div>
+        <div class="lg-row"><span class="badge u">URGENT</span><span>attire l'attention sur un sujet potentiellement sensible ou daté.</span></div>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Quelle différence entre Garder et Ignorer ?</summary>
+      <div class="legend-body">
+        <p>Garder signifie que l'information mérite d'être relue à l'étape suivante. Ignorer signifie qu'elle ne semble pas utile pour la veille en cours. Une information ignorée n'est pas un jugement définitif sur la source : c'est seulement une décision pour ce traitement.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Que faire des signaux faibles ?</summary>
+      <div class="legend-body">
+        <p>Les signaux faibles sont des informations moins directement reliées au client. Ils peuvent être ignorés rapidement, mais ils sont utiles quand un sujet émergent, une tendance faible ou un angle indirect mérite d'être surveillé.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Quelle différence entre Retenir pour le bulletin et Reporter ?</summary>
+      <div class="legend-body">
+        <p>Retenir pour le bulletin signifie que l'information doit alimenter la génération du bulletin courant. Reporter signifie qu'elle reste intéressante, mais qu'elle ne doit pas entrer dans ce bulletin sans nouvelle décision.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Quand ajouter une info supplémentaire ?</summary>
+      <div class="legend-body">
+        <p>Ajoutez une info supplémentaire uniquement si elle apporte un contexte que les informations retenues ne contiennent pas : retour terrain, échange récent, précision client, point de vigilance, source hors veille ou consigne éditoriale.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Que vérifier avant de générer ?</summary>
+      <div class="legend-body">
+        <p>Vérifiez que les informations retenues sont bien celles du bulletin courant, que les dates sont compréhensibles, que les sources primaires sont utilisables, et que les infos reportées ne contiennent rien d'indispensable pour ce bulletin.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Que fait Générer le bulletin ?</summary>
+      <div class="legend-body">
+        <p>Le bouton prépare le texte de travail à donner à l'outil de rédaction. Il rassemble les informations retenues, les compléments saisis à la main et les consignes utiles pour produire un bulletin cohérent.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Que faire si une source est marquée à vérifier ?</summary>
+      <div class="legend-body">
+        <p>Ne l'utilisez pas telle quelle dans un bulletin client. Ouvrez ou recherchez la source primaire, vérifiez le contenu, puis reformulez avec prudence si l'information est conservée.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Que faire si je me trompe ?</summary>
+      <div class="legend-body">
+        <p>Utilisez les boutons de l'information ou la vue liste pour la déplacer dans la bonne colonne. Le bouton de réinitialisation de l'étape sert à revenir en arrière sur l'étape en cours.</p>
+      </div>
+    </details>
+    <details class="legend">
+      <summary>Que fait Dernier bulletin ?</summary>
+      <div class="legend-body">
+        <p>Il permet de rouvrir la dernière base de bulletin préparée pour le client actif, par exemple pour relire ce qui avait été retenu ou reprendre une génération récente.</p>
+      </div>
+    </details>
+    </div>
+  </details>
+</main>
+
+<div class="modal-bg" id="modal" style="display:none">
+  <div class="panel">
+    <h2>Base de bulletin — <span id="m-client"></span></h2>
+    <p class="hint">Le texte de travail est copié : collez-le dans Claude (ou votre IA habituelle), répondez à ses questions, ajoutez votre édito. Les infos retenues pour ce bulletin et les infos supplémentaires du client actif sont utilisées.</p>
+    <pre class="prompt" id="m-prompt"></pre>
+    <div style="margin-top:12px; display:flex; gap:10px">
+      <button class="bigbtn" id="m-copy" type="button">Copier à nouveau</button>
+      <button class="bigbtn" id="m-finalize" type="button" style="display:none">Valider ce bulletin</button>
+      <button class="tab" id="m-reopen" type="button" style="display:none">Rouvrir les infos générées</button>
+      <button class="tab" id="m-close" type="button">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<footer>AleVia Conseil · Communication stratégique &amp; représentation d'intérêts — <span class="gold">veille propulsée par BriefLayer</span></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const EMBED = {
+  url: 'https://xkqeqajeccsacocnfqca.supabase.co',
+  key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhrcWVxYWplY2NzYWNvY25mcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNjc4OTIsImV4cCI6MjA5Njc0Mzg5Mn0.7NmmzyrXt-kVMBl-_WFqPuBP_9r-BAuIbavRO_sIryk'
+};
+let sb = null, clients = [], current = null, rows = [], manualRows = [], manualStorageError = '', themes = new Set(), activeStage = 'todo', listMode = false, pendingBulletin = null;
+const TAGLABELS = { energie: 'Énergie', environnement: 'Environnement', sante: 'Santé', numerique: 'Numérique', donnees_personnelles: 'Données personnelles', fiscalite: 'Fiscalité', travail_emploi: 'Travail & emploi', transports: 'Transports', agriculture_alimentation: 'Agriculture', industrie: 'Industrie', finance: 'Finance', logement_urbanisme: 'Logement & urbanisme', education_recherche: 'Éducation & recherche', culture_medias: 'Culture & médias', defense_securite: 'Défense & sécurité', justice: 'Justice', collectivites_territoriales: 'Collectivités', europe_ue: 'Europe / UE', international: 'International', concurrence: 'Concurrence', marches_publics: 'Marchés publics', aides_etat: "Aides d'État", consommation: 'Consommation', institutions: 'Institutions' };
+const LEGACY_TITLE_TRANSLATIONS = new Map([
+  ['Quality and AI in focus at the annual Main SACEPO meeting', "La qualité et l'IA au coeur de la réunion plénière annuelle du SACEPO"],
+  ['EUIPO streamlines online filing tools to simplify the user experience', "L'EUIPO simplifie ses outils de dépôt en ligne pour améliorer l'expérience utilisateur"],
+  ['EPO meets with Jio Platforms', "L'OEB rencontre Jio Platforms"],
+  ["Design (law) aficionados beware: A new era is about to begin!", "Droit des dessins et modèles : une nouvelle ère est sur le point de commencer"],
+  ["New ‘National Days at the EUIPO’ initiative strengthens EUIPN cooperation, kicking-off with Germany", "Une nouvelle initiative de journées nationales à l'EUIPO renforce la coopération de l'EUIPN, en commençant par l'Allemagne"],
+  ['More than 66 000 fake football jerseys seized ahead of FIFA World Cup 2026', 'Plus de 66 000 faux maillots de football saisis avant la Coupe du monde 2026'],
+  ["The list of the representatives of the Member States on the Administrative Council has been updated", "La liste des représentants des États membres au Conseil d'administration a été mise à jour"],
+  ["EPO launches its Data Desk, providing actionable intelligence for Europe's innovators and policymakers", "L'OEB lance son Data Desk au service des innovateurs et des décideurs européens"],
+  ['New referral G 1/26: Further guidance sought on claim interpretation', "Nouvelle saisine G 1/26 : des précisions attendues sur l'interprétation des revendications"],
+  ['EPO at UNION-IP Congress 2026 in Amsterdam', "L'OEB au congrès UNION-IP 2026 à Amsterdam"],
+  ["Artificial intelligence in focus at meeting of world’s five largest patent offices in Tokyo", "L'intelligence artificielle au coeur de la réunion des cinq plus grands offices de brevets à Tokyo"],
+  ['EPO participates in annual EARTO conference on industrial competitiveness', "L'OEB participe à la conférence annuelle de l'EARTO sur la compétitivité industrielle"]
+]);
+function demoClientName(client) {
+  const i = clients.findIndex(c => c.id === client.id);
+  return `Client démo ${i + 1}`;
+}
+function anonymizeDemoText(text) {
+  return String(text || '')
+    .replace(/\bASPIE?\b/gi, 'Client démo 1')
+    .replace(/\bCNSA\b/gi, 'Client démo 2');
+}
+const $ = id => document.getElementById(id);
+const toast = m => { const t = $('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); };
+
+function withFrenchLegacyTitle(row) {
+  const item = row && row.items;
+  if (!item || !item.title) return row;
+  const translated = LEGACY_TITLE_TRANSLATIONS.get(String(item.title).trim());
+  return translated ? { ...row, items: { ...item, title: translated } } : row;
+}
+
+function init() {
+  try { sb = supabase.createClient(EMBED.url, EMBED.key); }
+  catch (e) { $('list').innerHTML = '<div class="empty">⚠ Connexion impossible : ' + e.message + '</div>'; return; }
+  loadClients().catch(e => { $('list').innerHTML = '<div class="empty">⚠ Erreur : ' + e.message + '</div>'; });
+}
+
+$('m-close').onclick = () => { $('modal').style.display = 'none'; load(); };
+
+async function loadClients() {
+  const { data, error } = await sb.from('clients').select('id,tenant_id,name,client_profiles(id,brief)').eq('active', true).order('name');
+  if (error) { $('hdr-info').textContent = 'erreur : ' + error.message; return; }
+  clients = (data || []).filter(c => c.client_profiles && c.client_profiles.length);
+  $('hdr-info').textContent = clients.length + ' client(s)';
+  if (!current && clients.length) current = clients[0].id;
+  renderTabs(); load();
+}
+
+async function renderTabs() {
+  $('tabs').innerHTML = clients.map(c =>
+    `<button type="button" class="tab ${c.id === current ? 'on' : ''}" onclick="switchTo('${c.id}')">${demoClientName(c)}</button>`
+  ).join('');
+}
+function switchTo(id) { current = id; activeStage = 'todo'; listMode = false; renderTabs(); load(); }
+
+async function load() {
+  const c = clients.find(x => x.id === current);
+  if (!c) { $('list').innerHTML = '<div class="empty">Aucun client configuré.</div>'; return; }
+  const pid = c.client_profiles[0].id;
+  const statuts = ['proposed', 'grey', 'approved', 'incubated', 'edited', 'rejected'];
+  const { data, error } = await sb.from('matches')
+    .select('id,llm_score,rationale,client_summary,status,reviewed_at,items(title,url,url_canonical,source_id,raw_content,published_at,act_type,urgency,key_dates,tags)', { count: 'exact' })
+    .eq('profile_id', pid).in('status', statuts).is('bulletin_id', null)
+    .order('created_at', { ascending: false }).limit(1000);
+  if (error) { $('list').innerHTML = '<div class="empty">Erreur : ' + error.message + '</div>'; return; }
+  rows = (data || []).map(withFrenchLegacyTitle);
+  rows.sort(sortByScore);
+  await loadManualItems(pid, c.tenant_id);
+  renderThemes(); render();
+}
+
+function sortByScore(a, b) {
+  return (b.llm_score - a.llm_score) || String((b.items || {}).published_at || '').localeCompare(String((a.items || {}).published_at || ''));
+}
+
+function filteredRows() {
+  const period = $('f-jours').value || '3';
+  const jours = Number(period) || 0;
+  const type = $('f-type').value;
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const cutoff = period === 'today' ? todayStart.getTime() : (jours ? Date.now() - jours * 86400000 : 0);
+  return rows.filter(r => {
+    const it = r.items || {};
+    if (cutoff && new Date(it.published_at || 0).getTime() < cutoff) return false;
+    if (type && it.act_type !== type) return false;
+    if (themes.size && !(it.tags || []).some(t => themes.has(t))) return false;
+    return true;
+  });
+}
+function periodLabel() {
+  return $('f-jours').selectedOptions[0] ? $('f-jours').selectedOptions[0].textContent : 'Période active';
+}
+function setPeriod(value) {
+  $('f-jours').value = value;
+  render();
+}
+function toggleListMode() {
+  listMode = !listMode;
+  render();
+}
+function renderPeriodPicker() {
+  const value = $('f-jours').value || '3';
+  const options = [
+    ['today', "Aujourd'hui"],
+    ['3', '3 derniers jours'],
+    ['0', 'Tout']
+  ];
+  return `<div class="period-picker">${options.map(([v, label]) => `<button class="tab ${value === v ? 'on' : ''}" type="button" onclick="setPeriod('${v}')">${label}</button>`).join('')}</div>`;
+}
+function renderThemes() {
+  const present = new Set();
+  rows.forEach(r => ((r.items || {}).tags || []).forEach(t => present.add(t)));
+  themes.forEach(t => { if (!present.has(t)) themes.delete(t); });
+  $('f-themes').innerHTML = [...present].sort().map(t =>
+    `<button type="button" class="chip ${themes.has(t) ? 'on' : ''}" onclick="toggleTheme('${t}')">${TAGLABELS[t] || t}</button>`).join('');
+}
+function toggleTheme(t) { themes.has(t) ? themes.delete(t) : themes.add(t); renderThemes(); render(); }
+function render() {
+  const list = ['manual', 'generate'].includes(activeStage) ? rows : filteredRows();
+  renderBoard(list);
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+function isInternalSourceHost(host) {
+  const h = String(host || '').replace(/^www\./, '').toLowerCase();
+  return h === 'retrotest.local' || h.endsWith('.local') || h === 'brieflayer.app' || h.endsWith('.brieflayer.app') || h.includes('brieflayer');
+}
+function isInternalSourceText(value) {
+  return /retrotest\.local|brieflayer|référence interne|reference interne/i.test(String(value || ''));
+}
+function sourceInfo(itemOrUrl) {
+  const item = itemOrUrl && typeof itemOrUrl === 'object' ? itemOrUrl : null;
+  const candidates = (item ? [item.url_canonical, item.url] : [itemOrUrl])
+    .map(value => String(value || '').trim().replace(/&amp;/gi, '&'))
+    .filter(Boolean);
+  let internalCandidate = '';
+  let invalidCandidate = '';
+  for (const clean of candidates) {
+    if (!/^https?:\/\//i.test(clean)) {
+      invalidCandidate ||= clean;
+      continue;
+    }
+    try {
+      const parsed = new URL(clean);
+      const host = parsed.hostname.replace(/^www\./, '');
+      if (isInternalSourceHost(host)) {
+        internalCandidate ||= clean;
+        continue;
+      }
+      return { url: clean, host, valid: true, internal: false };
+    } catch (e) {
+      invalidCandidate ||= clean;
+    }
+  }
+  const recovered = findPrimaryUrlInText(item ? item.raw_content : '');
+  if (recovered) return sourceInfo(recovered);
+  if (internalCandidate || candidates.some(isInternalSourceText)) {
+    const source = internalCandidate || candidates.find(isInternalSourceText) || '';
+    return { url: source, host: 'Référence interne BriefLayer', valid: false, internal: true };
+  }
+  const invalid = invalidCandidate || candidates[0] || '';
+  return { url: invalid, host: invalid || 'Source primaire absente', valid: false, internal: false };
+}
+function findPrimaryUrlInText(text) {
+  const matches = (String(text || '').match(/https?:\/\/[^\s<>"')]+/gi) || [])
+    .map(url => url.replace(/&amp;/gi, '&').replace(/[.,;:!?]+$/, ''));
+  return matches.find(u => {
+    try {
+      const host = new URL(u).hostname.replace(/^www\./, '');
+      return !isInternalSourceHost(host);
+    } catch (e) {
+      return false;
+    }
+  }) || '';
+}
+function renderSource(source) {
+  return `<div class="source-row ${source.valid ? '' : (source.internal ? 'internal' : 'missing')}">
+    <div class="source-main">
+      <span class="tile-kicker">${source.valid ? 'Source primaire' : (source.internal ? 'Source primaire à retrouver' : 'Source à vérifier')}</span>
+      <span class="source-host">${esc(source.host)}</span>
+    </div>
+    ${source.valid ? `<a class="source-link" href="${esc(source.url)}" target="_blank" rel="noopener">Ouvrir la source →</a>` : `<span class="source-link">${source.internal ? 'Référence interne non publiable' : 'URL manquante'}</span>`}
+  </div>`;
+}
+function sourceLine(item) {
+  const source = sourceInfo(item);
+  if (source.valid) return source.url;
+  if (source.internal) return 'SOURCE PRIMAIRE MANQUANTE - référence interne non publiable : ' + source.url;
+  return 'SOURCE PRIMAIRE MANQUANTE - à vérifier avant publication';
+}
+function missingPrimarySources(items) {
+  return (items || []).filter(r => !sourceInfo((r || {}).items || {}).valid);
+}
+function scoreInfo(s) {
+  if (s >= 80) return ['s-hi', 'Prioritaire', 'prioritaire', '80+'];
+  if (s >= 60) return ['s-mid', 'Pertinent', 'pertinent', '60-79'];
+  return ['s-grey', 'Signal faible', 'zone-grise', '40-59'];
+}
+function formatDateTile(value) {
+  if (!value) return { main: 'Date à vérifier', sub: 'absente' };
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return { main: String(value).slice(0, 10), sub: 'date brute' };
+  const now = new Date();
+  const start = new Date(d); start.setHours(0, 0, 0, 0);
+  const today = new Date(now); today.setHours(0, 0, 0, 0);
+  const diffDays = Math.round((today - start) / 86400000);
+  const main = d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }).replace('.', '');
+  const year = d.getFullYear() !== now.getFullYear() ? ` ${d.getFullYear()}` : '';
+  const sub = diffDays === 0 ? "aujourd'hui" : (diffDays === 1 ? 'hier' : `il y a ${diffDays} jours`);
+  return { main: main + year, sub };
+}
+
+function manualKey() {
+  return 'brieflayer-manual-' + (current || 'global');
+}
+function manualItems() {
+  return manualRows;
+}
+async function loadManualItems(profileId, tenantId) {
+  const result = await sb.from('manual_items')
+    .select('id,title,body,source,status,created_at')
+    .eq('profile_id', profileId).eq('status', 'pending').is('bulletin_id', null)
+    .order('created_at', { ascending: true });
+  if (result.error) {
+    manualRows = [];
+    manualStorageError = 'Le stockage partagé des informations supplémentaires doit être activé dans Supabase.';
+    return;
+  }
+  manualStorageError = '';
+  manualRows = result.data || [];
+  try {
+    const legacy = JSON.parse(localStorage.getItem(manualKey()) || '[]');
+    if (!manualRows.length && Array.isArray(legacy) && legacy.length) {
+      const payload = legacy.map(item => ({ tenant_id: tenantId, profile_id: profileId, title: item.title || '', body: item.body || '', source: item.source || null, status: 'pending', created_at: item.created_at || new Date().toISOString() }));
+      const migrated = await sb.from('manual_items').insert(payload).select('id,title,body,source,status,created_at');
+      if (!migrated.error) {
+        manualRows = migrated.data || [];
+        localStorage.removeItem(manualKey());
+      }
+    }
+  } catch (e) {}
+}
+function incubatedIds() { return new Set(); }
+function saveIncubatedIds() {}
+function isIncubated(rowOrId) {
+  return Boolean(rowOrId && typeof rowOrId === 'object' && rowOrId.status === 'incubated');
+}
+function removeIncubation() {}
+async function resumeIncubation(id) {
+  const row = rows.find(r => r.id === id);
+  if (row && row.status === 'incubated') {
+    const { error } = await sb.from('matches').update({ status: 'approved', reviewed_at: null }).eq('id', id);
+    if (error) { toast('Erreur : ' + error.message); return; }
+  }
+  removeIncubation(id);
+  rows = rows.map(r => r.id === id ? { ...r, status: 'approved' } : r);
+  toast('Remis à trier');
+  render();
+}
+async function recallIncubationToTodo(id) {
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  const next = fallbackStatus(row);
+  const { error } = await sb.from('matches').update({ status: next, reviewed_at: null }).eq('id', id);
+  if (error) { toast('Erreur : ' + error.message); return; }
+  removeIncubation(id);
+  rows = rows.map(r => r.id === id ? { ...r, status: next, reviewed_at: null } : r);
+  activeStage = 'todo';
+  toast('Remis au tri');
+  render();
+}
+async function recallReadyToTodo(id) {
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  const next = fallbackStatus(row);
+  const { error } = await sb.from('matches').update({ status: next, reviewed_at: null, bulletin_id: null }).eq('id', id);
+  if (error) { toast('Erreur : ' + error.message); return; }
+  rows = rows.map(r => r.id === id ? { ...r, status: next, reviewed_at: null, bulletin_id: null } : r);
+  activeStage = next === 'grey' ? 'grey' : 'todo';
+  toast('Remis au tri');
+  render();
+}
+async function incubate(id) {
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  const summary = $('sum-' + id) ? $('sum-' + id).value : row.client_summary;
+  const { error } = await sb.from('matches').update({ status: 'incubated', client_summary: summary, reviewed_at: new Date().toISOString() }).eq('id', id);
+  if (error) { toast('Report impossible : ' + error.message); return; }
+  removeIncubation(id);
+  rows = rows.map(r => r.id === id ? { ...r, status: 'incubated', client_summary: summary } : r);
+  advanceStageIfDone();
+  render();
+  toast('Reporté hors bulletin courant');
+}
+async function saveManualInfo() {
+  const titleEl = $('manual-title');
+  const bodyEl = $('manual-body');
+  const sourceEl = $('manual-source');
+  const title = titleEl ? titleEl.value.trim() : '';
+  const body = bodyEl ? bodyEl.value.trim() : '';
+  const source = sourceEl ? sourceEl.value.trim() : '';
+  if (!title && !body) { toast('Ajoutez au moins un titre ou un contenu.'); return; }
+  if (manualStorageError) { toast(manualStorageError); return; }
+  const c = clients.find(x => x.id === current); if (!c) return;
+  const payload = { tenant_id: c.tenant_id, profile_id: c.client_profiles[0].id, title, body, source: source || null, status: 'pending' };
+  const saved = await sb.from('manual_items').insert(payload).select('id,title,body,source,status,created_at').single();
+  if (saved.error) { toast('Ajout impossible : ' + saved.error.message); return; }
+  manualRows = [...manualRows, saved.data];
+  if (titleEl) titleEl.value = '';
+  if (bodyEl) bodyEl.value = '';
+  if (sourceEl) sourceEl.value = '';
+  render();
+  toast('Info supplémentaire ajoutée');
+}
+const STATUS_GROUPS = [
+  { key: 'todo', statuses: ['proposed'] },
+  { key: 'selected', statuses: ['approved'] },
+  { key: 'rejected', statuses: ['rejected'] },
+  { key: 'ready', statuses: ['edited'] }
+];
+function laneFor(row) {
+  return STATUS_GROUPS.find(l => l.statuses.includes(row.status)) || STATUS_GROUPS[0];
+}
+function fallbackStatus(row) {
+  return row.llm_score >= 60 ? 'proposed' : 'grey';
+}
+function isPreviousReady(row) {
+  return false;
+}
+function currentReadyRows(list) {
+  // La requête exclut déjà les informations rattachées à un bulletin.
+  // Une information validée reste donc retenue, quelle que soit sa date de revue.
+  return (list || []).filter(r => r && r.status === 'edited');
+}
+function previousReadyRows(list) {
+  return [];
+}
+function statusForLane(row, laneKey) {
+  if (laneKey === 'todo') return fallbackStatus(row);
+  if (laneKey === 'selected') return 'approved';
+  if (laneKey === 'rejected') return 'rejected';
+  if (laneKey === 'incubation') return 'incubated';
+  if (laneKey === 'ready') return 'edited';
+  return row.status;
+}
+function actionsFor(row) {
+  const back = fallbackStatus(row);
+  if (isIncubated(row)) return `
+        <button type="button" class="b-soft" onclick="resumeIncubation('${row.id}')">Reprendre</button>
+        <button type="button" class="b-ready" onclick="decide('${row.id}', 'edited')">Retenir pour ce bulletin</button>`;
+  if (row.status === 'approved') return `
+        <button type="button" class="b-wait" onclick="incubate('${row.id}')">Reporter hors bulletin</button>
+        <button type="button" class="b-ready" onclick="decide('${row.id}', 'edited')">Retenir pour ce bulletin</button>`;
+  if (row.status === 'edited') return `
+        <button type="button" class="b-no" onclick="decide('${row.id}', 'rejected')">Ignorer</button>
+        <button type="button" class="b-soft" onclick="decide('${row.id}', 'approved')">Remettre à trier</button>`;
+  if (row.status === 'rejected') return `
+        <button type="button" class="b-ok" onclick="decide('${row.id}', 'approved')">Garder</button>
+        <button type="button" class="b-soft" onclick="decide('${row.id}', '${back}')">Restaurer</button>`;
+  return `
+        <button type="button" class="b-no" onclick="decide('${row.id}', 'rejected')">Ignorer</button>
+        <button type="button" class="b-ok" onclick="decide('${row.id}', 'approved')">Garder</button>`;
+}
+function groupRows(list) {
+  const grouped = Object.fromEntries(STATUS_GROUPS.map(l => [l.key, []]));
+  grouped.grey = [];
+  grouped.incubation = [];
+  const incubated = incubatedIds();
+  list.forEach(r => {
+    if (r.status === 'grey') grouped.grey.push(r);
+    else if (r.status === 'incubated') grouped.incubation.push(r);
+    else if (r.status === 'approved' && incubated.has(r.id)) grouped.incubation.push(r);
+    else grouped[laneFor(r).key].push(r);
+  });
+  Object.values(grouped).forEach(g => g.sort(sortByScore));
+  return grouped;
+}
+function renderBoard(list) {
+  const grouped = groupRows(list);
+  $('list').innerHTML = `<div class="journey">${renderStageNav(grouped)}${renderStagePanel(grouped)}</div>`;
+}
+function resetAction() {
+  return '<button class="tab reset-step" type="button" onclick="resetCurrentStep()">↺ Réinitialiser cette étape</button>';
+}
+function stageTools(actions = '', options = {}) {
+  const { view = true } = options;
+  const primary = actions || resetAction();
+  return `<div class="stage-toolbar">
+    <div class="stage-actions">${primary}${actions ? resetAction() : ''}</div>
+    ${view ? `<div class="stage-viewbar">${listToggleButton()}</div>` : ''}
+  </div>`;
+}
+function stageCounts(grouped) {
+  const currentReady = currentReadyRows(grouped.ready).length;
+  return {
+    todo: grouped.todo.length,
+    selected: grouped.selected.length,
+    grey: grouped.grey.length,
+    incubation: grouped.incubation.length,
+    rejected: grouped.rejected.length,
+    ready: currentReady,
+    manual: manualItems().length
+  };
+}
+function renderStageNav(grouped) {
+  const c = stageCounts(grouped);
+  const tabs = [
+    { key: 'todo', cls: 'todo', label: '1. Trier les infos à garder', hint: `${c.todo} info(s) à trier`, icon: '🧭' },
+    { key: 'grey', cls: 'grey', label: '2. Trier les signaux faibles', hint: `${c.grey} info(s) sous 60/100`, icon: '◐' },
+    { key: 'selected', cls: 'selected', label: '3. Choisir les infos à intégrer au bulletin', hint: `${c.selected} info${c.selected > 1 ? 's' : ''} à trier`, icon: '🎯' },
+    { key: 'manual', cls: 'manual', label: '4. Ajouter des infos supplémentaires', hint: `${c.manual} ajout${c.manual > 1 ? 's' : ''} manuel${c.manual > 1 ? 's' : ''}`, icon: '✚' },
+    { key: 'generate', cls: 'generate', label: '5. Générer le bulletin', hint: `${c.ready + c.manual} élément${c.ready + c.manual > 1 ? 's' : ''} retenu${c.ready + c.manual > 1 ? 's' : ''}`, icon: '⚡' }
+  ];
+  return `<nav class="stage-nav">${tabs.map(t => `<button class="stage-tab ${t.cls} ${activeStage === t.key ? 'on' : ''}" type="button" onclick="setStage('${t.key}')"><strong>${t.icon} ${t.label}</strong><span>${t.hint}</span></button>`).join('')}</nav>`;
+}
+function renderStagePanel(grouped) {
+  if (activeStage === 'grey') return renderGreyStage(grouped);
+  if (activeStage === 'selected') return renderSelectedStage(grouped);
+  if (activeStage === 'manual') return renderManualStage(grouped);
+  if (activeStage === 'generate') return renderGenerateStage(grouped);
+  return renderTodoStage(grouped);
+}
+function stageHeader(step, title, copy) {
+  return `<div class="stage-head"><span class="stage-kicker">${esc(step)}</span><h2 class="stage-title">${esc(title)}</h2></div>
+    <p class="stage-copy compact">${esc(copy)}</p>`;
+}
+function stageSummary(main, detail, showPeriod = true, extra = '') {
+  return `<div class="stage-summary">
+    <strong>${esc(showPeriod ? `${periodLabel()} : ${main}` : main)}</strong>
+    <span>${esc(detail)}</span>
+    ${showPeriod ? renderPeriodPicker() : ''}
+    ${extra}
+  </div>`;
+}
+function emptyTodoSuggestion(count) {
+  if (count) return '';
+  const isToday = ($('f-jours').value || '3') === 'today';
+  return `<div class="keyboard-tip">
+    ${isToday ? "Aucune information visible aujourd'hui. Il y a peut-être des signaux faibles à examiner, ou des éléments récents sur les 3 derniers jours." : 'Aucune information dans cette période. Vous pouvez examiner les signaux faibles ou élargir la période.'}
+    <div class="suggestion-actions">
+      <button class="tab" type="button" onclick="setStage('grey')">Voir les signaux faibles</button>
+      ${isToday ? `<button class="tab" type="button" onclick="setPeriod('3')">Passer aux 3 derniers jours</button>` : ''}
+    </div>
+  </div>`;
+}
+function listToggleButton() {
+  const icon = listMode
+    ? '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="3"></rect><path d="M8 9h8M8 13h5"></path></svg>'
+    : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+  return `<button class="view-toggle ${listMode ? 'on' : ''}" type="button" onclick="toggleListMode()">${icon}<span>${listMode ? 'Vue cartes' : 'Vue liste'}</span></button>`;
+}
+function miniRow(r) {
+  const it = r.items || {};
+  const dateInfo = formatDateTile(it.published_at);
+  const [, slab] = scoreInfo(r.llm_score);
+  const source = sourceInfo(it);
+  const dragAttrs = r.id ? ` draggable="true" data-id="${r.id}" ondragstart="dragCard(event, '${r.id}')" ondragend="endDrag(event)"` : '';
+  return `<div class="mini-row"${dragAttrs}>
+    <strong>${esc(it.title || 'Information sans titre')}</strong>
+    <span>${esc(dateInfo.main)} · ${r.llm_score}/100 · ${esc(slab)}</span>
+    <span>${source.valid ? 'Source : ' + esc(source.host) : 'Source à vérifier : ' + esc(source.host)}</span>
+    <span>${esc(r.client_summary || r.rationale || '')}</span>
+  </div>`;
+}
+function manualMiniRow(item) {
+  return `<div class="mini-row">
+    <strong>${esc(item.title || 'Information manuelle')}</strong>
+    <span>Information supplémentaire</span>
+    <span>${esc(item.source || 'Source à compléter')}</span>
+    <span>${esc(item.body || '')}</span>
+  </div>`;
+}
+function retainedForBulletinRow(item) {
+  return item && item._manual ? manualMiniRow(item) : miniRow(item);
+}
+function retainedForBulletinListRow(item) {
+  return item && item._manual ? manualMiniRow(item) : renderListRow(item);
+}
+function renderManualSummaryItems(items) {
+  if (!items.length) return '';
+  return `<div class="manual-summary-list">${items.map((item, index) => `<details class="manual-summary-item">
+    <summary>${esc(item.title || `Information supplémentaire ${index + 1}`)}</summary>
+    <div class="manual-summary-body">
+      <p>${esc(item.body || 'Information à compléter.')}</p>
+      <span>${esc(item.source || 'Source à compléter')}</span>
+    </div>
+  </details>`).join('')}</div>`;
+}
+function renderManualInlineForm() {
+  if (manualStorageError) return `<div class="empty">${esc(manualStorageError)} Exécutez le fichier supabase-infos-manuelles-partagees-CHATGPT.sql.</div>`;
+  return `<section class="manual-inline" aria-label="Ajouter une information supplémentaire">
+    <div>
+      <label class="field-label" for="manual-title">Titre</label>
+      <input class="manual-field" id="manual-title" type="text" placeholder="Ex. Retour terrain, échange institutionnel, précision client">
+    </div>
+    <div>
+      <label class="field-label" for="manual-body">Information et angle à intégrer</label>
+      <textarea class="manual-field manual-text" id="manual-body" placeholder="Ajoutez le contexte utile au bulletin : fait important, nuance, réserve, angle client, question à surveiller..."></textarea>
+    </div>
+    <div>
+      <label class="field-label" for="manual-source">Source ou lien, si disponible</label>
+      <input class="manual-field" id="manual-source" type="text" placeholder="URL, document, contact, note interne...">
+    </div>
+    <div class="manual-inline-actions">
+      <button class="bigbtn" type="button" onclick="saveManualInfo()">✚ Ajouter l'info</button>
+    </div>
+  </section>`;
+}
+function splitColumn(cls, title, items, renderItem = miniRow, note = '', laneKey = '', options = {}) {
+  const dropAttrs = laneKey ? ` ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="dropOnLane(event, '${laneKey}')"` : '';
+  const titleText = options.count ? `${title} (${items.length})` : title;
+  if (options.collapsible) {
+    return `<details class="split-col ${cls}"${dropAttrs}>
+      <summary><span aria-hidden="true"></span><span class="split-col-summary"><h3>${esc(titleText)}</h3>${note ? `<p class="split-col-note">${esc(note)}</p>` : ''}</span></summary>
+      <div class="compact-list">${items.length ? items.map(renderItem).join('') : '<div class="empty">Rien ici pour le moment.</div>'}</div>
+    </details>`;
+  }
+  return `<section class="split-col ${cls}"${dropAttrs}>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><h3>${esc(titleText)}</h3>${options.headerBtn || ''}</div>
+    ${note ? `<p class="split-col-note">${esc(note)}</p>` : ''}
+    <div class="compact-list">${items.length ? items.map(renderItem).join('') : '<div class="empty">Rien ici pour le moment.</div>'}</div>
+  </section>`;
+}
+function renderStepSplit(...columns) {
+  return `<div class="split-list">${columns.join('')}</div>`;
+}
+function renderActionColumn(cls, title, items, laneKey = '', options = {}) {
+  return splitColumn(cls, title, items, renderListRow, '', laneKey, options);
+}
+function renderReportedRecall(grouped) {
+  const incubated = (grouped.incubation || []).map(r => ({ row: r, origin: 'Reportée hors bulletin', action: 'recallIncubationToTodo' }));
+  const previous = previousReadyRows(grouped.ready || []).map(r => ({ row: r, origin: 'Retenue avant cette revue', action: 'recallReadyToTodo' }));
+  const items = [...incubated, ...previous];
+  if (!items.length) return '';
+  return `<details class="recall-box reminder">
+    <summary class="recall-head">
+      <strong>Infos reportées (${items.length})</strong>
+      <span>${items.length} information${items.length > 1 ? 's' : ''} à réexaminer avant validation</span>
+    </summary>
+    <div class="compact-list">${items.map(item => {
+      const r = item.row;
+      const it = r.items || {};
+      const dateInfo = formatDateTile(it.published_at);
+      return `<div class="mini-row">
+        <strong>${esc(it.title || 'Information reportée')}</strong>
+        <span>Date : ${esc(dateInfo.main)} · ${esc(dateInfo.sub)}</span>
+        <span>Origine : ${esc(item.origin)}</span>
+        <span>${esc(r.client_summary || r.rationale || '')}</span>
+        <div class="list-actions"><button type="button" class="b-soft" onclick="${item.action}('${r.id}')">Remettre au tri</button></div>
+      </div>`;
+    }).join('')}</div>
+  </details>`;
+}
+function renderGenerateRecap(ready, manual, incubation) {
+  const previous = previousReadyRows(ready);
+  const current = currentReadyRows(ready);
+  const retained = [...current, ...manual.map(item => ({ ...item, _manual: true }))];
+  const reminders = [...incubation, ...previous];
+  return `<div class="generate-columns">
+    ${splitColumn('ready primary', 'Infos retenues pour ce bulletin', retained, retainedForBulletinRow, 'Prioritaire : infos RSS validées et informations supplémentaires ajoutées à la main.', 'ready', { count: true, headerBtn: retained.length ? '<button type="button" class="b-soft" style="flex:none" onclick="resetRetained()">↺ Réinitialiser</button>' : '' })}
+    ${splitColumn('reminder', 'Infos reportées', reminders, miniRow, 'Infos gardées pour mémoire, mais non incluses automatiquement dans ce bulletin.', 'incubation', { collapsible: true, count: true })}
+  </div>`;
+}
+function renderGenerateList(ready, manual, incubation) {
+  const previous = previousReadyRows(ready);
+  const current = currentReadyRows(ready);
+  const retained = [...current, ...manual.map(item => ({ ...item, _manual: true }))];
+  const reminders = [...incubation, ...previous];
+  return `<div class="generate-columns">
+    ${splitColumn('ready primary', 'Infos retenues pour ce bulletin', retained, retainedForBulletinListRow, 'Prioritaire : infos RSS validées et informations supplémentaires ajoutées à la main.', 'ready', { count: true, headerBtn: retained.length ? '<button type="button" class="b-soft" style="flex:none" onclick="resetRetained()">↺ Réinitialiser</button>' : '' })}
+    ${splitColumn('reminder', 'Infos reportées', reminders, renderListRow, 'Infos gardées pour mémoire, mais non incluses automatiquement dans ce bulletin.', 'incubation', { collapsible: true, count: true })}
+  </div>`;
+}
+function renderGreyStage(grouped) {
+  const cards = grouped.grey;
+  const card = cards[0];
+  return `<section class="stage-panel grey">
+    ${stageHeader('Deuxième étape', '◐ Trier les signaux faibles', 'Trier les informations dont le score est inférieur à 60/100.')}
+    ${stageSummary(`${cards.length} signal(aux) faible(s) à trier`, 'Ils sont affichés directement ici, sans chargement manuel.')}
+    ${stageTools()}
+    ${listMode ? renderStepSplit(renderActionColumn('reject', 'À ignorer ou déjà ignorés', [...cards, ...grouped.rejected.filter(r => r.llm_score < 60)]), renderActionColumn('keep', 'Repêchés pour la suite', [...grouped.selected, ...grouped.ready].filter(r => r.llm_score < 60))) : `<div class="keyboard-tip">Astuce clavier : ← ignorer · → garder</div><div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} signal${cards.length > 1 ? 'aux' : ''} faible${cards.length > 1 ? 's' : ''} à trier</div>${renderCard(card)}` : '<div class="empty">Aucun signal faible à trier sur cette période.</div>'}</div>`}
+  </section>`;
+}
+function renderTodoStage(grouped) {
+  const cards = grouped.todo;
+  const card = cards[0];
+  const previousReady = previousReadyRows(grouped.ready);
+  const currentReady = currentReadyRows(grouped.ready);
+  return `<section class="stage-panel todo">
+    ${stageHeader('Première étape', '🧭 Trier les infos à garder', 'Une info à la fois : garder ce qui mérite une décision, ignorer le hors sujet.')}
+    ${stageSummary(`${cards.length} information(s) encore à trier`, `${grouped.selected.length} gardée(s) pour l'étape 3 · ${grouped.rejected.length} ignorée(s).`)}
+    ${stageTools()}
+    ${emptyTodoSuggestion(cards.length)}
+    ${listMode ? '' : renderReportedRecall(grouped)}
+    ${listMode ? renderStepSplit(
+      renderActionColumn('wait', 'À trier', cards, 'todo'),
+      renderActionColumn('reject', 'Infos ignorées', grouped.rejected.filter(r => r.llm_score >= 60), 'rejected'),
+      renderActionColumn('reminder', 'Infos reportées', [...grouped.incubation, ...previousReady], 'incubation'),
+      renderActionColumn('keep', 'Infos gardées pour la suite', [...grouped.selected, ...currentReady].filter(r => r.llm_score >= 60), 'selected')
+    ) : `<div class="keyboard-tip">Astuce clavier : ← ignorer · → garder</div><div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} info${cards.length > 1 ? 's' : ''} à trier</div>${renderCard(card)}` : '<div class="empty">Tri terminé. Direction les infos à intégrer au bulletin.</div>'}</div>`}
+  </section>`;
+}
+function renderSelectedStage(grouped) {
+  const cards = grouped.selected;
+  const card = cards[0];
+  const previousReady = previousReadyRows(grouped.ready);
+  const currentReady = currentReadyRows(grouped.ready);
+  const incubation = [...grouped.incubation, ...previousReady];
+  return `<section class="stage-panel selected">
+    ${stageHeader('Troisième étape', '🎯 Choisir les infos à intégrer au bulletin', 'Envoyer au bulletin courant ou reporter hors bulletin.')}
+    ${stageSummary(`${cards.length} information(s) à trier`, `${currentReady.length} retenue(s) pour ce bulletin · ${incubation.length} reportée(s).`)}
+    ${stageTools(cards.length ? `<button class="b-ready" type="button" onclick="retainAllSelected()">✓ Retenir toutes les infos gardées (${cards.length})</button>` : '')}
+    ${listMode ? renderStepSplit(
+      renderActionColumn('wait', 'À trier', cards, 'selected'),
+      renderActionColumn('reminder', 'Infos reportées', incubation, 'incubation', { collapsible: true, count: true }),
+      renderActionColumn('ready', 'Retenues pour le bulletin', currentReady, 'ready')
+    ) : `<div class="keyboard-tip">Astuce clavier : ← reporter hors bulletin · → retenir pour ce bulletin</div><div class="swipe-frame">${card ? `<div class="swipe-count">${cards.length} info${cards.length > 1 ? 's' : ''} à trier</div>${renderCard(card)}` : '<div class="empty">Aucune info à trier dans cette étape.</div>'}</div>${splitColumn('reminder', 'Infos reportées', incubation, renderListRow, 'Infos gardées pour mémoire, mais non incluses automatiquement dans ce bulletin.', 'incubation', { collapsible: true, count: true })}`}
+  </section>`;
+}
+function renderManualStage(grouped) {
+  const manual = manualItems();
+  const currentReady = currentReadyRows(grouped.ready);
+  return `<section class="stage-panel manual">
+    ${stageHeader('Quatrième étape', '✚ Ajouter des infos supplémentaires', 'Ajouter uniquement le contexte hors flux utile au bulletin.')}
+    ${stageSummary(`${manual.length} information(s) supplémentaire(s)`, `${currentReady.length} info(s) déjà retenue(s) pour ce bulletin.`, false, renderManualSummaryItems(manual))}
+    ${stageTools()}
+    ${renderManualInlineForm()}
+    ${listMode ? renderStepSplit(splitColumn('wait', 'Infos retenues pour ce bulletin', currentReady)) : ''}
+  </section>`;
+}
+function renderGenerateStage(grouped) {
+  const ready = grouped.ready;
+  const incubation = grouped.incubation;
+  const currentReady = currentReadyRows(ready);
+  const previous = previousReadyRows(ready);
+  const remindersCount = incubation.length + previous.length;
+  const manual = manualItems();
+  const total = currentReady.length + manual.length;
+  return `<section class="stage-panel generate">
+    ${stageHeader('Cinquième étape', '⚡ Générer le bulletin', total ? `${total} élément${total > 1 ? 's' : ''} retenu${total > 1 ? 's' : ''} pour ce bulletin.` : 'Ajoutez au moins une info retenue ou une info manuelle avant de générer.')}
+    ${stageSummary(`${currentReady.length} info(s) retenue(s) + ${manual.length} info(s) manuelle(s)`, `${remindersCount} information(s) reportée(s) à vérifier avant validation finale. Les infos ajoutées à la main seront signalées comme compléments sourcés dans la base de rédaction.`, false)}
+    <div class="generate-layout">
+      <div>${listMode ? renderGenerateList(ready, manual, incubation) : renderGenerateRecap(ready, manual, incubation)}</div>
+      <aside class="generate-side" aria-label="Options de génération">
+        <button class="bigbtn" type="button" onclick="generateBulletin()" ${total ? '' : 'disabled'}>⚡ Générer la base de rédaction<span class="arrow">→</span></button>
+        <button class="doc-future" type="button" disabled>Générer directement le document</button>
+        <button class="tab" type="button" onclick="openLastBulletin()">◉ Voir le dernier bulletin</button>
+      </aside>
+    </div>
+  </section>`;
+}
+function statusInfo(row) {
+  if (isIncubated(row)) return ['wait', 'Info reportée'];
+  if (row.status === 'approved') return ['selected', 'À trier'];
+  if (row.status === 'edited') return ['ready', 'Retenue pour ce bulletin'];
+  if (row.status === 'rejected') return ['ignored', 'Ignoré'];
+  return ['todo', row.status === 'grey' ? 'Signal faible' : 'À trier'];
+}
+function renderListRow(r) {
+  const it = r.items || {};
+  const [scls, slab, scoreClass, scoreRange] = scoreInfo(r.llm_score);
+  const dateInfo = formatDateTile(it.published_at);
+  const [statusClass, statusLabel] = statusInfo(r);
+  const source = sourceInfo(it);
+  const title = source.valid ? `<a href="${esc(source.url)}" target="_blank" rel="noopener">${esc(it.title)}</a>` : esc(it.title);
+  return `<article class="list-row" draggable="true" data-id="${r.id}" ondragstart="dragCard(event, '${r.id}')" ondragend="endDrag(event)">
+    <div class="list-cell"><span class="tile-kicker">Date</span><strong>${esc(dateInfo.main)}</strong><span>${esc(dateInfo.sub)}</span></div>
+    <div class="list-cell"><span class="tile-kicker">Score</span><span class="badge ${scls}">${r.llm_score}/100 · ${esc(slab)}</span><span class="date-sub">seuil ${scoreRange}</span></div>
+    <div class="list-cell"><span class="tile-kicker">Statut</span><span class="status-chip ${statusClass}">${esc(statusLabel)}</span></div>
+    <div class="list-cell list-title">
+      <strong>${title}</strong>
+      ${renderSource(source)}
+      <div class="list-summary">${esc(r.client_summary || r.rationale || '')}</div>
+    </div>
+    <div class="list-actions">${actionsFor(r)}</div>
+  </article>`;
+}
+function renderCard(r) {
+    const it = r.items || {};
+    const [scls, slab, scoreClass, scoreRange] = scoreInfo(r.llm_score);
+    const dateInfo = formatDateTile(it.published_at);
+    const source = sourceInfo(it);
+    const title = source.valid ? `<a href="${esc(source.url)}" target="_blank" rel="noopener">${esc(it.title)}</a>` : esc(it.title);
+    const dates = (Array.isArray(it.key_dates) ? it.key_dates : []).map(d => `<span class="badge echeance">${esc(d.date)} ${esc(d.libelle || d.label || '')}</span>`).join(' ');
+    return `<div class="card ${it.urgency === 'urgent' ? 'urgent' : ''} ${r.status === 'rejected' ? 'rejected-card' : ''}" draggable="true" data-id="${r.id}" ondragstart="dragCard(event, '${r.id}')" ondragend="endDrag(event)">
+      <div class="card-radar">
+        <div class="date-tile">
+          <span class="tile-kicker">Date</span>
+          <span class="date-main">${esc(dateInfo.main)}</span>
+          <span class="date-sub">${esc(dateInfo.sub)}</span>
+        </div>
+        <div class="score-tile ${scoreClass}">
+          <span class="tile-kicker">Pertinence</span>
+          <span class="score-main">${r.llm_score}/100</span>
+          <span class="score-sub">${esc(slab)} · seuil ${scoreRange}</span>
+        </div>
+      </div>
+      <p class="t">${title}</p>
+      <div class="meta">
+        <span class="badge ${scls}">${esc(slab)}</span>
+        ${it.urgency === 'urgent' ? '<span class="badge u" title="Signal temporel ou sensible détecté en amont. Le tri reste fondé sur le score.">URGENT</span>' : ''}
+        <span>${esc(it.act_type || '')}</span>
+        ${dates}
+      </div>
+      ${renderSource(source)}
+      <p class="why"><b>Pourquoi :</b> ${esc(r.rationale)}</p>
+      <textarea class="resume" id="sum-${r.id}">${esc(r.client_summary)}</textarea>
+      <div class="acts">
+        ${actionsFor(r)}
+      </div>
+    </div>`;
+}
+
+function dragCard(event, id) {
+  event.dataTransfer.setData('text/plain', id);
+  event.dataTransfer.effectAllowed = 'move';
+  event.currentTarget.classList.add('dragging');
+}
+function endDrag(event) {
+  event.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.split-col.drop-target').forEach(x => x.classList.remove('drop-target'));
+}
+function allowDrop(event) {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'move';
+  event.currentTarget.classList.add('drop-target');
+}
+function leaveDrop(event) {
+  if (!event.currentTarget.contains(event.relatedTarget)) event.currentTarget.classList.remove('drop-target');
+}
+async function dropOnLane(event, laneKey) {
+  event.preventDefault();
+  event.currentTarget.classList.remove('drop-target');
+  const id = event.dataTransfer.getData('text/plain');
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  if (laneKey === 'incubation') {
+    if (isIncubated(row)) return;
+    await incubate(id);
+    return;
+  }
+  const next = statusForLane(row, laneKey);
+  if (laneKey === 'ready' && next === row.status && isPreviousReady(row)) {
+    await decide(id, 'edited');
+    return;
+  }
+  if (next === row.status) return;
+  await decide(id, next);
+}
+
+function setStage(stage) {
+  activeStage = stage;
+  listMode = false;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function activeKeyboardCard() {
+  const grouped = groupRows(filteredRows());
+  if (activeStage === 'todo') return grouped.todo[0] || null;
+  if (activeStage === 'grey') return grouped.grey[0] || null;
+  if (activeStage === 'selected') return grouped.selected[0] || null;
+  return null;
+}
+function shouldIgnoreShortcut(event) {
+  const el = event.target;
+  if (!el) return false;
+  if ($('modal') && $('modal').style.display !== 'none') return true;
+  return ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(el.tagName) || el.isContentEditable;
+}
+async function handleKeyboard(event) {
+  if (event.repeat || shouldIgnoreShortcut(event)) return;
+  const row = activeKeyboardCard();
+  if (!row) return;
+  if (activeStage === 'todo' && event.key === 'ArrowLeft') { event.preventDefault(); await decide(row.id, 'rejected'); }
+  if (activeStage === 'todo' && event.key === 'ArrowRight') { event.preventDefault(); await decide(row.id, 'approved'); }
+  if (activeStage === 'grey' && event.key === 'ArrowLeft') { event.preventDefault(); await decide(row.id, 'rejected'); }
+  if (activeStage === 'grey' && event.key === 'ArrowRight') { event.preventDefault(); await decide(row.id, 'approved'); }
+  if (activeStage === 'selected' && event.key === 'ArrowLeft') { event.preventDefault(); incubate(row.id); }
+  if (activeStage === 'selected' && event.key === 'ArrowRight') { event.preventDefault(); await decide(row.id, 'edited'); }
+}
+function advanceStageIfDone() {
+  const grouped = groupRows(filteredRows());
+  if (activeStage === 'todo' && !grouped.todo.length && grouped.selected.length) activeStage = 'selected';
+  if (activeStage === 'selected' && !grouped.selected.length) activeStage = 'manual';
+}
+async function decide(id, statut) {
+  const summary = $('sum-' + id) ? $('sum-' + id).value : null;
+  const reviewDate = ['proposed', 'grey'].includes(statut) ? null : new Date().toISOString();
+  const { error } = await sb.from('matches').update({ status: statut, client_summary: summary, reviewed_at: reviewDate }).eq('id', id);
+  if (error) { toast('Erreur : ' + error.message); return; }
+  removeIncubation(id);
+  rows = rows.map(r => r.id === id ? { ...r, status: statut, client_summary: summary, reviewed_at: reviewDate } : r);
+  advanceStageIfDone();
+  renderThemes(); render(); renderTabs();
+  const labels = { proposed: 'Remis au tri', grey: 'Remis en signal faible', approved: 'À trier', edited: 'Retenu pour ce bulletin', rejected: 'Ignoré' };
+  toast(labels[statut] || 'Mis à jour');
+}
+
+async function retainAllSelected() {
+  const selected = groupRows(filteredRows()).selected;
+  if (!selected.length) { toast('Aucune information gardée à retenir.'); return; }
+  const ids = selected.map(r => r.id);
+  const reviewDate = new Date().toISOString();
+  const { error } = await sb.from('matches').update({ status: 'edited', reviewed_at: reviewDate }).in('id', ids);
+  if (error) { toast('Erreur : ' + error.message); return; }
+  ids.forEach(removeIncubation);
+  const selectedIds = new Set(ids);
+  rows = rows.map(r => selectedIds.has(r.id) ? { ...r, status: 'edited', reviewed_at: reviewDate } : r);
+  renderThemes(); render(); renderTabs();
+  toast(`${ids.length} information${ids.length > 1 ? 's retenues' : ' retenue'} pour ce bulletin`);
+}
+
+async function resetRetained() {
+  const editedRows = rows.filter(r => r.status === 'edited');
+  const manualPending = (manualRows || []).filter(m => !m.bulletin_id);
+  if (!editedRows.length && !manualPending.length) { toast('Aucune info retenue à réinitialiser.'); return; }
+  if (!confirm('Réinitialiser les infos retenues pour ce bulletin ?\n• Les infos RSS validées repartent au tri.\n• Les infos ajoutées à la main sont retirées.')) return;
+  for (const r of editedRows) {
+    const { error } = await sb.from('matches').update({ status: fallbackStatus(r), reviewed_at: null, bulletin_id: null }).eq('id', r.id);
+    if (error) { toast('Erreur : ' + error.message); return; }
+  }
+  if (manualPending.length) {
+    const { error } = await sb.from('manual_items').delete().in('id', manualPending.map(m => m.id)).eq('status', 'pending').is('bulletin_id', null);
+    if (error) { toast('Erreur infos manuelles : ' + error.message); return; }
+  }
+  listMode = false;
+  await load();
+  toast('Infos retenues réinitialisées');
+}
+
+async function approvedRows() {
+  const c = clients.find(x => x.id === current); if (!c) return [];
+  const pid = c.client_profiles[0].id;
+  const { data } = await sb.from('matches')
+    .select('id,status,reviewed_at,rationale,client_summary,items(title,url,url_canonical,source_id,raw_content,published_at,act_type,urgency,key_dates)')
+    .eq('profile_id', pid).eq('status', 'edited').is('bulletin_id', null);
+  return currentReadyRows((data || []).map(withFrenchLegacyTitle));
+}
+
+function promptExcerpt(text, max = 6500) {
+  const cleaned = String(text || '').replace(/\s+/g, ' ').trim();
+  if (!cleaned) return 'Contenu source non disponible dans BriefLayer.';
+  if (cleaned.length <= max) return cleaned;
+  return cleaned.slice(0, max).replace(/\s+\S*$/, '') + ' [...]';
+}
+
+function buildPrompt(client, brief, items, manual) {
+  const lignes = items.map((r, i) => {
+    const it = r.items || {};
+    const dates = (Array.isArray(it.key_dates) ? it.key_dates : []).map(d => `${d.date} (${d.libelle || d.label || 'échéance'})`).join(', ');
+    return `${i + 1}. ${it.title}
+   Date : ${(it.published_at || '').slice(0, 10)} — Type : ${it.act_type || 'n.c.'}${it.urgency === 'urgent' ? ' — URGENT' : ''}${dates ? '\n   Échéances : ' + dates : ''}
+   Angle client : ${r.client_summary || ''}
+   Pourquoi ça le concerne : ${r.rationale || ''}
+   Source primaire : ${sourceLine(it)}
+   Contenu source extrait : ${promptExcerpt(it.raw_content)}`;
+  }).join('\n\n');
+  const complements = (manual || []).map((item, i) => `${i + 1}. ${item.title || 'Information manuelle'}
+   Ajout manuel : ${item.body || ''}
+   Source ou statut de vérification : ${item.source || 'source à compléter / information à vérifier'}
+   Ajouté le : ${(item.created_at || '').slice(0, 10) || 'n.c.'}`).join('\n\n');
+
+  return `Tu es consultant en affaires publiques chez AleVia. Tu dois préparer le bulletin de veille de CLIENT_CIBLE = "${client}" à partir des informations validées ci-dessous.
+
+OBJECTIF
+Produire un bulletin prêt à envoyer, dans une forme proche des bulletins ASPI/ASPIE 2026 déjà parus, tout en adaptant les rubriques, le niveau de détail et les angles au client ${client}.
+
+MODE PAR DEFAUT : BULLETIN EXHAUSTIF
+- Traiter explicitement chaque information retenue, sauf doublon évident à signaler.
+- Ne pas réduire le bulletin à une note de synthèse : chaque item retenu doit être exploité.
+- Pour chaque item, restituer les faits utiles disponibles : acteurs, institutions, dates, texte concerné, procédure, décisions, échéances, chiffres, portée et limites.
+- Utiliser le contenu source extrait pour enrichir la rédaction. Si le contenu source est court ou absent, le signaler implicitement par une rédaction prudente plutôt que d'inventer.
+- Fusionner deux informations seulement si elles parlent du même sujet ou si un regroupement améliore vraiment la lecture. Dans ce cas, conserver les sources de chaque information fusionnée.
+- Le niveau de détail attendu est celui d'un bulletin professionnel complet : mieux vaut rédiger un peu long et structuré que trop court.
+
+VARIABLES A ME DEMANDER AVANT REDACTION
+- Numéro du bulletin.
+- Période couverte, mois affiché et, si besoin, partie X/Y.
+- Existence ou non d'un bloc "Cartographie" et son lien.
+- Eventuel édito ou message prioritaire à faire ressortir.
+- Informations à regrouper, à supprimer ou à traiter en focus.
+
+FORME DE REFERENCE OBSERVEE DANS LES BULLETINS ASPI 2026
+- En-tête sobre :
+  Bulletin de veille n°[NUMERO] partie [X/Y]
+  [Mois Année]
+- Si pertinent : bloc "Cartographie" avec une phrase courte du type "La cartographie de ${client} est actualisée en temps réel : [lien]".
+- Architecture principale :
+  1/ En France
+    Parlement
+    Gouvernement
+    puis rubriques thématiques selon la matière : Industrie, Propriété intellectuelle, IA et cybersécurité, Confidentialité des juristes d'entreprise, Nomination, Evénement, Compétitivité, etc.
+    Focus - [angle transversal] si plusieurs informations dessinent une tendance.
+  2/ A l'international
+    Europe
+    International
+    puis rubriques thématiques utiles.
+- Chaque item doit commencer par un titre analytique en gras ou clairement détaché : "Sujet - enseignement principal."
+- Après le titre, rédiger au minimum 2 paragraphes factuels pour toute information substantielle :
+  - 1 paragraphe seulement si l'information est réellement mineure, brève ou essentiellement signalétique ;
+  - 2 à 4 paragraphes pour un texte parlementaire, une initiative gouvernementale, un rapport, une consultation, une décision ou un sujet européen important ;
+  - jusqu'à 5 paragraphes si le sujet structure une tendance majeure, un risque, une opportunité ou une position publique pour le client.
+- Mettre le lien source en clair immédiatement après chaque item.
+- Ajouter un "Focus - ..." lorsqu'un regroupement permet une lecture stratégique. Le focus doit synthétiser la tendance en 1 ou 2 paragraphes, sans répéter les items.
+- Terminer par un agenda uniquement si des dates clés sont présentes.
+
+STYLE REDACTIONNEL A RESPECTER
+- Ton factuel, professionnel, fluide, sans marketing.
+- Les phrases doivent expliquer pourquoi le sujet compte, sans écrire "pour le client" à chaque ligne.
+- Ne pas copier mécaniquement "Angle client" : l'utiliser pour orienter la rédaction.
+- Ne pas inventer de faits, dates, citations, auteurs, votes ou liens.
+- Ne pas supprimer une information retenue parce qu'elle paraît secondaire : la traiter brièvement si nécessaire, mais la traiter.
+- Ne pas remplacer plusieurs items par un unique résumé transversal. Le focus vient en complément, jamais à la place des items.
+- Les informations ajoutées manuellement peuvent être utilisées comme compléments, signaux faibles, éléments de contexte ou points d'attention. Si la source manque, les signaler comme à vérifier plutôt que les présenter comme établies.
+- Conserver les noms propres, institutions, numéros de textes, commissions, rapporteurs et échéances quand ils sont disponibles.
+- Pour les questions écrites parlementaires : mentionner le numéro, l'auteur, le groupe et la circonscription si fournis.
+- Pour ${client}, adapter les rubriques au profil ci-dessous. Si le client n'est pas ASPI/ASPIE, conserver la forme AleVia mais remplacer les rubriques PI par les rubriques du client.
+
+PROFIL DU CLIENT ${client} :
+${brief}
+
+INFORMATIONS PRETES A GENERER (${items.length}) :
+
+${lignes || 'Aucune information issue du parcours de validation.'}
+
+INFORMATIONS AJOUTEES MANUELLEMENT (${(manual || []).length}) :
+
+${complements || 'Aucune information manuelle.'}
+
+AVANT DE REDIGER : commence par me poser les questions de variables manquantes. Quand je réponds, rédige directement le bulletin complet au format ci-dessus.`;
+}
+
+async function generateBulletin() {
+  const c = clients.find(x => x.id === current); if (!c) return;
+  const a = await approvedRows();
+  const manual = manualItems();
+  if (!a.length && !manual.length) return;
+  const missing = missingPrimarySources(a);
+  if (missing.length) {
+    const examples = missing.slice(0, 5).map(r => '- ' + ((r.items || {}).title || 'Information sans titre')).join('\n');
+    alert(`Génération bloquée : ${missing.length} information(s) n'ont pas de source primaire publiable.\n\nCorrigez ou retirez ces informations avant de générer le bulletin.\n\n${examples}`);
+    setStage('generate');
+    return;
+  }
+  const brief = c.client_profiles[0].brief || '';
+const demoName = demoClientName(c);
+const prompt = buildPrompt(demoName, anonymizeDemoText(brief), a, manual);
+  const { data: bul, error } = await sb.from('bulletins').insert({ tenant_id: c.tenant_id, profile_id: c.client_profiles[0].id, prompt_text: prompt, status: 'draft' }).select('id').single();
+  if (error) { toast('Erreur bulletin : ' + error.message); return; }
+  pendingBulletin = { id: bul.id, matchIds: a.map(r => r.id), manualIds: manual.map(item => item.id) };
+$('m-client').textContent = demoName;  $('m-prompt').textContent = prompt;
+  $('m-copy').onclick = async () => { try { await navigator.clipboard.writeText(prompt); toast('Copié'); } catch (e) {} };
+  $('m-finalize').style.display = 'inline-block';
+  $('m-finalize').onclick = finalizeBulletin;
+  $('m-reopen').style.display = 'none';
+  $('modal').style.display = 'flex';
+  // La copie peut rester en attente si le navigateur bloque le presse-papiers.
+  // La fenêtre de validation doit donc être affichée avant de la tenter.
+  Promise.resolve()
+    .then(() => navigator.clipboard.writeText(prompt))
+    .then(() => toast('Texte de travail copié'))
+    .catch(() => toast('Copie manuelle nécessaire'));
+}
+
+async function finalizeBulletin() {
+  if (!pendingBulletin) { toast('Aucun brouillon à valider dans cette session.'); return; }
+  const draft = pendingBulletin;
+  if (draft.matchIds.length) {
+    const linked = await sb.from('matches').update({ bulletin_id: draft.id }).in('id', draft.matchIds).is('bulletin_id', null);
+    if (linked.error) { toast('Erreur rattachement : ' + linked.error.message); return; }
+  }
+  if (draft.manualIds.length) {
+    const linkedManual = await sb.from('manual_items').update({ bulletin_id: draft.id, status: 'included', updated_at: new Date().toISOString() }).in('id', draft.manualIds).eq('status', 'pending');
+    if (linkedManual.error) {
+      if (draft.matchIds.length) await sb.from('matches').update({ bulletin_id: null }).eq('bulletin_id', draft.id);
+      toast('Erreur infos supplémentaires : ' + linkedManual.error.message);
+      return;
+    }
+  }
+  const written = await sb.from('bulletins').update({ status: 'written' }).eq('id', draft.id);
+  if (written.error) {
+    if (draft.matchIds.length) await sb.from('matches').update({ bulletin_id: null }).eq('bulletin_id', draft.id);
+    if (draft.manualIds.length) await sb.from('manual_items').update({ bulletin_id: null, status: 'pending', updated_at: new Date().toISOString() }).in('id', draft.manualIds);
+    toast('Validation annulée : ' + written.error.message);
+    return;
+  }
+  const includedManual = new Set(draft.manualIds);
+  manualRows = manualRows.filter(item => !includedManual.has(item.id));
+  pendingBulletin = null;
+  $('m-finalize').style.display = 'none';
+  $('modal').style.display = 'none';
+  await load();
+  toast('Bulletin validé : les informations ont été archivées');
+}
+
+async function openLastBulletin() {
+  const c = clients.find(x => x.id === current); if (!c) return;
+  const { data } = await sb.from('bulletins').select('id,prompt_text,created_at').eq('profile_id', c.client_profiles[0].id).order('created_at', { ascending: false }).limit(1);
+  if (!data || !data.length) { toast('Aucun bulletin généré pour ce client.'); return; }
+  const b = data[0];
+  $('m-client').textContent = demoClientName(c) + ' — généré le ' + new Date(b.created_at).toLocaleDateString('fr-FR');
+  $('m-prompt').textContent = b.prompt_text || '';
+  try { await navigator.clipboard.writeText(b.prompt_text || ''); toast('Texte de travail copié'); } catch (e) {}
+  $('m-copy').onclick = async () => { try { await navigator.clipboard.writeText(b.prompt_text || ''); toast('Copié'); } catch (e) {} };
+  $('m-finalize').style.display = 'none';
+  $('m-reopen').style.display = 'inline-block';
+  $('m-reopen').onclick = async () => {
+    await sb.from('matches').update({ bulletin_id: null }).eq('bulletin_id', b.id);
+    $('modal').style.display = 'none'; $('m-reopen').style.display = 'none';
+    toast('Infos rouvertes : elles comptent à nouveau pour la génération');
+    load();
+  };
+  $('modal').style.display = 'flex';
+}
+
+async function resetReview() {
+  const c = clients.find(x => x.id === current); if (!c) return;
+  if (!confirm('Remettre toutes les propositions de ' + c.name + ' à l\'état initial ?\nLes décisions de tri et les bulletins générés seront annulés.')) return;
+  const pid = c.client_profiles[0].id;
+  const r1 = await sb.from('matches').update({ status: 'proposed', reviewed_at: null, bulletin_id: null }).eq('profile_id', pid).gte('llm_score', 60);
+  const r2 = await sb.from('matches').update({ status: 'grey', reviewed_at: null, bulletin_id: null }).eq('profile_id', pid).lt('llm_score', 60);
+  if (r1.error || r2.error) { toast('Erreur : ' + (r1.error || r2.error).message); return; }
+  toast('Réinitialisé : toutes les propositions sont de retour');
+  renderTabs(); load();
+}
+async function resetCurrentStep() {
+  const list = ['manual', 'generate'].includes(activeStage) ? rows : filteredRows();
+  const grouped = groupRows(list);
+  if (activeStage === 'manual') {
+    if (!manualItems().length) { toast('Aucune info manuelle à retirer.'); return; }
+    if (!confirm('Retirer les informations supplémentaires du client actif ?')) return;
+    const c = clients.find(x => x.id === current); if (!c) return;
+    const removed = await sb.from('manual_items').delete().eq('profile_id', c.client_profiles[0].id).eq('status', 'pending').is('bulletin_id', null);
+    if (removed.error) { toast('Suppression impossible : ' + removed.error.message); return; }
+    manualRows = [];
+    render();
+    toast('Étape infos supplémentaires réinitialisée');
+    return;
+  }
+  let candidates = [];
+  let label = '';
+  if (activeStage === 'grey') {
+    candidates = list.filter(r => r.llm_score < 60 && ['approved', 'rejected', 'edited', 'incubated'].includes(r.status));
+    label = 'Remettre les décisions sur les signaux faibles au tri ?';
+  } else if (activeStage === 'todo') {
+    candidates = list.filter(r => r.llm_score >= 60 && ['approved', 'rejected'].includes(r.status));
+    label = 'Remettre les décisions de tri de la période active au tri ?';
+  } else if (activeStage === 'selected') {
+    candidates = [...grouped.ready, ...grouped.incubation, ...grouped.selected.filter(r => isIncubated(r))];
+    label = 'Remettre les décisions de cette étape à l’état À trier ?';
+  } else if (activeStage === 'generate') {
+    candidates = grouped.ready;
+    label = 'Retirer les infos retenues pour ce bulletin et les remettre à trier ?';
+  } else {
+    candidates = [];
+  }
+  if (!candidates.length) { toast('Rien à réinitialiser dans cette étape.'); return; }
+  if (!confirm(label)) return;
+  const ids = [...new Set(candidates.map(r => r.id))];
+  if (activeStage === 'todo' || activeStage === 'grey') {
+    const results = await Promise.all(ids.map(id => {
+      const row = rows.find(r => r.id === id);
+      return sb.from('matches').update({ status: fallbackStatus(row), reviewed_at: null }).eq('id', id);
+    }));
+    const failed = results.find(x => x.error);
+    if (failed) { toast('Erreur : ' + failed.error.message); return; }
+  } else {
+    const { error } = await sb.from('matches').update({ status: 'approved', reviewed_at: null }).in('id', ids);
+    if (error) { toast('Erreur : ' + error.message); return; }
+  }
+  listMode = false;
+  await load();
+  toast('Étape réinitialisée');
+}
+
+document.addEventListener('keydown', handleKeyboard);
+
+window.switchTo = switchTo; window.decide = decide; window.retainAllSelected = retainAllSelected; window.incubate = incubate; window.resumeIncubation = resumeIncubation; window.recallIncubationToTodo = recallIncubationToTodo; window.recallReadyToTodo = recallReadyToTodo; window.toggleTheme = toggleTheme; window.setStage = setStage; window.generateBulletin = generateBulletin; window.finalizeBulletin = finalizeBulletin;
+window.setPeriod = setPeriod; window.toggleListMode = toggleListMode; window.openLastBulletin = openLastBulletin; window.resetReview = resetReview; window.resetCurrentStep = resetCurrentStep; window.resetRetained = resetRetained;
+window.dragCard = dragCard; window.endDrag = endDrag; window.allowDrop = allowDrop; window.leaveDrop = leaveDrop; window.dropOnLane = dropOnLane;
+(function start() {
+  if (typeof supabase !== 'undefined') { init(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+  s.onload = () => init();
+  s.onerror = () => { $('list').innerHTML = '<div class="empty">⚠ Impossible de charger la librairie de connexion (bloqueur de pub, antivirus ou réseau). Désactivez le bloqueur pour cette page ou essayez un autre navigateur, puis rechargez (F5).</div>'; $('hdr-info').textContent = 'hors ligne'; };
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>
