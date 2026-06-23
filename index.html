@@ -931,7 +931,7 @@ function splitColumn(cls, title, items, renderItem = miniRow, note = '', laneKey
     </details>`;
   }
   return `<section class="split-col ${cls}"${dropAttrs}>
-    <h3>${esc(titleText)}</h3>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><h3>${esc(titleText)}</h3>${options.headerBtn || ''}</div>
     ${note ? `<p class="split-col-note">${esc(note)}</p>` : ''}
     <div class="compact-list">${items.length ? items.map(renderItem).join('') : '<div class="empty">Rien ici pour le moment.</div>'}</div>
   </section>`;
@@ -972,7 +972,7 @@ function renderGenerateRecap(ready, manual, incubation) {
   const retained = [...current, ...manual.map(item => ({ ...item, _manual: true }))];
   const reminders = [...incubation, ...previous];
   return `<div class="generate-columns">
-    ${splitColumn('ready primary', 'Infos retenues pour ce bulletin', retained, retainedForBulletinRow, 'Prioritaire : infos RSS validées et informations supplémentaires ajoutées à la main.', 'ready', { count: true })}
+    ${splitColumn('ready primary', 'Infos retenues pour ce bulletin', retained, retainedForBulletinRow, 'Prioritaire : infos RSS validées et informations supplémentaires ajoutées à la main.', 'ready', { count: true, headerBtn: retained.length ? '<button type="button" class="b-soft" style="flex:none" onclick="resetRetained()">↺ Réinitialiser</button>' : '' })}
     ${splitColumn('reminder', 'Infos reportées', reminders, miniRow, 'Infos gardées pour mémoire, mais non incluses automatiquement dans ce bulletin.', 'incubation', { collapsible: true, count: true })}
   </div>`;
 }
@@ -982,7 +982,7 @@ function renderGenerateList(ready, manual, incubation) {
   const retained = [...current, ...manual.map(item => ({ ...item, _manual: true }))];
   const reminders = [...incubation, ...previous];
   return `<div class="generate-columns">
-    ${splitColumn('ready primary', 'Infos retenues pour ce bulletin', retained, retainedForBulletinListRow, 'Prioritaire : infos RSS validées et informations supplémentaires ajoutées à la main.', 'ready', { count: true })}
+    ${splitColumn('ready primary', 'Infos retenues pour ce bulletin', retained, retainedForBulletinListRow, 'Prioritaire : infos RSS validées et informations supplémentaires ajoutées à la main.', 'ready', { count: true, headerBtn: retained.length ? '<button type="button" class="b-soft" style="flex:none" onclick="resetRetained()">↺ Réinitialiser</button>' : '' })}
     ${splitColumn('reminder', 'Infos reportées', reminders, renderListRow, 'Infos gardées pour mémoire, mais non incluses automatiquement dans ce bulletin.', 'incubation', { collapsible: true, count: true })}
   </div>`;
 }
@@ -1223,6 +1223,24 @@ async function retainAllSelected() {
   rows = rows.map(r => selectedIds.has(r.id) ? { ...r, status: 'edited', reviewed_at: reviewDate } : r);
   renderThemes(); render(); renderTabs();
   toast(`${ids.length} information${ids.length > 1 ? 's retenues' : ' retenue'} pour ce bulletin`);
+}
+
+async function resetRetained() {
+  const editedRows = rows.filter(r => r.status === 'edited');
+  const manualPending = (manualRows || []).filter(m => !m.bulletin_id);
+  if (!editedRows.length && !manualPending.length) { toast('Aucune info retenue à réinitialiser.'); return; }
+  if (!confirm('Réinitialiser les infos retenues pour ce bulletin ?\n• Les infos RSS validées repartent au tri.\n• Les infos ajoutées à la main sont retirées.')) return;
+  for (const r of editedRows) {
+    const { error } = await sb.from('matches').update({ status: fallbackStatus(r), reviewed_at: null, bulletin_id: null }).eq('id', r.id);
+    if (error) { toast('Erreur : ' + error.message); return; }
+  }
+  if (manualPending.length) {
+    const { error } = await sb.from('manual_items').delete().in('id', manualPending.map(m => m.id)).eq('status', 'pending').is('bulletin_id', null);
+    if (error) { toast('Erreur infos manuelles : ' + error.message); return; }
+  }
+  listMode = false;
+  await load();
+  toast('Infos retenues réinitialisées');
 }
 
 async function approvedRows() {
@@ -1473,7 +1491,7 @@ async function resetCurrentStep() {
 document.addEventListener('keydown', handleKeyboard);
 
 window.switchTo = switchTo; window.decide = decide; window.retainAllSelected = retainAllSelected; window.incubate = incubate; window.resumeIncubation = resumeIncubation; window.recallIncubationToTodo = recallIncubationToTodo; window.recallReadyToTodo = recallReadyToTodo; window.toggleTheme = toggleTheme; window.setStage = setStage; window.generateBulletin = generateBulletin; window.finalizeBulletin = finalizeBulletin;
-window.setPeriod = setPeriod; window.toggleListMode = toggleListMode; window.openLastBulletin = openLastBulletin; window.resetReview = resetReview; window.resetCurrentStep = resetCurrentStep;
+window.setPeriod = setPeriod; window.toggleListMode = toggleListMode; window.openLastBulletin = openLastBulletin; window.resetReview = resetReview; window.resetCurrentStep = resetCurrentStep; window.resetRetained = resetRetained;
 window.dragCard = dragCard; window.endDrag = endDrag; window.allowDrop = allowDrop; window.leaveDrop = leaveDrop; window.dropOnLane = dropOnLane;
 (function start() {
   if (typeof supabase !== 'undefined') { init(); return; }
